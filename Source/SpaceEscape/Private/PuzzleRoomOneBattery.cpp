@@ -3,6 +3,7 @@
 
 #include "PuzzleRoomOneBattery.h"
 
+#include "Battery.h"
 #include "Components/BoxComponent.h"
 
 APuzzleRoomOneBattery::APuzzleRoomOneBattery()
@@ -10,7 +11,7 @@ APuzzleRoomOneBattery::APuzzleRoomOneBattery()
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision For Battery"));
 	SetRootComponent(boxComp);
 }
-/*
+
 void APuzzleRoomOneBattery::BeginPlay()
 {
 	Super::BeginPlay();
@@ -51,4 +52,3 @@ void APuzzleRoomOneBattery::SetBattery()
 		ReportClear();
 	}
 }
-*/

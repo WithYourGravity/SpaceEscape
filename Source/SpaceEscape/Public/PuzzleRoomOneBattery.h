@@ -16,11 +16,11 @@ class SPACEESCAPE_API APuzzleRoomOneBattery : public APuzzleBase
 
 public:
 	APuzzleRoomOneBattery();
-	//virtual void BeginPlay() override;
+	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly)
 	class UBoxComponent* boxComp;
-	/*
+	
 	UFUNCTION()
 	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
@@ -31,5 +31,5 @@ private:
 	UPROPERTY()
 	class ABattery* battery;
 	bool bCanSetBattery;
-	*/
+	
 };
