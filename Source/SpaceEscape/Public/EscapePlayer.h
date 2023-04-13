@@ -163,7 +163,7 @@ public:
 
 	// 원격잡기 모드 여부
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	bool bIsRemoteGrab = true;
+	bool bIsRemoteGrab = false;
 	// Remote Grab 거리
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
 	float remoteDistance = 2000.0f;

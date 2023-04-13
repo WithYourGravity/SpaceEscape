@@ -171,8 +171,18 @@ void AEscapePlayer::Move(const FInputActionValue& values)
 	}
 
 	FVector2D axis = values.Get<FVector2D>();
-	AddMovementInput(GetActorForwardVector(), axis.X);
-	AddMovementInput(GetActorRightVector(), axis.Y);
+	// HMD 가 연결되어 있지 않다면
+	if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled() == false)
+	{
+		AddMovementInput(GetActorForwardVector(), axis.X);
+		AddMovementInput(GetActorRightVector(), axis.Y);
+	}
+	// 만약 HMD 가 연결되어 있다면
+	else
+	{
+		AddMovementInput(vrCamera->GetForwardVector(), axis.X);
+		AddMovementInput(vrCamera->GetRightVector(), axis.Y);
+	}
 }
 
 void AEscapePlayer::Turn(const FInputActionValue& values)
@@ -513,6 +523,8 @@ void AEscapePlayer::Fire(const FInputActionValue& values)
 	// 만약 부딪힌 것이 있으면
 	if (bHit)
 	{
+		DrawDebugSphere(GetWorld(), hitInfo.Location, remoteRadius, 10, FColor::Blue);
+
 		auto hitComp = hitInfo.GetComponent();
 		if (hitComp && hitComp->IsSimulatingPhysics())
 		{
