@@ -9,7 +9,7 @@
 ARoomManager::ARoomManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -31,8 +31,6 @@ void ARoomManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//UE_LOG(LogTemp, Warning, TEXT("current stage is : %d"), playingStage);
-	//UE_LOG(LogTemp, Warning, TEXT("solved pulzze count is : %d"), solvedPuzzleCount);
 }
 
 // 완료한 퍼즐 개수 올리고 다 풀었다면 다음 스테이지로 넘어가는 함수
@@ -44,6 +42,9 @@ void ARoomManager::AddSolvedPuzzleCount()
 	{
 		MoveOnNextStage();
 	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("solved pulzze count is : %d"), solvedPuzzleCount);
+	//UE_LOG(LogTemp, Warning, TEXT("current stage is : %d"), playingStage);
 }
 
 // 다음 스테이지로 넘어가며 퍼즐카운트 초기화 해주는 함수

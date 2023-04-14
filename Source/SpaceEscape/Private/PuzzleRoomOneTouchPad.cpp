@@ -33,52 +33,52 @@ APuzzleRoomOneTouchPad::APuzzleRoomOneTouchPad()
 
 	touchKeyComp0 = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKey0"));
 	touchKeyComp0->SetupAttachment(RootComponent);
-	touchKeyComp0->SetRelativeLocation(FVector(-38.f, 15.f, -83.f));
-	touchKeyComp0->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
+	touchKeyComp0->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
+	touchKeyComp0->SetRelativeLocation(FVector(-38.f, 15.f, -85.f));
 	touchKeyComp1 = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKey1"));
 	touchKeyComp1->SetupAttachment(RootComponent);
-	touchKeyComp1->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
+	touchKeyComp1->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
 	touchKeyComp1->SetRelativeLocation(FVector(-60.f, 15.f, -42.f));
 	touchKeyComp2 = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKey2"));
 	touchKeyComp2->SetupAttachment(RootComponent);
-	touchKeyComp2->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
+	touchKeyComp2->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
 	touchKeyComp2->SetRelativeLocation(FVector(-38.f, 15.f, -42.f));
 	touchKeyComp3 = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKey3"));
 	touchKeyComp3->SetupAttachment(RootComponent);
-	touchKeyComp3->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
+	touchKeyComp3->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
 	touchKeyComp3->SetRelativeLocation(FVector(-16.f, 15.f, -42.f));
 	touchKeyComp4 = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKey4"));
 	touchKeyComp4->SetupAttachment(RootComponent);
-	touchKeyComp4->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
+	touchKeyComp4->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
 	touchKeyComp4->SetRelativeLocation(FVector(-60.f, 15.f, -56.f));
 	touchKeyComp5 = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKey5"));
 	touchKeyComp5->SetupAttachment(RootComponent);
-	touchKeyComp5->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
+	touchKeyComp5->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
 	touchKeyComp5->SetRelativeLocation(FVector(-38.f, 15.f, -56.f));
 	touchKeyComp6 = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKey6"));
 	touchKeyComp6->SetupAttachment(RootComponent);
-	touchKeyComp6->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
+	touchKeyComp6->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
 	touchKeyComp6->SetRelativeLocation(FVector(-16.f, 15.f, -56.f));
 	touchKeyComp7 = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKey7"));
 	touchKeyComp7->SetupAttachment(RootComponent);
-	touchKeyComp7->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
+	touchKeyComp7->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
 	touchKeyComp7->SetRelativeLocation(FVector(-60.f, 15.f, -70.f));
 	touchKeyComp8 = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKey8"));
 	touchKeyComp8->SetupAttachment(RootComponent);
-	touchKeyComp8->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
+	touchKeyComp8->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
 	touchKeyComp8->SetRelativeLocation(FVector(-38.f, 15.f, -70.f));
 	touchKeyComp9 = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKey9"));
 	touchKeyComp9->SetupAttachment(RootComponent);
-	touchKeyComp9->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
+	touchKeyComp9->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
 	touchKeyComp9->SetRelativeLocation(FVector(-16.f, 15.f, -70.f));
 	touchKeyCompEnt = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKeyEnter"));
 	touchKeyCompEnt->SetupAttachment(RootComponent);
-	touchKeyCompEnt->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
-	touchKeyCompEnt->SetRelativeLocation(FVector(-16.f, 15.f, -83.f));
+	touchKeyCompEnt->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
+	touchKeyCompEnt->SetRelativeLocation(FVector(-16.f, 15.f, -85.f));
 	touchKeyCompDel = CreateDefaultSubobject<UBoxComponent>(TEXT("touchKeyDelete"));
 	touchKeyCompDel->SetupAttachment(RootComponent);
-	touchKeyCompDel->SetRelativeScale3D(FVector(0.3f, 0.1f, 0.2f));
-	touchKeyCompDel->SetRelativeLocation(FVector(-60.f, 15.f, -83.f));
+	touchKeyCompDel->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
+	touchKeyCompDel->SetRelativeLocation(FVector(-60.f, 15.f, -85.f));
 }
 
 void APuzzleRoomOneTouchPad::BeginPlay()
@@ -144,7 +144,7 @@ void APuzzleRoomOneTouchPad::CheckPassword()
 	if (panelWidgetClass->GetCurrentScreen() == answer)
 	{
 		// 성공 처리
-		puzzleClearDele.Execute();
+		ReportClear();
 		UE_LOG(LogTemp, Warning, TEXT("Succeeded"));
 	}
 	else

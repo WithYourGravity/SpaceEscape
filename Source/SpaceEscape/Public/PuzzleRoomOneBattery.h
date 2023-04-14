@@ -18,18 +18,13 @@ public:
 	APuzzleRoomOneBattery();
 	virtual void BeginPlay() override;
 
+ 	// 배터리 장착 가능 범위 콜리전
 	UPROPERTY(EditDefaultsOnly)
 	class UBoxComponent* boxComp;
+	// 배터리가 고정될 위치 컴포넌트
+	UPROPERTY(EditDefaultsOnly)
+	class UBoxComponent* targerPosition;
 	
 	UFUNCTION()
-	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	void SetBattery();
-
-private:
-	UPROPERTY()
-	class ABattery* battery;
-	bool bCanSetBattery;
-	
+	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);	
 };

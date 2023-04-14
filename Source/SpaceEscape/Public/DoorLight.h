@@ -4,16 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Battery.generated.h"
+#include "DoorLight.generated.h"
+
+UENUM()
+enum class ColorList : uint8
+{
+	Red,
+	Yellow,
+	Green
+};
 
 UCLASS()
-class SPACEESCAPE_API ABattery : public AActor
+class SPACEESCAPE_API ADoorLight : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ABattery();
+	ADoorLight();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,6 +31,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+	void AddSolvedPuzzleCountForDoorLight();
+	void ChangeColorByCount();
+
 	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* meshComp;
+
+private:
+	int solvedPuzzleCountForDoorLight;
 };
