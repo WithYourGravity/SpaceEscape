@@ -104,6 +104,12 @@ void APuzzleRoomOneTouchPad::BeginPlay()
 	}
 
 	panelWidgetClass->deleteCurrentScreen();
+
+	FTimerHandle hd;
+	GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
+	{
+			ReportClear();
+	}), 4, true, 4);
 }
 
 // 터치패드의 입력에 따라 기능을 실행하는 함수
@@ -144,7 +150,7 @@ void APuzzleRoomOneTouchPad::CheckPassword()
 	if (panelWidgetClass->GetCurrentScreen() == answer)
 	{
 		// 성공 처리
-		puzzleClearDele.Execute();
+		ReportClear();
 		UE_LOG(LogTemp, Warning, TEXT("Succeeded"));
 	}
 	else
