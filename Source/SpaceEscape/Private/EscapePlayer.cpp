@@ -2,6 +2,7 @@
 
 
 #include "EscapePlayer.h"
+#include "Crosshair.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "EnhancedInputComponent.h"
@@ -103,7 +104,13 @@ void AEscapePlayer::BeginPlay()
 		vrCamera->bUsePawnControlRotation = true;
 	}
 
-	moveMode = EMoveModeState::JOYSTICK;
+	// Crosshair 객체 생성
+	if (crosshairFactory)
+	{
+		crosshair = GetWorld()->SpawnActor<ACrosshair>(crosshairFactory);
+	}
+
+	moveMode = EMoveModeState::TELEPORT;
 
 	// moveMode 가 TELEPORT 이면 텔레포트 기능 초기화
 	if (moveMode == EMoveModeState::TELEPORT)
@@ -141,6 +148,8 @@ void AEscapePlayer::Tick(float DeltaTime)
 	Grabbing();
 
 	DrawDebugRemoteGrab();
+
+	DrawCrosshair();
 }
 
 // Called to bind functionality to input
@@ -515,7 +524,7 @@ void AEscapePlayer::DrawDebugRemoteGrab()
 void AEscapePlayer::Fire(const FInputActionValue& values)
 {
 	FVector startPos = rightAim->GetComponentLocation();
-	FVector endPos = startPos + rightAim->GetForwardVector() * 10000;
+	FVector endPos = startPos + rightAim->GetForwardVector() * fireDistance;
 
 	FHitResult hitInfo;
 	bool bHit = HitTest(startPos, endPos, hitInfo);
@@ -523,8 +532,6 @@ void AEscapePlayer::Fire(const FInputActionValue& values)
 	// 만약 부딪힌 것이 있으면
 	if (bHit)
 	{
-		DrawDebugSphere(GetWorld(), hitInfo.Location, remoteRadius, 10, FColor::Blue);
-
 		auto hitComp = hitInfo.GetComponent();
 		if (hitComp && hitComp->IsSimulatingPhysics())
 		{
@@ -532,4 +539,41 @@ void AEscapePlayer::Fire(const FInputActionValue& values)
 			hitComp->AddForceAtLocation((endPos - startPos).GetSafeNormal() * 150000, hitInfo.Location);
 		}
 	}
+}
+
+// 거리에 따라서 Crosshair 크기가 같게 보이게 한다.
+void AEscapePlayer::DrawCrosshair()
+{
+	// 시작점
+	FVector startPos = rightAim->GetComponentLocation();
+	// 끝점
+	FVector endPos = startPos + rightAim->GetForwardVector() * fireDistance;
+
+	// 충돌 체크
+	FHitResult hitInfo;
+	bool bHit = HitTest(startPos, endPos, hitInfo);
+
+	float distance = 0;
+	// 충돌이 발생하면
+	if (bHit)
+	{
+		// 충돌한 지점에 Crosshair 표시
+		crosshair->crosshairComp->SetVisibility(true);
+		crosshair->SetActorLocation(hitInfo.Location);
+		distance = hitInfo.Distance;
+	}
+	// 그렇지 않으면
+	else
+	{
+		crosshair->crosshairComp->SetVisibility(false);
+		// 그냥 끝점에 크로스헤어 표시
+		//crosshair->SetActorLocation(endPos);
+		//distance = (endPos - startPos).Size();
+	}
+
+	crosshair->SetActorScale3D(FVector(FMath::Max<float>(1, distance)));
+
+	// Crosshair 가 카메라를 바라보도록 처리
+	FVector direction = crosshair->GetActorLocation() - vrCamera->GetComponentLocation();
+	crosshair->SetActorRotation(direction.Rotation());
 }

@@ -194,6 +194,21 @@ public:
 
 
 // Fire
-public:
+private:
+	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
+	float fireDistance = 10000.0f;
+
 	void Fire(const FInputActionValue& values);
+
+
+	// Crosshair
+	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
+	TSubclassOf<class ACrosshair> crosshairFactory;
+
+	// Crosshair Instance
+	UPROPERTY()
+	class ACrosshair* crosshair;
+
+	// Draw Crosshair
+	void DrawCrosshair();
 };
