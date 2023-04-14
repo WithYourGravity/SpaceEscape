@@ -12,6 +12,7 @@
 #include "Components/CapsuleComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraDataInterfaceArrayFunctionLibrary.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 AEscapePlayer::AEscapePlayer()
@@ -61,6 +62,12 @@ AEscapePlayer::AEscapePlayer()
 		rightHandMesh->SetRelativeLocation(FVector(-2.9f, 3.5f, 4.5f));
 		rightHandMesh->SetRelativeRotation(FRotator(25, 0, 90));
 	}
+
+	// Right Index Finger Collision
+	indexFingerCollision = CreateDefaultSubobject<USphereComponent>(TEXT("indexFingerCollision"));
+	indexFingerCollision->SetupAttachment(rightHandMesh);
+	indexFingerCollision->SetRelativeLocation(FVector(3.5f, 16.5f, -4.5f));
+	indexFingerCollision->SetSphereRadius(0.5f);
 
 	// Teleport
 	teleportCircle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("teleportCircle"));
