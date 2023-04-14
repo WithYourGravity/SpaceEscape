@@ -61,7 +61,7 @@ public:
 	// 회전처리 함수
 	void Turn(const FInputActionValue& values);
 
-protected:
+public:
 	// Camera
 	UPROPERTY(VisibleAnywhere, Category = "VRCamera")
 	class UCameraComponent* vrCamera;
@@ -71,6 +71,8 @@ protected:
 	class UMotionControllerComponent* leftHand;
 	UPROPERTY(VisibleAnywhere, Category = "MotionController")
 	class UMotionControllerComponent* rightHand;
+	UPROPERTY(VisibleAnywhere, Category = "MotionController")
+	class UMotionControllerComponent* leftAim;
 	UPROPERTY(VisibleAnywhere, Category = "MotionController")
 	class UMotionControllerComponent* rightAim;
 
@@ -106,8 +108,8 @@ public:
 	FVector teleportLocation;
 
 	// 이동 방식
-	UPROPERTY(VisibleAnywhere, Category = "Settings")
-	EMoveModeState moveMode;
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	EMoveModeState moveMode = EMoveModeState::TELEPORT;;
 
 private:
 	// Curve Teleport
@@ -200,7 +202,6 @@ private:
 
 	void Fire(const FInputActionValue& values);
 
-
 	// Crosshair
 	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class ACrosshair> crosshairFactory;
@@ -208,6 +209,9 @@ private:
 	// Crosshair Instance
 	UPROPERTY()
 	class ACrosshair* crosshair;
+
+	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
+	float crosshairScale = 0.3f;
 
 	// Draw Crosshair
 	void DrawCrosshair();

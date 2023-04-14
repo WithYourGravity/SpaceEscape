@@ -32,6 +32,10 @@ AEscapePlayer::AEscapePlayer()
 	rightHand->SetupAttachment(RootComponent);
 	rightHand->SetTrackingMotionSource(FName("Right"));
 
+	leftAim = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("leftAim"));
+	leftAim->SetupAttachment(RootComponent);
+	leftAim->SetTrackingMotionSource(FName("LeftAim"));
+
 	rightAim = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("rightAim"));
 	rightAim->SetupAttachment(RootComponent);
 	rightAim->SetTrackingMotionSource(FName("RightAim"));
@@ -109,8 +113,6 @@ void AEscapePlayer::BeginPlay()
 	{
 		crosshair = GetWorld()->SpawnActor<ACrosshair>(crosshairFactory);
 	}
-
-	moveMode = EMoveModeState::TELEPORT;
 
 	// moveMode 가 TELEPORT 이면 텔레포트 기능 초기화
 	if (moveMode == EMoveModeState::TELEPORT)
@@ -285,8 +287,8 @@ void AEscapePlayer::DrawTeleportCurve()
 	linePoints.Empty();
 
 	// 투사체 던지기
-	FVector pos = rightAim->GetComponentLocation();
-	FVector dir = rightAim->GetForwardVector() * curvedPower;
+	FVector pos = leftAim->GetComponentLocation();
+	FVector dir = leftAim->GetForwardVector() * curvedPower;
 
 	// 시작점을 가장 먼저 기록
 	linePoints.Add(pos);
@@ -377,7 +379,7 @@ void AEscapePlayer::TryGrab()
 
 		// 손에 붙여준다.
 		grabbedObject->AttachToComponent(rightHand, FAttachmentTransformRules::KeepWorldTransform);
-
+		
 		// 직전 위치 초기화
 		prevPos = rightHand->GetComponentLocation();
 		// 직전 회전값 초기화
@@ -571,7 +573,7 @@ void AEscapePlayer::DrawCrosshair()
 		//distance = (endPos - startPos).Size();
 	}
 
-	crosshair->SetActorScale3D(FVector(FMath::Max<float>(1, distance)));
+	crosshair->SetActorScale3D(FVector(FMath::Max<float>(1, distance * crosshairScale)));
 
 	// Crosshair 가 카메라를 바라보도록 처리
 	FVector direction = crosshair->GetActorLocation() - vrCamera->GetComponentLocation();
