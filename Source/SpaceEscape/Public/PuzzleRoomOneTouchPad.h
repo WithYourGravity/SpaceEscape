@@ -58,5 +58,9 @@ public:
 
 private:
 	FString answer = "0714";
+	bool bCanTouch = true;
+	float touchDelay = 0.8;
+	UPROPERTY(EditDefaultsOnly)
+	class UHapticFeedbackEffect_Base* hapticFeedback;
 	
 };
