@@ -17,7 +17,7 @@ AScrew::AScrew()
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ScrewMesh"));
 	meshComp->SetupAttachment(RootComponent);
 
-	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController());
+//	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController());
 
 }
 
