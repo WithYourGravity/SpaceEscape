@@ -61,7 +61,7 @@ public:
 	// 회전처리 함수
 	void Turn(const FInputActionValue& values);
 
-protected:
+public:
 	// Camera
 	UPROPERTY(VisibleAnywhere, Category = "VRCamera")
 	class UCameraComponent* vrCamera;
