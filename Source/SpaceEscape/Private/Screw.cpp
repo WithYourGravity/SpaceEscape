@@ -4,6 +4,7 @@
 #include "Screw.h"
 #include "Components/BoxComponent.h"
 #include "Nail.h"
+#include "EscapePlayer.h"
 
 AScrew::AScrew()
 { 	
@@ -12,17 +13,17 @@ AScrew::AScrew()
 	SetRootComponent(boxComp);
 	boxComp->SetBoxExtent(FVector(20, 20, 50));
 	boxComp->SetRelativeRotation(FRotator(0, 90, 0));
+	boxComp->SetSimulatePhysics(true);
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ScrewMesh"));
 	meshComp->SetupAttachment(RootComponent);
+
+//	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController());
 
 }
 
 void AScrew::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//드라이버가 손과 닿는다
-	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AScrew::AttachScrewToHand);
 
 
 	
@@ -36,10 +37,15 @@ void AScrew::Tick(float DeltaTime)
 
 }
 
-void AScrew::AttachScrewToHand(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AScrew::AttachedByHand()
 {
-	//드라이버가 손에 붙는다
+	if(player->bIsGrabbed == false) return;
+	
+	//드라이버가 손에 붙으면
+	
 
 }
+
+
 
 

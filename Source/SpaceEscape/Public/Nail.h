@@ -30,8 +30,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Nail")
 	class UStaticMeshComponent* meshComp;
 
-	/*
-
+	
 	UFUNCTION()
 	void AttachScrewToNail(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -44,18 +43,19 @@ public:
 	//못이 다 나오면 바닥으로 떨어지도록
 	void CameOutNail();
 
-	void initScrew();
-
-	bool isAttaching;
-	class AScrew* attachedScrew;
-	//FRotator initNailRot;
-	double initRot;
+	class AEscapePlayer* player;
 
 	//회전한 값
 	double processedRot = 5;
-	FRotator initializedRot;
-	
+	FRotator initializedRot;	
 
 	void AttachNailProcess();
-	*/
+
+	//screw값 초기화
+	void initScrew();
+	bool isAttaching; //회전중인지 체크
+	class AScrew* attachedScrew;
+	//FRotator initNailRot;
+	double initRot;
+	
 };

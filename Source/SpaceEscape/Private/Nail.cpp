@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "Screw.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "EscapePlayer.h"
 
 ANail::ANail()
 { 	
@@ -22,15 +23,14 @@ ANail::ANail()
 void ANail::BeginPlay()
 {
 	Super::BeginPlay();
-	/*
+	
 	//드라이버가 나사에 닿는다
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &ANail::AttachScrewToNail);
 
 	//드라이버가 나사에서 떨어진다
 	boxComp->OnComponentEndOverlap.AddDynamic(this, &ANail::DettachScrewToNail);
 
-	initScrew();
-	*/
+	initScrew();	
 }
 
 void ANail::Tick(float DeltaTime)
@@ -38,7 +38,7 @@ void ANail::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-/*
+
 void ANail::AttachScrewToNail(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//드라이버가 나사와 부딪히면
@@ -47,7 +47,7 @@ void ANail::AttachScrewToNail(UPrimitiveComponent* OverlappedComponent, AActor* 
 	{
 		isAttaching = true;
 		
-		//나사가 드라이버를 회전시킬것이다
+		//나사가 드라이버를 회전시킬 수 있도록
 		attachedScrew->boxComp->SetEnableGravity(false);
 		attachedScrew->meshComp->SetEnableGravity(false);
 		attachedScrew->boxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -58,7 +58,10 @@ void ANail::AttachScrewToNail(UPrimitiveComponent* OverlappedComponent, AActor* 
 
 void ANail::AttachNailProcess()
 {
-	
+	if(isAttaching == true)
+	{
+		
+	}
 }
 
 void ANail::DettachScrewToNail(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -99,4 +102,4 @@ void ANail::initScrew()
 	//initNailRot = VectorZero();
 	initRot = 0;
 }
-*/
+
