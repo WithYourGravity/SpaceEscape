@@ -100,7 +100,7 @@ void APuzzleRoomOneTouchPad::BeginPlay()
 	touchKeyCompDel->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomOneTouchPad::TouchPadOverlap);
 
 	panelWidgetClass = Cast<UPuzzleRoomOneTouchPadPanelWidget>(screenWidgetComp->GetWidget());
-	if (!panelWidgetClass)
+	if (panelWidgetClass == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Panel Widget Casting Failed!!"));
 	}

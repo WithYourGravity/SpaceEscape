@@ -3,6 +3,7 @@
 
 #include "RemoteControlObject.h"
 
+#include "Components/BoxComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 
 
@@ -10,13 +11,22 @@
 ARemoteControlObject::ARemoteControlObject()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	SetRootComponent(meshComp);
+	meshComp->SetRelativeScale3D(FVector(0.025f));
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempSkeletal(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/SM_MiniCar.SM_MiniCar'"));
+    if (tempSkeletal.Succeeded())
+    {
+		meshComp->SetStaticMesh(tempSkeletal.Object);
+    }
+	meshComp->SetSimulatePhysics(true);
+	meshComp->SetCollisionProfileName(TEXT("BlockAll"));
 
 	cameraCaptureComp = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("Camaera Capture Component"));
 	cameraCaptureComp->SetupAttachment(RootComponent);
+	cameraCaptureComp->SetRelativeLocation(FVector(400.f, 0, 500.f));
 }
 
 // Called when the game starts or when spawned

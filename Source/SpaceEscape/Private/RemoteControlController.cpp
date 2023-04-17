@@ -5,34 +5,64 @@
 
 #include "Components/BoxComponent.h"
 #include "EngineUtils.h"
+#include "EscapePlayer.h"
 #include "RemoteControlObject.h"
 
 // Sets default values
 ARemoteControlController::ARemoteControlController()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	tabletMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TabletMeshComp"));
 	SetRootComponent(tabletMeshComp);
 	buttonGoMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonGoMeshComp"));
 	buttonGoMeshComp->SetupAttachment(RootComponent);
+	buttonGoMeshComp->SetRelativeLocationAndRotation(FVector(-95.f, 50.f, 6.f), FRotator(0, 270, 0));
+	buttonGoMeshComp->SetRelativeScale3D(FVector(0.4f));
 	buttonBackMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonBackMeshComp"));
 	buttonBackMeshComp->SetupAttachment(RootComponent);
+	buttonBackMeshComp->SetRelativeLocationAndRotation(FVector(-30.f, 50.f, 6.f), FRotator(0, 90, 0));
+	buttonBackMeshComp->SetRelativeScale3D(FVector(0.4f));
 	buttonLeftMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonLeftMeshComp"));
 	buttonLeftMeshComp->SetupAttachment(RootComponent);
+	buttonLeftMeshComp->SetRelativeLocationAndRotation(FVector(30.f, 50.f, 6.f), FRotator(0, 180, 0));
+	buttonLeftMeshComp->SetRelativeScale3D(FVector(0.4f));
 	buttonRightMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonRightMeshComp"));
 	buttonRightMeshComp->SetupAttachment(RootComponent);
+	buttonRightMeshComp->SetRelativeLocation(FVector(95.f, 50.f, 6.f));
+	buttonRightMeshComp->SetRelativeScale3D(FVector(0.4f));
 
-	buttonGoCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("buttonGoCollision"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempButtonIMG(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/SM_TabletButton.SM_TabletButton'"));
+    if (tempButtonIMG.Succeeded())
+    {
+		buttonGoMeshComp->SetStaticMesh(tempButtonIMG.Object);
+		buttonBackMeshComp->SetStaticMesh(tempButtonIMG.Object);
+		buttonLeftMeshComp->SetStaticMesh(tempButtonIMG.Object);
+		buttonRightMeshComp->SetStaticMesh(tempButtonIMG.Object);
+    }
+
+	buttonGoCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ButtonGoCollision"));
 	buttonGoCollision->SetupAttachment(buttonGoMeshComp);
-	buttonBackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("buttonBackCollision"));
+	buttonGoCollision->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.f));
+	buttonGoCollision->SetRelativeLocation(FVector(0, 0, -20.f));
+	buttonBackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ButtonBackCollision"));
 	buttonBackCollision->SetupAttachment(buttonBackMeshComp);
-	buttonLeftCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("buttonLeftCollision"));
+	buttonBackCollision->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.f));
+	buttonBackCollision->SetRelativeLocation(FVector(0, 0, -20.f));
+	buttonLeftCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ButtonLeftCollision"));
 	buttonLeftCollision->SetupAttachment(buttonLeftMeshComp);
-	buttonRightCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("buttonRightCollision"));
+	buttonLeftCollision->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.f));
+	buttonLeftCollision->SetRelativeLocation(FVector(0, 0, -20.f));
+	buttonRightCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ButtonRightCollision"));
 	buttonRightCollision->SetupAttachment(buttonRightMeshComp);
+	buttonRightCollision->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.f));
+	buttonRightCollision->SetRelativeLocation(FVector(0, 0, -20.f));
 
+	tabletScreenComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TabletScreenComp"));
+	tabletScreenComp->SetupAttachment(RootComponent);
+	tabletScreenComp->SetRelativeScale3D(FVector(0.56f, 0.29f, 1.f));
+	tabletScreenComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 // Called when the game starts or when spawned
@@ -70,6 +100,12 @@ void ARemoteControlController::OnOverlap(UPrimitiveComponent* OverlappedComponen
 	FString compName;
 	compName.AppendChar(OverlappedComponent->GetName()[6]);
 	remoteObject->ControlManager(compName);
+
+	auto player = Cast<AEscapePlayer>(OtherActor);
+	if (player)
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+	}
 }
 
 void ARemoteControlController::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

@@ -41,6 +41,8 @@ public:
 	class UBoxComponent* buttonLeftCollision;
 	UPROPERTY(EditDefaultsOnly)
 	class UBoxComponent* buttonRightCollision;
+	UPROPERTY(EditDefaultsOnly)
+	class UStaticMeshComponent* tabletScreenComp;
 
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -51,5 +53,8 @@ private:
 
 	UPROPERTY()
 	class ARemoteControlObject* remoteObject;
+	UPROPERTY(EditDefaultsOnly)
+	class UHapticFeedbackEffect_Base* hapticFeedback;
+
 };
 	
