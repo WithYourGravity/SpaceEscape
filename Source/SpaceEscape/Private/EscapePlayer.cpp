@@ -12,6 +12,7 @@
 #include "Components/CapsuleComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraDataInterfaceArrayFunctionLibrary.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 AEscapePlayer::AEscapePlayer()
@@ -61,6 +62,12 @@ AEscapePlayer::AEscapePlayer()
 		rightHandMesh->SetRelativeLocation(FVector(-2.9f, 3.5f, 4.5f));
 		rightHandMesh->SetRelativeRotation(FRotator(25, 0, 90));
 	}
+
+	// Right Index Finger Collision
+	indexFingerCollision = CreateDefaultSubobject<USphereComponent>(TEXT("indexFingerCollision"));
+	indexFingerCollision->SetupAttachment(rightHandMesh);
+	indexFingerCollision->SetRelativeLocation(FVector(3.5f, 16.5f, -4.5f));
+	indexFingerCollision->SetSphereRadius(0.5f);
 
 	// Teleport
 	teleportCircle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("teleportCircle"));
@@ -250,9 +257,9 @@ bool AEscapePlayer::CheckHitTeleport(FVector lastPos, FVector& curPos)
 	// 두 점 사이에 충돌체 있는지 확인
 	FHitResult hitInfo;
 	bool bHit = HitTest(lastPos, curPos, hitInfo);
-
+	
 	// 만약 부딪힌 대상이 바닥이라면
-	if (bHit && hitInfo.GetActor()->GetName().Contains(TEXT("Floor")))
+	if (bHit && hitInfo.GetActor()->GetActorLabel().Contains(TEXT("Floor")))
 	{
 		// endPos 를 부딪힌 곳으로 수정
 		curPos = hitInfo.Location;

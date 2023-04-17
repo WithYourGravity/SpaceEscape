@@ -82,6 +82,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "MotionController")
 	class USkeletalMeshComponent* rightHandMesh;
 
+	UPROPERTY(VisibleAnywhere, Category = "Collision")
+	class USphereComponent* indexFingerCollision;
 
 // Teleport
 public:
