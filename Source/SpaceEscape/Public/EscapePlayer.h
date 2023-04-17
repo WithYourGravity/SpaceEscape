@@ -51,7 +51,9 @@ public:
 	class UInputAction* IA_Teleport;
 	// Input Action for Grab
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	class UInputAction* IA_Grab;
+	class UInputAction* IA_GrabLeft;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_GrabRight;
 	// Input Action for Fire
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Fire;
@@ -142,12 +144,18 @@ private:
 public:
 	// Grab 범위
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	float grabRange = 100;
+	float grabRange = 10;
 	// Grab Object 기억
 	UPROPERTY()
 	class UPrimitiveComponent* grabbedObject;
+	UPROPERTY()
+	class UGrabComponent* heldComponentRight;
+	UPROPERTY()
+	class UGrabComponent* heldComponentLeft;
 
 	// Object Grab 여부
+	bool bIsGrabbedRight = false;
+	bool bIsGrabbedLeft = false;
 	bool bIsGrabbed = false;
 
 	// 던질 힘
@@ -185,11 +193,16 @@ public:
 	bool bDrawDebugRemoteGrab = false;
 
 	// 잡기 시도 기능
-	void TryGrab();
+	void TryGrabLeft();
+	void TryGrabRight();
 	// 놓기
-	void UnTryGrab();
+	void UnTryGrabLeft();
+	void UnTryGrabRight();
 	// 잡고있는 중, 던질 정보를 업데이트하기 위한 함수
 	void Grabbing();
+
+	// MotionController 근처 잡을 수 있는 Object 찾는 함수
+	class UGrabComponent* GetGrabComponentNearMotionController(class UMotionControllerComponent* motionController);
 
 	// 원격 잡기 함수
 	void RemoteGrab();

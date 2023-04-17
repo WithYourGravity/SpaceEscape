@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "EnhancedInputComponent.h"
+#include "GrabComponent.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "MotionControllerComponent.h"
 #include "Camera/CameraComponent.h"
@@ -174,8 +175,10 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_Mouse, ETriggerEvent::Triggered, this, &AEscapePlayer::Turn);
 		InputSystem->BindAction(IA_Teleport, ETriggerEvent::Started, this, &AEscapePlayer::TeleportStart);
 		InputSystem->BindAction(IA_Teleport, ETriggerEvent::Completed, this, &AEscapePlayer::TeleportEnd);
-		InputSystem->BindAction(IA_Grab, ETriggerEvent::Started, this, &AEscapePlayer::TryGrab);
-		InputSystem->BindAction(IA_Grab, ETriggerEvent::Completed, this, &AEscapePlayer::UnTryGrab);
+		InputSystem->BindAction(IA_GrabLeft, ETriggerEvent::Started, this, &AEscapePlayer::TryGrabLeft);
+		InputSystem->BindAction(IA_GrabLeft, ETriggerEvent::Completed, this, &AEscapePlayer::UnTryGrabLeft);
+		InputSystem->BindAction(IA_GrabRight, ETriggerEvent::Started, this, &AEscapePlayer::TryGrabRight);
+		InputSystem->BindAction(IA_GrabRight, ETriggerEvent::Completed, this, &AEscapePlayer::UnTryGrabRight);
 		InputSystem->BindAction(IA_Fire, ETriggerEvent::Started, this, &AEscapePlayer::Fire);
 	}
 	
@@ -324,7 +327,58 @@ void AEscapePlayer::DrawTeleportCurve()
 	}
 }
 
-void AEscapePlayer::TryGrab()
+void AEscapePlayer::TryGrabLeft()
+{
+	//UPrimitiveComponent* grabComp = GetGrabComponentNearMotionController(leftHand);
+
+	//// 만약 잡았다면
+	//if (bIsGrabbed)
+	//{
+	//	grabbedObject = grabComp;
+	//	// Object 물리기능 비활성화
+	//	grabbedObject->SetSimulatePhysics(false);
+	//	grabbedObject->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	//	// 손에 붙여준다.
+	//	grabbedObject->AttachToComponent(leftHand, FAttachmentTransformRules::KeepWorldTransform);
+
+	//	// 직전 위치 초기화
+	//	prevPos = leftHand->GetComponentLocation();
+	//	// 직전 회전값 초기화
+	//	prevRot = leftHand->GetComponentQuat();
+	//}
+
+	UGrabComponent* grabComp = GetGrabComponentNearMotionController(leftHand);
+
+	// 만약 잡았다면
+	if (bIsGrabbedLeft && grabComp)
+	{
+		if (grabComp->TryGrab(leftHand))
+		{
+			heldComponentLeft = grabComp;
+
+			if (heldComponentLeft == heldComponentRight)
+			{
+				heldComponentRight = nullptr;
+			}
+		}
+
+		//grabbedObject = grabComp->GetAttachParentActor();
+		//// Object 물리기능 비활성화
+		//grabbedObject->SetSimulatePhysics(false);
+		//grabbedObject->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		//// 손에 붙여준다.
+		//grabbedObject->AttachToComponent(rightHand, FAttachmentTransformRules::KeepWorldTransform);
+
+		// 직전 위치 초기화
+		//prevPos = rightHand->GetComponentLocation();
+		// 직전 회전값 초기화
+		//prevRot = rightHand->GetComponentQuat();
+	}
+}
+
+void AEscapePlayer::TryGrabRight()
 {
 	// Remote Grab 활성화되어 있으면
 	if (bIsRemoteGrab)
@@ -333,59 +387,28 @@ void AEscapePlayer::TryGrab()
 		return;
 	}
 
-	// 중심점
-	FVector center = rightHand->GetComponentLocation();
-
-	// 충돌체크
-	FCollisionQueryParams params;
-	params.AddIgnoredActor(this);
-	params.AddIgnoredComponent(rightHand);
-
-	// 충돌한 물체들 기록할 배열
-	TArray<FOverlapResult> hitObjects;
-	bool bHit = GetWorld()->OverlapMultiByChannel(hitObjects, center, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(grabRange), params);
-
-	// 충돌하지 않았다면 아무처리도 하지 않는다.
-	if (!bHit)
-	{
-		return;
-	}
-
-	// 가장 가까운 물체 인덱스
-	int32 closestIdx = 0;
-	for (int32 i = 0; i < hitObjects.Num(); i++)
-	{
-		// 물리 기능이 활성화되어 있는 object 만 판단
-		// 만약 부딪힌 컴포넌트가 물리기능이 비활성화되어 있다면
-		if (!hitObjects[i].GetComponent()->IsSimulatingPhysics())
-		{
-			// 검출하지 않는다.
-			continue;
-		}
-
-		bIsGrabbed = true;
-
-		// 현재 가장 가까운 Object 거리
-		float closestDist = FVector::Dist(hitObjects[closestIdx].GetActor()->GetActorLocation(), center);
-		// 검출하고 있는 Object 거리
-		float nextDist = FVector::Dist(hitObjects[i].GetActor()->GetActorLocation(), center);
-		// 만약 검출하고 있는 Object 거리가 현재 가장 가까운 Object 거리보다 가깝다면
-		if (nextDist < closestDist)
-		{
-			closestIdx = i;
-		}
-	}
+	UGrabComponent* grabComp = GetGrabComponentNearMotionController(rightHand);
 
 	// 만약 잡았다면
-	if (bIsGrabbed)
+	if (bIsGrabbedRight && grabComp)
 	{
-		grabbedObject = hitObjects[closestIdx].GetComponent();
-		// Object 물리기능 비활성화
-		grabbedObject->SetSimulatePhysics(false);
-		grabbedObject->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		if (grabComp->TryGrab(rightHand))
+		{
+			heldComponentRight = grabComp;
 
-		// 손에 붙여준다.
-		grabbedObject->AttachToComponent(rightHand, FAttachmentTransformRules::KeepWorldTransform);
+			if (heldComponentRight == heldComponentLeft)
+			{
+				heldComponentLeft = nullptr;
+			}
+		}
+
+		//grabbedObject = grabComp->GetAttachParentActor();
+		//// Object 물리기능 비활성화
+		//grabbedObject->SetSimulatePhysics(false);
+		//grabbedObject->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		//// 손에 붙여준다.
+		//grabbedObject->AttachToComponent(rightHand, FAttachmentTransformRules::KeepWorldTransform);
 		
 		// 직전 위치 초기화
 		prevPos = rightHand->GetComponentLocation();
@@ -394,39 +417,68 @@ void AEscapePlayer::TryGrab()
 	}
 }
 
-void AEscapePlayer::UnTryGrab()
+void AEscapePlayer::UnTryGrabLeft()
 {
-	if (!bIsGrabbed)
+	if (!bIsGrabbedLeft)
 	{
 		return;
 	}
 
 	// 잡지 않은 상태로 전환
-	bIsGrabbed = false;
-	// 손에서 떼어내기
-	grabbedObject->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	// 물리기능 활성화
-	grabbedObject->SetSimulatePhysics(true);
-	// 충돌기능 활성화
-	grabbedObject->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	bIsGrabbedLeft = false;
+
+	if (heldComponentLeft)
+	{
+		if (heldComponentLeft->TryRelease())
+		{
+			heldComponentLeft = nullptr;
+		}
+	}
+
+
+	//// 손에서 떼어내기
+	//grabbedObject->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	//// 물리기능 활성화
+	//grabbedObject->SetSimulatePhysics(true);
+	//// 충돌기능 활성화
+	//grabbedObject->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	// 던지기
-	grabbedObject->AddForce(throwDirection * throwPower * grabbedObject->GetMass());
+	//grabbedObject->AddForce(throwDirection * throwPower * grabbedObject->GetMass());
 
 	// 회전 시키기
-	float angle;
-	FVector axis;
-	deltaRotation.ToAxisAndAngle(axis, angle);
-	float dt = GetWorld()->DeltaTimeSeconds;
-	FVector angularVelocity = (1.0f / dt) * angle * axis;
-	grabbedObject->SetPhysicsAngularVelocityInRadians(angularVelocity * torquePower, true);
+	//float angle;
+	//FVector axis;
+	//deltaRotation.ToAxisAndAngle(axis, angle);
+	//float dt = GetWorld()->DeltaTimeSeconds;
+	//FVector angularVelocity = (1.0f / dt) * angle * axis;
+	//grabbedObject->SetPhysicsAngularVelocityInRadians(angularVelocity * torquePower, true);
 
-	grabbedObject = nullptr;
+	//grabbedObject = nullptr;
+}
+
+void AEscapePlayer::UnTryGrabRight()
+{
+	if (!bIsGrabbedRight)
+	{
+		return;
+	}
+
+	// 잡지 않은 상태로 전환
+	bIsGrabbedRight = false;
+
+	if (heldComponentRight)
+	{
+		if (heldComponentRight->TryRelease())
+		{
+			heldComponentRight = nullptr;
+		}
+	}
 }
 
 void AEscapePlayer::Grabbing()
 {
-	if (!bIsGrabbed)
+	if (!bIsGrabbedRight)
 	{
 		return;
 	}
@@ -442,6 +494,75 @@ void AEscapePlayer::Grabbing()
 
 	// 이전 회전값 업데이트
 	prevRot = rightHand->GetComponentQuat();
+}
+
+UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionControllerComponent* motionController)
+{
+	// 중심점
+	FVector center = motionController->GetComponentLocation();
+
+	// 충돌체크
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(this);
+	params.AddIgnoredComponent(motionController);
+
+	// 충돌한 물체들 기록할 배열
+	TArray<FOverlapResult> hitObjects;
+	bool bHit = GetWorld()->OverlapMultiByChannel(hitObjects, center, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(grabRange), params);
+
+	// 충돌하지 않았다면 아무처리도 하지 않는다.
+	if (!bHit)
+	{
+		return nullptr;
+	}
+
+	// 가장 가까운 물체 인덱스
+	//int32 closestIdx = 0;
+	// 가장 가까운 물체 거리
+	float closestDistance = 1e9;
+	UGrabComponent* nearestGrabComponent = nullptr;
+	for (int32 i = 0; i < hitObjects.Num(); i++)
+	{
+		// 물리 기능이 활성화되어 있는 object 만 판단
+		// 만약 부딪힌 컴포넌트가 물리기능이 비활성화되어 있다면
+		if (!hitObjects[i].GetComponent()->IsSimulatingPhysics())
+		{
+			// 검출하지 않는다.
+			continue;
+		}
+
+		TArray<UGrabComponent*> tempGrabComps;
+		hitObjects[i].GetActor()->GetComponents<UGrabComponent>(tempGrabComps);
+		if (tempGrabComps.Num() == 0)
+		{
+			continue;
+		}
+
+		if (motionController->MotionSource == FName("Right"))
+		{
+			bIsGrabbedRight = true;
+		}
+		else if (motionController->MotionSource == FName("Left"))
+		{
+			bIsGrabbedLeft = true;
+		}
+
+		for (auto grabComp : tempGrabComps)
+		{
+			// 현재 가장 가까운 Object 거리
+			//float closestDist = FVector::Dist(hitObjects[closestIdx].GetActor()->GetActorLocation(), center);
+			// 검출하고 있는 Object 거리
+			float curDistance = FVector::Dist(grabComp->GetComponentLocation(), center);
+			// 만약 검출하고 있는 Object 거리가 현재 가장 가까운 Object 거리보다 가깝다면
+			if (curDistance <= closestDistance)
+			{
+				closestDistance = curDistance;
+				nearestGrabComponent = grabComp;
+			}
+		}
+	}
+
+	return nearestGrabComponent;
 }
 
 void AEscapePlayer::RemoteGrab()
@@ -460,7 +581,7 @@ void AEscapePlayer::RemoteGrab()
 	// 충돌이 되면 잡아당기기 애니메이션 실행
 	if (bHit && hitInfo.GetComponent()->IsSimulatingPhysics())
 	{
-		bIsGrabbed = true;
+		bIsGrabbedRight = true;
 
 		// 잡은 물체 할당
 		grabbedObject = hitInfo.GetComponent();
