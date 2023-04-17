@@ -23,7 +23,7 @@ ACrosshair::ACrosshair()
 		crosshairComp->SetStaticMesh(tempMesh.Object);
 	}
 	// material ¼³Á¤
-	ConstructorHelpers::FObjectFinder<UMaterial> tempMaterial(TEXT("/Script/Engine.Material'/Game/YSY/Assets/M_Crosshair.M_Crosshair'"));
+	ConstructorHelpers::FObjectFinder<UMaterial> tempMaterial(TEXT("/Script/Engine.Material'/Game/YSY/Assets/Crosshair/M_Crosshair.M_Crosshair'"));
 	if (tempMaterial.Succeeded())
 	{
 		crosshairComp->SetMaterial(0, tempMaterial.Object);

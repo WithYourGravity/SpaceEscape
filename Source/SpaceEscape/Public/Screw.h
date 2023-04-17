@@ -22,15 +22,32 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	UPROPERTY(EditDefaultsOnly, Category = "Nail")
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "Screw")
 	class UBoxComponent* boxComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Nail")
+	UPROPERTY(EditDefaultsOnly, Category = "Screw")
+	class UBoxComponent* handleBoxComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Screw")
 	class UStaticMeshComponent* meshComp;
 
 	//드라이버를 손에 붙인다
 	void AttachedByHand();
 	class AEscapePlayer* player;
-	
+	class ANail* attachedNail;
+
+	//드라이버에 나사가 닿으면
+	UFUNCTION()
+	void AttachNailtoScrew(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	//드라이버에 나사가 닿은 후
+	void AttachNailProcess();
+	void ComingoutNails();
+
+	//값 초기화
+	void initNail();
+	bool isAttaching; //회전중인지 체크
+	double initRot;
 
 };
