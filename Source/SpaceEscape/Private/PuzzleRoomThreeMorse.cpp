@@ -3,6 +3,7 @@
 
 #include "PuzzleRoomThreeMorse.h"
 
+#include "EscapePlayer.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 
@@ -33,17 +34,25 @@ APuzzleRoomThreeMorse::APuzzleRoomThreeMorse()
 void APuzzleRoomThreeMorse::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	leverCollision->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomThreeMorse::OnOverlap);
 }
 
 // Called every frame
 void APuzzleRoomThreeMorse::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	/*
+	CheckIsGrabed();
 	if (!bIsGrabed)
 	{
 		LeverShouldBeZero();
 	}
+	else
+	{
+		ControlByPlayerHand();
+	}
+	*/
 }
 
 // 레버 틱마다 원위치로 이동시키는 함수
@@ -54,12 +63,45 @@ void APuzzleRoomThreeMorse::LeverShouldBeZero()
 	if (rot.Roll > 5)
 	{
 		rot.Roll -= 5;
-		leverComp->SetRelativeLocationAndRotation(FVector(0), rot);
+		leverComp->SetRelativeRotation(rot);
 	}
 	else
 	{
 		rot.Roll = 0;
-		leverComp->SetRelativeLocationAndRotation(FVector(0), rot);
+		leverComp->SetRelativeRotation(rot);
+	} 
+}
+
+// 플레이어 손에 잡혔을 때 레버 이동시키는 함수
+void APuzzleRoomThreeMorse::ControlByPlayerHand()
+{
+	if (player)
+	{
+		if (player->grabbedObject == leverCollision && player->bIsGrabbed)
+		{
+			FRotator rot = leverComp->GetRelativeRotation();
+			leverComp->SetRelativeRotation(rot);
+		}
+	}
+}
+
+// 플레이어 손에 잡혔는지 확인하는 함수
+void APuzzleRoomThreeMorse::CheckIsGrabed()
+{
+	if (player)
+	{
+		bIsGrabed = player->bIsGrabbed;
+	}
+}
+
+// 레버 손잡이부분 오버랩 됐을때 실행될 함수
+void APuzzleRoomThreeMorse::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	player = Cast<AEscapePlayer>(OtherActor);
+	if (player)
+	{
+		
 	}
 }
 
