@@ -16,6 +16,16 @@ ARemoteControlController::ARemoteControlController()
 
 	tabletMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TabletMeshComp"));
 	SetRootComponent(tabletMeshComp);
+	tabletMeshComp->SetRelativeScale3D(FVector(0.2f));
+	tabletMeshComp->SetSimulatePhysics(true);
+	tabletMeshComp->SetGenerateOverlapEvents(false);
+	tabletMeshComp->SetCollisionProfileName(TEXT("PhysicsActor"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/sci-fi-tablet/source/Tablet/Tablet.Tablet'"));
+    if (tempMesh.Succeeded())
+    {
+		tabletMeshComp->SetStaticMesh(tempMesh.Object);
+    }
+
 	buttonGoMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonGoMeshComp"));
 	buttonGoMeshComp->SetupAttachment(RootComponent);
 	buttonGoMeshComp->SetRelativeLocationAndRotation(FVector(-95.f, 50.f, 6.f), FRotator(0, 270, 0));

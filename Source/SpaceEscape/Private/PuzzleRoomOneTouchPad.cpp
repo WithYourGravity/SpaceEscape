@@ -24,7 +24,7 @@ APuzzleRoomOneTouchPad::APuzzleRoomOneTouchPad()
 
 	screenWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Screen Widget"));
 	screenWidgetComp->SetupAttachment(RootComponent);
-	ConstructorHelpers::FClassFinder<UUserWidget>tempWidget(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/LTG/Blueprints/WBP_TouchPadPanel.WBP_TouchPadPanel_C'"));
+	ConstructorHelpers::FClassFinder<UUserWidget>tempWidget(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/LTG/UI/WBP_TouchPadPanel.WBP_TouchPadPanel_C'"));
 	if (tempWidget.Succeeded())
 	{
 		screenWidgetComp->SetWidgetClass(tempWidget.Class);
