@@ -26,9 +26,9 @@ void UGrabComponent::BeginPlay()
 	Super::BeginPlay();
 
 	SetShouldSimulateOnDrop();
-
-	// Parent Object Collision 설정
-	Cast<UPrimitiveComponent>(GetAttachParent())->SetCollisionProfileName(FName("PhysicsActor"));
+	
+	// Parent Object 물리기능 활성화
+	SetPrimitiveCompPhysics(true);
 }
 
 
@@ -46,6 +46,7 @@ bool UGrabComponent::TryGrab(UMotionControllerComponent* motionController)
 	// 자유롭게 잡기
 	case EGrabType::FREE:
 		SetPrimitiveCompPhysics(false);
+
 		if (AttachParentToMotionController(motionController))
 		{
 			bIsHeld = true;
@@ -54,6 +55,7 @@ bool UGrabComponent::TryGrab(UMotionControllerComponent* motionController)
 	// 정해진 곳 잡기
 	case EGrabType::SNAP:
 		SetPrimitiveCompPhysics(false);
+
 		if (!AttachParentToMotionController(motionController))
 		{
 			return false;
@@ -106,6 +108,7 @@ bool UGrabComponent::TryRelease()
 		{
 			GetAttachParent()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 		}
+		
 		bIsHeld = false;
 		break;
 	default:
@@ -116,6 +119,8 @@ bool UGrabComponent::TryRelease()
 	{
 		return false;
 	}
+
+	
 
 	// On Dropped Delegate
 
