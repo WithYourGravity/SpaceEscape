@@ -7,6 +7,7 @@
 #include "Engine/LocalPlayer.h"
 #include "EnhancedInputComponent.h"
 #include "GrabComponent.h"
+#include "Gun.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "MotionControllerComponent.h"
 #include "Camera/CameraComponent.h"
@@ -171,6 +172,8 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_GrabRight, ETriggerEvent::Started, this, &AEscapePlayer::TryGrabRight);
 		InputSystem->BindAction(IA_GrabRight, ETriggerEvent::Completed, this, &AEscapePlayer::UnTryGrabRight);
 		//InputSystem->BindAction(IA_Fire, ETriggerEvent::Started, this, &AEscapePlayer::Fire);
+		InputSystem->BindAction(IA_FireLeft, ETriggerEvent::Started, this, &AEscapePlayer::FireLeft);
+		InputSystem->BindAction(IA_FireRight, ETriggerEvent::Started, this, &AEscapePlayer::FireRight);
 	}
 	
 }
@@ -453,6 +456,22 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 	}
 
 	return nearestGrabComponent;
+}
+
+void AEscapePlayer::FireLeft(const FInputActionValue& values)
+{
+	if (grabbedGun)
+	{
+		grabbedGun->FireLeft();
+	}
+}
+
+void AEscapePlayer::FireRight(const FInputActionValue& values)
+{
+	if (grabbedGun)
+	{
+		grabbedGun->FireRight();
+	}
 }
 
 //void AEscapePlayer::Fire(const FInputActionValue& values)

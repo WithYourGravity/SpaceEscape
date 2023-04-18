@@ -57,6 +57,11 @@ public:
 	// Input Action for Fire
 	//UPROPERTY(EditDefaultsOnly, Category = "Input")
 	//class UInputAction* IA_Fire;
+	// Input Action for Fire
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_FireLeft;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_FireRight;
 
 	// 이동처리 함수
 	void Move(const FInputActionValue& values);
@@ -169,9 +174,11 @@ public:
 
 // Fire
 private:
-	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
-	float fireDistance = 10000.0f;
-
 	//void Fire(const FInputActionValue& values);
+	void FireLeft(const FInputActionValue& values);
+	void FireRight(const FInputActionValue& values);
 
+public:
+	UPROPERTY()
+	class AGun* grabbedGun;
 };
