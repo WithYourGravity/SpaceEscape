@@ -66,8 +66,7 @@ AEscapePlayer::AEscapePlayer()
 
 	// Right Index Finger Collision
 	indexFingerCollision = CreateDefaultSubobject<USphereComponent>(TEXT("indexFingerCollision"));
-	indexFingerCollision->SetupAttachment(rightHandMesh);
-	indexFingerCollision->SetRelativeLocation(FVector(3.5f, 16.5f, -4.5f));
+	indexFingerCollision->SetupAttachment(rightHandMesh, FName("indexCollision"));
 	indexFingerCollision->SetSphereRadius(0.5f);
 
 	// Teleport
@@ -116,11 +115,7 @@ void AEscapePlayer::BeginPlay()
 		vrCamera->bUsePawnControlRotation = true;
 	}
 
-	// Crosshair 객체 생성
-	if (crosshairFactory)
-	{
-		crosshair = GetWorld()->SpawnActor<ACrosshair>(crosshairFactory);
-	}
+	
 
 	// moveMode 가 TELEPORT 이면 텔레포트 기능 초기화
 	if (moveMode == EMoveModeState::TELEPORT)
@@ -155,7 +150,7 @@ void AEscapePlayer::Tick(float DeltaTime)
 		}
 	}
 	
-	DrawCrosshair();
+	//DrawCrosshair();
 }
 
 // Called to bind functionality to input
@@ -175,7 +170,7 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_GrabLeft, ETriggerEvent::Completed, this, &AEscapePlayer::UnTryGrabLeft);
 		InputSystem->BindAction(IA_GrabRight, ETriggerEvent::Started, this, &AEscapePlayer::TryGrabRight);
 		InputSystem->BindAction(IA_GrabRight, ETriggerEvent::Completed, this, &AEscapePlayer::UnTryGrabRight);
-		InputSystem->BindAction(IA_Fire, ETriggerEvent::Started, this, &AEscapePlayer::Fire);
+		//InputSystem->BindAction(IA_Fire, ETriggerEvent::Started, this, &AEscapePlayer::Fire);
 	}
 	
 }
@@ -411,7 +406,11 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 
 	// 충돌한 물체들 기록할 배열
 	TArray<FOverlapResult> hitObjects;
-	bool bHit = GetWorld()->OverlapMultiByChannel(hitObjects, center, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(grabRange), params);
+
+	FCollisionObjectQueryParams objectParams;
+	objectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldDynamic);
+	bool bHit = GetWorld()->OverlapMultiByObjectType(hitObjects, center, FQuat::Identity, objectParams, FCollisionShape::MakeSphere(grabRange), params);
+
 
 	// 충돌하지 않았다면 아무처리도 하지 않는다.
 	if (!bHit)
@@ -424,14 +423,6 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 	UGrabComponent* nearestGrabComponent = nullptr;
 	for (int32 i = 0; i < hitObjects.Num(); i++)
 	{
-		// 물리 기능이 활성화되어 있는 object 만 판단
-		// 만약 부딪힌 컴포넌트가 물리기능이 비활성화되어 있다면
-		if (!hitObjects[i].GetComponent()->IsSimulatingPhysics())
-		{
-			// 검출하지 않는다.
-			continue;
-		}
-
 		TArray<UGrabComponent*> tempGrabComps;
 		hitObjects[i].GetActor()->GetComponents<UGrabComponent>(tempGrabComps);
 		if (tempGrabComps.Num() == 0)
@@ -464,56 +455,24 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 	return nearestGrabComponent;
 }
 
-void AEscapePlayer::Fire(const FInputActionValue& values)
-{
-	FVector startPos = rightAim->GetComponentLocation();
-	FVector endPos = startPos + rightAim->GetForwardVector() * fireDistance;
+//void AEscapePlayer::Fire(const FInputActionValue& values)
+//{
+//	FVector startPos = rightAim->GetComponentLocation();
+//	FVector endPos = startPos + rightAim->GetForwardVector() * fireDistance;
+//
+//	FHitResult hitInfo;
+//	bool bHit = HitTest(startPos, endPos, hitInfo);
+//
+//	// 만약 부딪힌 것이 있으면
+//	if (bHit)
+//	{
+//		auto hitComp = hitInfo.GetComponent();
+//		if (hitComp && hitComp->IsSimulatingPhysics())
+//		{
+//			// 날려보낸다.
+//			hitComp->AddForceAtLocation((endPos - startPos).GetSafeNormal() * 150000, hitInfo.Location);
+//		}
+//	}
+//}
 
-	FHitResult hitInfo;
-	bool bHit = HitTest(startPos, endPos, hitInfo);
 
-	// 만약 부딪힌 것이 있으면
-	if (bHit)
-	{
-		auto hitComp = hitInfo.GetComponent();
-		if (hitComp && hitComp->IsSimulatingPhysics())
-		{
-			// 날려보낸다.
-			hitComp->AddForceAtLocation((endPos - startPos).GetSafeNormal() * 150000, hitInfo.Location);
-		}
-	}
-}
-
-// 거리에 따라서 Crosshair 크기가 같게 보이게 한다.
-void AEscapePlayer::DrawCrosshair()
-{
-	// 시작점
-	FVector startPos = rightAim->GetComponentLocation();
-	// 끝점
-	FVector endPos = startPos + rightAim->GetForwardVector() * fireDistance;
-
-	// 충돌 체크
-	FHitResult hitInfo;
-	bool bHit = HitTest(startPos, endPos, hitInfo);
-
-	float distance = 0;
-	// 충돌이 발생하면
-	if (bHit)
-	{
-		// 충돌한 지점에 Crosshair 표시
-		crosshair->crosshairComp->SetVisibility(true);
-		crosshair->SetActorLocation(hitInfo.Location);
-		distance = hitInfo.Distance;
-	}
-	// 그렇지 않으면
-	else
-	{
-		crosshair->crosshairComp->SetVisibility(false);
-	}
-
-	crosshair->SetActorScale3D(FVector(FMath::Max<float>(1, distance * crosshairScale)));
-
-	// Crosshair 가 카메라를 바라보도록 처리
-	FVector direction = crosshair->GetActorLocation() - vrCamera->GetComponentLocation();
-	crosshair->SetActorRotation(direction.Rotation());
-}

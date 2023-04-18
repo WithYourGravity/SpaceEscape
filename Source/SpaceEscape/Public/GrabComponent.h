@@ -6,6 +6,9 @@
 #include "Components/SceneComponent.h"
 #include "GrabComponent.generated.h"
 
+DECLARE_DELEGATE(FOnGrabbedDelegate);
+DECLARE_DELEGATE(FOnDroppedDelegate)
+
 UENUM(BlueprintType)
 enum class EGrabType : uint8
 {
@@ -53,6 +56,9 @@ public:
 	EGrabType grabType = EGrabType::FREE;
 
 	bool bSimulateOnDrop = false;
+
+	FOnGrabbedDelegate onGrabbedDelegate;
+	FOnDroppedDelegate onDroppedDelegate;
 
 private:
 	UPROPERTY()

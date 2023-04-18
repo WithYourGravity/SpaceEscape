@@ -55,8 +55,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_GrabRight;
 	// Input Action for Fire
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	class UInputAction* IA_Fire;
+	//UPROPERTY(EditDefaultsOnly, Category = "Input")
+	//class UInputAction* IA_Fire;
 
 	// 이동처리 함수
 	void Move(const FInputActionValue& values);
@@ -172,19 +172,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
 	float fireDistance = 10000.0f;
 
-	void Fire(const FInputActionValue& values);
+	//void Fire(const FInputActionValue& values);
 
-	// Crosshair
-	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
-	TSubclassOf<class ACrosshair> crosshairFactory;
-
-	// Crosshair Instance
-	UPROPERTY()
-	class ACrosshair* crosshair;
-
-	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
-	float crosshairScale = 0.3f;
-
-	// Draw Crosshair
-	void DrawCrosshair();
 };

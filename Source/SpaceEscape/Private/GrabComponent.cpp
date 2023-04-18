@@ -84,6 +84,10 @@ bool UGrabComponent::TryGrab(UMotionControllerComponent* motionController)
 	motionControllerComp = motionController;
 
 	// grabbed delegate
+	if (onGrabbedDelegate.IsBound())
+	{
+		onGrabbedDelegate.Execute();
+	}
 
 	// haptic effect
 	if (grabHapticEffect)
@@ -120,9 +124,11 @@ bool UGrabComponent::TryRelease()
 		return false;
 	}
 
-	
-
 	// On Dropped Delegate
+	if (onDroppedDelegate.IsBound())
+	{
+		onDroppedDelegate.Execute();
+	}
 
 	return true;
 }
