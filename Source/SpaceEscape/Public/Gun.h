@@ -31,11 +31,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputMappingContext* IMC_WeaponRight;
 
-	// Input Action for Fire
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	class UInputAction* IA_FireLeft;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	class UInputAction* IA_FireRight;
 
 	UPROPERTY(EditDefaultsOnly)
 	class UBoxComponent* boxComp;
@@ -43,15 +38,25 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
 	class UStaticMeshComponent* gunMeshComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Gun")
+	class UStaticMeshComponent* gunSlideMeshComp;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
 	class UGrabComponent* grabComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Grab")
+	class UGrabComponent* slideGrabComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Fire")
+	class USceneComponent* muzzleLocation;
+
+	UPROPERTY(EditAnywhere, Category = "Fire")
+	TSubclassOf<class AActor> bulletFactory;
 
 	UFUNCTION()
 	void OnGrabbed();
 	UFUNCTION()
 	void OnDropped();
-
-	void BindToInput();
 
 	void FireLeft();
 	void FireRight();
@@ -67,6 +72,11 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
 	float crosshairScale = 0.3f;
+
+	bool isOnGrabbed = false;
+
+	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
+	float fireDistance = 10000.0f;
 
 	// Draw Crosshair
 	void DrawCrosshair();
