@@ -37,21 +37,17 @@ public:
 	class UWidgetComponent* screenComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UBoxComponent* leverCollision;
+	UPROPERTY(EditDefaultsOnly)
+	class UGrabComponent* grabComp;
 
 	void LeverShouldBeZero();
 	void ControlByPlayerHand();
-	void CheckIsGrabed();
-
-	UPROPERTY(EditAnywhere)
-	bool bIsGrabed;
 	UFUNCTION()
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void ChangeIsGrabed();
 
 private:
 
 	UPROPERTY()
 	class AEscapePlayer* player;
-
-	
-
+	bool bIsGrabed;
 };

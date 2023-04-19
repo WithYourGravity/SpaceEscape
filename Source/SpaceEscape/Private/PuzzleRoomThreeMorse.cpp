@@ -4,7 +4,7 @@
 #include "PuzzleRoomThreeMorse.h"
 
 #include "EscapePlayer.h"
-#include "Components/BoxComponent.h"
+#include "GrabComponent.h"
 #include "Components/WidgetComponent.h"
 
 // Sets default values
@@ -18,27 +18,29 @@ APuzzleRoomThreeMorse::APuzzleRoomThreeMorse()
 	buttonBodyComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("buttonBodyComp"));
 	buttonBodyComp->SetupAttachment(RootComponent);
 	buttonBodyComp->SetCollisionProfileName(TEXT("NoCollision"));
-
 	buttonComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("buttonComp"));
 	buttonComp->SetupAttachment(buttonBodyComp);
+	buttonComp->SetCollisionProfileName(TEXT("PuzzleButtonPreset"));
 	leverBodyComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("leverBodyComp"));
 	leverBodyComp->SetupAttachment(RootComponent);
 	leverBodyComp->SetCollisionProfileName(TEXT("NoCollision"));
-
 	leverComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("leverComp"));
 	leverComp->SetupAttachment(leverBodyComp);
-	leverCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("leverCollision"));
-	leverCollision->SetupAttachment(leverComp);
+	leverComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
 	screenComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("screenComp"));
 	screenComp->SetupAttachment(RootComponent);
-
+	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComp"));
+	grabComp->SetupAttachment(leverComp);
 }
 
 // Called when the game starts or when spawned
 void APuzzleRoomThreeMorse::BeginPlay()
 {
 	Super::BeginPlay();
-	leverCollision->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomThreeMorse::OnOverlap);
+
+	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	grabComp->onDroppedDelegate.BindUFunction(this, TEXT("ChangeIsGrabed"));
+	grabComp->onGrabbedDelegate.BindUFunction(this, TEXT("ChangeIsGrabed"));
 }
 
 // Called every frame
@@ -46,8 +48,6 @@ void APuzzleRoomThreeMorse::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/*
-	CheckIsGrabed();
 	if (!bIsGrabed)
 	{
 		LeverShouldBeZero();
@@ -56,7 +56,6 @@ void APuzzleRoomThreeMorse::Tick(float DeltaTime)
 	{
 		ControlByPlayerHand();
 	}
-	*/
 }
 
 // 레버 틱마다 원위치로 이동시키는 함수
@@ -79,33 +78,19 @@ void APuzzleRoomThreeMorse::LeverShouldBeZero()
 // 플레이어 손에 잡혔을 때 레버 이동시키는 함수
 void APuzzleRoomThreeMorse::ControlByPlayerHand()
 {
-	if (player)
-	{
-		if (player->bIsGrabbed)
-		{
-			FRotator rot = leverComp->GetRelativeRotation();
-			leverComp->SetRelativeRotation(rot);
-		}
-	}
-}
+	FVector afterVector = (player->rightHandMesh->GetComponentLocation() - leverComp->GetComponentLocation()).GetSafeNormal();
+	float degree = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(leverComp->GetUpVector(), afterVector)));
+	FRotator rot = leverComp->GetRelativeRotation();
+	rot.Roll = degree;
+	leverComp->SetRelativeRotation(rot);
+
+	//UE_LOG(LogTemp, Warning, TEXT("degree is %f"), degree);
+	//UE_LOG(LogTemp, Warning, TEXT("bisGrabis %d"), bIsGrabed);
+}	
 
 // 플레이어 손에 잡혔는지 확인하는 함수
-void APuzzleRoomThreeMorse::CheckIsGrabed()
+void APuzzleRoomThreeMorse::ChangeIsGrabed()
 {
-	if (player)
-	{
-		bIsGrabed = player->bIsGrabbed;
-	}
-}
-
-// 레버 손잡이부분 오버랩 됐을때 실행될 함수
-void APuzzleRoomThreeMorse::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	player = Cast<AEscapePlayer>(OtherActor);
-	if (player)
-	{
-		
-	}
+	bIsGrabed = !bIsGrabed;
 }
 
