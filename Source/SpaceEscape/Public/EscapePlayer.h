@@ -90,7 +90,9 @@ public:
 	class USkeletalMeshComponent* rightHandMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "Collision")
-	class USphereComponent* indexFingerCollision;
+	class USphereComponent* rightIndexFingerCollision;
+	UPROPERTY(VisibleAnywhere, Category = "Collision")
+	class USphereComponent* leftIndexFingerCollision;
 
 // Teleport
 public:

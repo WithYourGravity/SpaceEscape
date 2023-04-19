@@ -66,9 +66,13 @@ AEscapePlayer::AEscapePlayer()
 	}
 
 	// Right Index Finger Collision
-	indexFingerCollision = CreateDefaultSubobject<USphereComponent>(TEXT("indexFingerCollision"));
-	indexFingerCollision->SetupAttachment(rightHandMesh, FName("indexCollision"));
-	indexFingerCollision->SetSphereRadius(0.5f);
+	rightIndexFingerCollision = CreateDefaultSubobject<USphereComponent>(TEXT("rightIndexFingerCollision"));
+	rightIndexFingerCollision->SetupAttachment(rightHandMesh, FName("indexCollision_r"));
+	rightIndexFingerCollision->SetSphereRadius(0.5f);
+	// Left Index Finger Collision
+	leftIndexFingerCollision = CreateDefaultSubobject<USphereComponent>(TEXT("leftIndexFingerCollision"));
+	leftIndexFingerCollision->SetupAttachment(leftHandMesh, FName("indexCollision_l"));
+	leftIndexFingerCollision->SetSphereRadius(0.5f);
 
 	// Teleport
 	teleportCircle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("teleportCircle"));
