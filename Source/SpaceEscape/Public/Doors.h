@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
 #include "Doors.generated.h"
+
+class UCurveFloat;
 
 UCLASS()
 class SPACEESCAPE_API ADoors : public AActor
@@ -26,11 +29,11 @@ public:
 	/*퍼즐풀기를 완료하면 양 옆으로 열리는 문*/
 	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
 	class UStaticMeshComponent* leftDoorMesh;
-	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
-	class UStaticMeshComponent* rightDoorMesh;
+	//UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
+	//class UStaticMeshComponent* rightDoorMesh;
 
-	UPROPERTY(EditDefaultsOnly)
-	float slideDist = 30;
+	//UPROPERTY(EditDefaultsOnly)
+	//float slideDist = 40;
 
 	//일단 trigger box에 닿으면 열리도록
 	UPROPERTY(EditDefaultsOnly, Category="DoorSettings")
@@ -42,10 +45,25 @@ public:
 
 	UFUNCTION()
 	void OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	//퍼즐을 다 풀었는가
 
 	void Open();
 	void Close();
+
+	/*문의 부드러운 이동*/
+	UFUNCTION()
+	void TimeLineProgress(float val);
+
+	FTimeline curveTimeline;
+	UPROPERTY()
+	FVector startPoint;
+	UPROPERTY()
+	FVector endPoint;
+	UPROPERTY(EditDefaultsOnly, Category = "DoorTimeLine")
+	float yOffset = 150;
+	UPROPERTY(EditDefaultsOnly, Category = "DoorTimeLine")
+	UCurveFloat* curveFloat;
+
+	//퍼즐을 다 풀었는가
 
 
 };
