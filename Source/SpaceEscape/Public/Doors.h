@@ -29,8 +29,24 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
 	class UStaticMeshComponent* rightDoorMesh;
 
-	//퍼즐을다 풀었는가
+	UPROPERTY(EditDefaultsOnly)
+	float slideDist = 30;
 
+	//일단 trigger box에 닿으면 열리도록
+	UPROPERTY(EditDefaultsOnly, Category="DoorSettings")
+	class UBoxComponent* triggerboxComp;
+
+	UFUNCTION()
+	void OnTriggeredOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	//퍼즐을 다 풀었는가
+
+	void Open();
+	void Close();
 
 
 };
+
