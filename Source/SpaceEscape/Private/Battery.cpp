@@ -10,6 +10,8 @@ ABattery::ABattery()
 	PrimaryActorTick.bCanEverTick = false;
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh Component"));
 	SetRootComponent(meshComp);
+	meshComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
+	meshComp->SetSimulatePhysics(true);
 }
 
 // Called when the game starts or when spawned

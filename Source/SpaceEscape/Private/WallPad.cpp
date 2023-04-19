@@ -15,6 +15,8 @@ AWallPad::AWallPad()
 	SetRootComponent(meshComp);
 	meshComp->SetRelativeScale3D(FVector(0.2f));
 	meshComp->SetSimulatePhysics(false);
+	meshComp->SetCollisionProfileName(TEXT("NoCollision"));
+
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/sci-fi-tablet/source/Tablet/Tablet.Tablet'"));
 	if (tempMesh.Succeeded())
 	{
@@ -23,6 +25,7 @@ AWallPad::AWallPad()
 
 	wallScreenComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Wall Screen Widget"));
 	wallScreenComp->SetupAttachment(RootComponent);
+	wallScreenComp->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
 // Called when the game starts or when spawned

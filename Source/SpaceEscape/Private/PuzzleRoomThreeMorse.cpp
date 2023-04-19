@@ -17,10 +17,14 @@ APuzzleRoomThreeMorse::APuzzleRoomThreeMorse()
 	SetRootComponent(sceneComp);
 	buttonBodyComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("buttonBodyComp"));
 	buttonBodyComp->SetupAttachment(RootComponent);
+	buttonBodyComp->SetCollisionProfileName(TEXT("NoCollision"));
+
 	buttonComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("buttonComp"));
 	buttonComp->SetupAttachment(buttonBodyComp);
 	leverBodyComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("leverBodyComp"));
 	leverBodyComp->SetupAttachment(RootComponent);
+	leverBodyComp->SetCollisionProfileName(TEXT("NoCollision"));
+
 	leverComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("leverComp"));
 	leverComp->SetupAttachment(leverBodyComp);
 	leverCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("leverCollision"));
@@ -77,7 +81,7 @@ void APuzzleRoomThreeMorse::ControlByPlayerHand()
 {
 	if (player)
 	{
-		if (player->grabbedObject == leverCollision && player->bIsGrabbed)
+		if (player->bIsGrabbed)
 		{
 			FRotator rot = leverComp->GetRelativeRotation();
 			leverComp->SetRelativeRotation(rot);
