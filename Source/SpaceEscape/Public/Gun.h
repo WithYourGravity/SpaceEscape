@@ -58,8 +58,7 @@ public:
 	UFUNCTION()
 	void OnDropped();
 
-	void FireLeft();
-	void FireRight();
+	void Fire();
 
 private:
 	// Crosshair
