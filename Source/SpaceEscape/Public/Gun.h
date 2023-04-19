@@ -72,11 +72,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
 	float crosshairScale = 0.3f;
 
-	bool isOnGrabbed = false;
+	// Grab
+	bool bIsOnGrabbed = false;
 
+	// Fire
 	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
 	float fireDistance = 10000.0f;
-
-	// Draw Crosshair
+	
 	void DrawCrosshair();
+	void GrabSlider();
 };

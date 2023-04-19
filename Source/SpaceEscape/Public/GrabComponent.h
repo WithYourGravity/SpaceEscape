@@ -16,6 +16,7 @@ enum class EGrabType : uint8
 	FREE UMETA(DisplayName = "Free"),
 	SNAP UMETA(DisplayName = "Snap"),
 	LEVER UMETA(DisplayName = "Lever"),
+	GUNSLIDER UMETA(DisplayName = "GunSlider"),
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -57,6 +58,8 @@ public:
 	EGrabType grabType = EGrabType::FREE;
 
 	bool bSimulateOnDrop = false;
+
+	bool bIsGunSlideGrabbed = false;
 
 	FOnGrabbedDelegate onGrabbedDelegate;
 	FOnDroppedDelegate onDroppedDelegate;

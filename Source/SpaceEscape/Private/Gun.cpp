@@ -51,7 +51,7 @@ AGun::AGun()
 
 	slideGrabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("slideGrabComp"));
 	slideGrabComp->SetupAttachment(gunMeshComp);
-	slideGrabComp->grabType = EGrabType::SNAP;
+	slideGrabComp->grabType = EGrabType::GUNSLIDER;
 
 	muzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("muzzleLocation"));
 	muzzleLocation->SetupAttachment(gunMeshComp);
@@ -80,9 +80,14 @@ void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (isOnGrabbed)
+	if (bIsOnGrabbed)
 	{
 		DrawCrosshair();
+
+		if (slideGrabComp->bIsGunSlideGrabbed)
+		{
+			
+		}
 	}
 }
 
@@ -107,7 +112,7 @@ void AGun::OnGrabbed()
 				subSystem->AddMappingContext(IMC_WeaponLeft, 0);
 			}
 			Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->grabbedGun = this;
-			isOnGrabbed = true;
+			bIsOnGrabbed = true;
 		}
 	}
 }
@@ -132,7 +137,8 @@ void AGun::OnDropped()
 				subSystem->RemoveMappingContext(IMC_WeaponLeft);
 			}
 			Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->grabbedGun = nullptr;
-			isOnGrabbed = false;
+			bIsOnGrabbed = false;
+			crosshair->crosshairComp->SetVisibility(false);
 		}
 	}
 }
@@ -180,4 +186,9 @@ void AGun::DrawCrosshair()
 	// Crosshair 가 카메라를 바라보도록 처리
 	FVector direction = crosshair->GetActorLocation() - Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->vrCamera->GetComponentLocation();
 	crosshair->SetActorRotation(direction.Rotation());
+}
+
+void AGun::GrabSlider()
+{
+
 }
