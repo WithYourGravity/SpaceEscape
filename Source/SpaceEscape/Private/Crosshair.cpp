@@ -11,10 +11,10 @@ ACrosshair::ACrosshair()
 	PrimaryActorTick.bCanEverTick = true;
 
 	defaultSceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("defaultSceneComp"));
-	defaultSceneComp->SetupAttachment(RootComponent);
+	RootComponent = defaultSceneComp;
 
 	crosshairComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("crosshairComp"));
-	crosshairComp->SetupAttachment(defaultSceneComp);
+	crosshairComp->SetupAttachment(RootComponent);
 
 	// static mesh ¼³Á¤
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Shapes/Shape_Plane.Shape_Plane'"));

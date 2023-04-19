@@ -51,10 +51,17 @@ public:
 	class UInputAction* IA_Teleport;
 	// Input Action for Grab
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	class UInputAction* IA_Grab;
+	class UInputAction* IA_GrabLeft;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_GrabRight;
+	// Input Action for Fire
+	//UPROPERTY(EditDefaultsOnly, Category = "Input")
+	//class UInputAction* IA_Fire;
 	// Input Action for Fire
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	class UInputAction* IA_Fire;
+	class UInputAction* IA_FireLeft;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_FireRight;
 
 	// 이동처리 함수
 	void Move(const FInputActionValue& values);
@@ -142,79 +149,36 @@ private:
 public:
 	// Grab 범위
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	float grabRange = 100;
+	float grabRange = 10;
 	// Grab Object 기억
 	UPROPERTY()
-	class UPrimitiveComponent* grabbedObject;
+	class UGrabComponent* heldComponentRight;
+	UPROPERTY()
+	class UGrabComponent* heldComponentLeft;
 
 	// Object Grab 여부
+	bool bIsGrabbedRight = false;
+	bool bIsGrabbedLeft = false;
 	bool bIsGrabbed = false;
-
-	// 던질 힘
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	float throwPower = 10000.0f;
-	// 던질 방향
-	FVector throwDirection;
-	// 직전 위치
-	FVector prevPos;
-	// 회전 방향
-	FQuat deltaRotation;
-	// 이전 회전값
-	FQuat prevRot;
-	// 회전 빠르기
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	float torquePower = 1.0f;
-
-	// 원격잡기 모드 여부
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	bool bIsRemoteGrab = false;
-	// Remote Grab 거리
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	float remoteDistance = 2000.0f;
-	// 이동 속도
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	float remoteMoveSpeed = 10.0f;
-	// Remote Grab 검출 범위
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	float remoteRadius = 20.0f;
-	// Remote Object 이동을 위한 타이머
-	FTimerHandle grabTimer;
-
-	// Remote Grab 시각화 여부
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	bool bDrawDebugRemoteGrab = false;
-
+	
 	// 잡기 시도 기능
-	void TryGrab();
+	void TryGrabLeft();
+	void TryGrabRight();
 	// 놓기
-	void UnTryGrab();
-	// 잡고있는 중, 던질 정보를 업데이트하기 위한 함수
-	void Grabbing();
+	void UnTryGrabLeft();
+	void UnTryGrabRight();
 
-	// 원격 잡기 함수
-	void RemoteGrab();
-	// 원격 잡기 시각화 함수
-	void DrawDebugRemoteGrab();
+	// MotionController 근처 잡을 수 있는 Object 찾는 함수
+	class UGrabComponent* GetGrabComponentNearMotionController(class UMotionControllerComponent* motionController);
 
 
 // Fire
 private:
-	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
-	float fireDistance = 10000.0f;
+	//void Fire(const FInputActionValue& values);
+	void FireLeft(const FInputActionValue& values);
+	void FireRight(const FInputActionValue& values);
 
-	void Fire(const FInputActionValue& values);
-
-	// Crosshair
-	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
-	TSubclassOf<class ACrosshair> crosshairFactory;
-
-	// Crosshair Instance
+public:
 	UPROPERTY()
-	class ACrosshair* crosshair;
-
-	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
-	float crosshairScale = 0.3f;
-
-	// Draw Crosshair
-	void DrawCrosshair();
+	class AGun* grabbedGun;
 };
