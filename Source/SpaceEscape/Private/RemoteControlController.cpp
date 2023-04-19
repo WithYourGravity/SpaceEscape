@@ -19,7 +19,7 @@ ARemoteControlController::ARemoteControlController()
 	tabletMeshComp->SetRelativeScale3D(FVector(0.2f));
 	tabletMeshComp->SetSimulatePhysics(true);
 	tabletMeshComp->SetGenerateOverlapEvents(false);
-	tabletMeshComp->SetCollisionProfileName(TEXT("PhysicsActor"));
+	tabletMeshComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/sci-fi-tablet/source/Tablet/Tablet.Tablet'"));
     if (tempMesh.Succeeded())
     {
@@ -30,18 +30,22 @@ ARemoteControlController::ARemoteControlController()
 	buttonGoMeshComp->SetupAttachment(RootComponent);
 	buttonGoMeshComp->SetRelativeLocationAndRotation(FVector(-95.f, 50.f, 6.f), FRotator(0, 270, 0));
 	buttonGoMeshComp->SetRelativeScale3D(FVector(0.4f));
+	buttonGoMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 	buttonBackMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonBackMeshComp"));
 	buttonBackMeshComp->SetupAttachment(RootComponent);
 	buttonBackMeshComp->SetRelativeLocationAndRotation(FVector(-30.f, 50.f, 6.f), FRotator(0, 90, 0));
 	buttonBackMeshComp->SetRelativeScale3D(FVector(0.4f));
+	buttonBackMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 	buttonLeftMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonLeftMeshComp"));
 	buttonLeftMeshComp->SetupAttachment(RootComponent);
 	buttonLeftMeshComp->SetRelativeLocationAndRotation(FVector(30.f, 50.f, 6.f), FRotator(0, 180, 0));
 	buttonLeftMeshComp->SetRelativeScale3D(FVector(0.4f));
+	buttonLeftMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 	buttonRightMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonRightMeshComp"));
 	buttonRightMeshComp->SetupAttachment(RootComponent);
 	buttonRightMeshComp->SetRelativeLocation(FVector(95.f, 50.f, 6.f));
 	buttonRightMeshComp->SetRelativeScale3D(FVector(0.4f));
+	buttonRightMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempButtonIMG(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/SM_TabletButton.SM_TabletButton'"));
     if (tempButtonIMG.Succeeded())
@@ -56,23 +60,27 @@ ARemoteControlController::ARemoteControlController()
 	buttonGoCollision->SetupAttachment(buttonGoMeshComp);
 	buttonGoCollision->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.f));
 	buttonGoCollision->SetRelativeLocation(FVector(0, 0, -20.f));
+	buttonGoCollision->SetCollisionProfileName(TEXT("PuzzleButtonPreset"));
 	buttonBackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ButtonBackCollision"));
 	buttonBackCollision->SetupAttachment(buttonBackMeshComp);
 	buttonBackCollision->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.f));
 	buttonBackCollision->SetRelativeLocation(FVector(0, 0, -20.f));
+	buttonBackCollision->SetCollisionProfileName(TEXT("PuzzleButtonPreset"));
 	buttonLeftCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ButtonLeftCollision"));
 	buttonLeftCollision->SetupAttachment(buttonLeftMeshComp);
 	buttonLeftCollision->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.f));
 	buttonLeftCollision->SetRelativeLocation(FVector(0, 0, -20.f));
+	buttonLeftCollision->SetCollisionProfileName(TEXT("PuzzleButtonPreset"));
 	buttonRightCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ButtonRightCollision"));
 	buttonRightCollision->SetupAttachment(buttonRightMeshComp);
 	buttonRightCollision->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.f));
 	buttonRightCollision->SetRelativeLocation(FVector(0, 0, -20.f));
+	buttonRightCollision->SetCollisionProfileName(TEXT("PuzzleButtonPreset"));
 
 	tabletScreenComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TabletScreenComp"));
 	tabletScreenComp->SetupAttachment(RootComponent);
 	tabletScreenComp->SetRelativeScale3D(FVector(0.56f, 0.29f, 1.f));
-	tabletScreenComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	tabletScreenComp->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
 // Called when the game starts or when spawned

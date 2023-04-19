@@ -5,6 +5,7 @@
 
 #include "Components/BoxComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
+#include "Engine/TextureRenderTarget2D.h"
 
 
 // Sets default values
@@ -22,11 +23,16 @@ ARemoteControlObject::ARemoteControlObject()
 		meshComp->SetStaticMesh(tempSkeletal.Object);
     }
 	meshComp->SetSimulatePhysics(true);
-	meshComp->SetCollisionProfileName(TEXT("BlockAll"));
+	meshComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
 
-	cameraCaptureComp = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("Camaera Capture Component"));
+	cameraCaptureComp = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("Camera Capture Component"));
 	cameraCaptureComp->SetupAttachment(RootComponent);
 	cameraCaptureComp->SetRelativeLocation(FVector(400.f, 0, 500.f));
+	ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D>tempTarget(TEXT("/Script/Engine.TextureRenderTarget2D'/Game/LTG/Materials/RT_RemoteRenderTarget.RT_RemoteRenderTarget'"));
+    if (tempTarget.Succeeded())
+    {
+		cameraCaptureComp->TextureTarget = tempTarget.Object;
+    }
 }
 
 // Called when the game starts or when spawned
