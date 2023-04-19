@@ -26,9 +26,6 @@ void UGrabComponent::BeginPlay()
 	Super::BeginPlay();
 
 	SetShouldSimulateOnDrop();
-	
-	// Parent Object 물리기능 활성화
-	SetPrimitiveCompPhysics(true);
 }
 
 
@@ -72,6 +69,9 @@ bool UGrabComponent::TryGrab(UMotionControllerComponent* motionController)
 		}
 
 		break;
+	case EGrabType::LEVER:
+		bIsHeld = true;
+		break;
 	default:
 		break;
 	}
@@ -113,6 +113,9 @@ bool UGrabComponent::TryRelease()
 			GetAttachParent()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 		}
 		
+		bIsHeld = false;
+		break;
+	case EGrabType::LEVER:
 		bIsHeld = false;
 		break;
 	default:

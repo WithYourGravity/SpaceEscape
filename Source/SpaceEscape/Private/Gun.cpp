@@ -137,19 +137,8 @@ void AGun::OnDropped()
 	}
 }
 
-void AGun::FireLeft()
+void AGun::Fire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("FireLeft"));
-
-	FVector loc = muzzleLocation->GetComponentLocation();
-	FRotator rot = muzzleLocation->GetComponentRotation();
-	GetWorld()->SpawnActor<AActor>(bulletFactory, loc, rot);
-}
-
-void AGun::FireRight()
-{
-	UE_LOG(LogTemp, Warning, TEXT("FireRight"));
-
 	FVector loc = muzzleLocation->GetComponentLocation();
 	FRotator rot = muzzleLocation->GetComponentRotation();
 	GetWorld()->SpawnActor<AActor>(bulletFactory, loc, rot);

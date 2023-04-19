@@ -412,6 +412,8 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 
 	FCollisionObjectQueryParams objectParams;
 	objectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldDynamic);
+	objectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel2);
+
 	bool bHit = GetWorld()->OverlapMultiByObjectType(hitObjects, center, FQuat::Identity, objectParams, FCollisionShape::MakeSphere(grabRange), params);
 
 
@@ -462,7 +464,7 @@ void AEscapePlayer::FireLeft(const FInputActionValue& values)
 {
 	if (grabbedGun)
 	{
-		grabbedGun->FireLeft();
+		grabbedGun->Fire();
 	}
 }
 
@@ -470,7 +472,7 @@ void AEscapePlayer::FireRight(const FInputActionValue& values)
 {
 	if (grabbedGun)
 	{
-		grabbedGun->FireRight();
+		grabbedGun->Fire();
 	}
 }
 
