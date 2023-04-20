@@ -30,24 +30,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* buttonComp;
 	UPROPERTY(EditDefaultsOnly)
-	class UStaticMeshComponent* leverBodyComp;
-	UPROPERTY(EditDefaultsOnly)
-	class UStaticMeshComponent* leverComp;
-	UPROPERTY(EditDefaultsOnly)
 	class UWidgetComponent* screenComp;
 	UPROPERTY(EditDefaultsOnly)
-	class UBoxComponent* leverCollision;
-	UPROPERTY(EditDefaultsOnly)
-	class UGrabComponent* grabComp;
-
-	void LeverShouldBeZero();
-	void ControlByPlayerHand();
-	UFUNCTION()
-	void ChangeIsGrabed();
-
-private:
-
-	UPROPERTY()
-	class AEscapePlayer* player;
-	bool bIsGrabed;
+	class ULeverComponent* leverComp;
 };
