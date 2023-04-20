@@ -30,28 +30,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* buttonComp;
 	UPROPERTY(EditDefaultsOnly)
-	class UStaticMeshComponent* leverBodyComp;
-	UPROPERTY(EditDefaultsOnly)
-	class UStaticMeshComponent* leverComp;
-	UPROPERTY(EditDefaultsOnly)
 	class UWidgetComponent* screenComp;
 	UPROPERTY(EditDefaultsOnly)
-	class UBoxComponent* leverCollision;
-
-	void LeverShouldBeZero();
-	void ControlByPlayerHand();
-	void CheckIsGrabed();
-
-	UPROPERTY(EditAnywhere)
-	bool bIsGrabed;
-	UFUNCTION()
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-private:
-
-	UPROPERTY()
-	class AEscapePlayer* player;
-
-	
-
+	class ULeverComponent* leverComp;
 };
