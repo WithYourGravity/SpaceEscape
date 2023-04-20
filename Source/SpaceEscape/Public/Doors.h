@@ -31,18 +31,23 @@ public:
 	class UStaticMeshComponent* doorMesh;
 
 	//일단 trigger box에 닿으면 열리도록
-	UPROPERTY(EditDefaultsOnly, Category="DoorSettings")
-	class UBoxComponent* triggerboxComp;
+	//UPROPERTY(EditDefaultsOnly, Category="DoorSettings")
+	//class UBoxComponent* triggerboxComp;
 
-	UFUNCTION()
-	void OnTriggeredOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	//UFUNCTION()
+	//void OnTriggeredOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	//	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	//UFUNCTION()
+	//void OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	UFUNCTION()
 	void Open();
 	UFUNCTION()
 	void Close();
+
+	//문 여는 충돌감지 진행중인가
+	bool bIsOpenOverlaping = true;
+	UFUNCTION()
+	void ChangeDoorOverlaping();
 
 	/*문의 부드러운 이동*/
 	UFUNCTION()
@@ -57,12 +62,11 @@ public:
 	float yOffset = 200;
 	UPROPERTY(EditDefaultsOnly, Category = "DoorTimeLine")
 	UCurveFloat* curveFloat;
-	//문 여는 충돌감지 진행중인가
-	bool bIsOpenOverlaping = true;
+	
 	//문 최초 위치
 	FVector initLoc;
 
-	//퍼즐을 다 풀었는가
+
 
 };
 

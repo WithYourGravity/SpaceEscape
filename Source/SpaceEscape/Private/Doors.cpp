@@ -2,20 +2,21 @@
 
 
 #include "Doors.h"
-#include "Components/BoxComponent.h"
+//#include "Components/BoxComponent.h"
 #include "Components/TimelineComponent.h"
-
+#include "DoorButton.h"
+#include "EngineUtils.h"
 // Sets default values
 ADoors::ADoors()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this actor to call Tick() every frame.  You can t	urn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	triggerboxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("triggerboxComp"));
-	triggerboxComp->SetupAttachment(RootComponent);
-	triggerboxComp->SetRelativeLocation(FVector(0, 0, 0));
-	triggerboxComp->SetRelativeScale3D(FVector(5, 10, 1));
+	//triggerboxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("triggerboxComp"));
+	//triggerboxComp->SetupAttachment(RootComponent);
+	//triggerboxComp->SetRelativeLocation(FVector(0, 0, 0));
+	//triggerboxComp->SetRelativeScale3D(FVector(5, 10, 1));
 	doorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("doorMesh"));
 	doorMesh->SetupAttachment(RootComponent);
 	doorMesh->SetRelativeLocation(FVector(0, 0, 0));
@@ -28,17 +29,23 @@ void ADoors::BeginPlay()
 {
 	Super::BeginPlay();	
 
-	initLoc = GetActorLocation();
-	if(curveFloat)
+	for(TActorIterator<ADoorButton> it(GetWorld()); it; ++it)
 	{
-		FOnTimelineFloat TimeLineProgress;
-		TimeLineProgress.BindUFunction(this, FName("TimeLineProgress"));
-		curveTimeline.AddInterpFloat(curveFloat, TimeLineProgress);
-		triggerboxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoors::OnTriggeredOverlap);
+		ADoorButton* db = *it;
+				
+		db->openDoorDele.BindUFunction(this, FName("ChangeDoorOverlaping"));
 
-		triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
-
+		initLoc = GetActorLocation();
+		if (curveFloat)
+		{
+			FOnTimelineFloat TimeLineProgress;
+			TimeLineProgress.BindUFunction(this, FName("TimeLineProgress"));
+			curveTimeline.AddInterpFloat(curveFloat, TimeLineProgress);
+			//triggerboxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoors::OnTriggeredOverlap);
+			//triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
+		}
 	}
+	
 }
 
 // Called every frame
@@ -47,7 +54,7 @@ void ADoors::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	curveTimeline.TickTimeline(DeltaTime);
 }
-
+/*
 void ADoors::OnTriggeredOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {	
@@ -63,7 +70,7 @@ void ADoors::OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 		Close();		
 	}
 }
-
+*/
 void ADoors::Open()
 {
 	startPoint = GetActorLocation();
@@ -71,7 +78,6 @@ void ADoors::Open()
 	curveTimeline.PlayFromStart();
 	UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
 	bIsOpenOverlaping = false;
-
 }
 
 void ADoors::Close()
@@ -84,9 +90,13 @@ void ADoors::Close()
 	UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))
 }
 
+void ADoors::ChangeDoorOverlaping()
+{
+	bIsOpenOverlaping == true ? Open() : Close();
+}
+
 void ADoors::TimeLineProgress(float val)
 {
 	FVector newLoc = FMath::Lerp(startPoint, endPoint, val);
-	SetActorLocation(newLoc);
-	
+	SetActorLocation(newLoc);	
 }
