@@ -37,7 +37,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
 	class UStaticMeshComponent* gunMeshComp;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
 	class UStaticMeshComponent* gunSlideMeshComp;
 
@@ -50,8 +50,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Fire")
 	class USceneComponent* muzzleLocation;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Magazine")
+	class UBoxComponent* magazineBoxComp;
+
 	UPROPERTY(EditAnywhere, Category = "Fire")
 	TSubclassOf<class AActor> bulletFactory;
+
+	UPROPERTY()
+	class AMagazine* magazine;
+
+	bool bIsOnGrabbed = false;
 
 	UFUNCTION()
 	void OnGrabbed();
@@ -59,24 +67,29 @@ public:
 	void OnDropped();
 
 	void Fire();
+	void DropMagazine();
 
 private:
 	// Crosshair
 	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class ACrosshair> crosshairFactory;
 
-	// Crosshair Instance
 	UPROPERTY()
 	class ACrosshair* crosshair;
 
 	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
 	float crosshairScale = 0.3f;
-
-	bool isOnGrabbed = false;
-
+	
 	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
 	float fireDistance = 10000.0f;
 
-	// Draw Crosshair
+	UPROPERTY()
+	class AEscapePlayer* player;
+
+	FVector initGunSlideCompLocation;
+	FVector initGunSlideMeshLocation;
+
 	void DrawCrosshair();
+	void GrabSlider();
+	void ReleaseSlider();
 };

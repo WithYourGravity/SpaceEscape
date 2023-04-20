@@ -2,6 +2,8 @@
 
 
 #include "GrabComponent.h"
+
+#include "Gun.h"
 #include "MotionControllerComponent.h"
 #include "Haptics/HapticFeedbackEffect_Base.h"
 
@@ -72,6 +74,10 @@ bool UGrabComponent::TryGrab(UMotionControllerComponent* motionController)
 	case EGrabType::LEVER:
 		bIsHeld = true;
 		break;
+	case EGrabType::GUNSLIDER:
+		bIsGunSlideGrabbed = true;
+		bIsHeld = true;
+		break;
 	default:
 		break;
 	}
@@ -104,18 +110,37 @@ bool UGrabComponent::TryRelease()
 	{
 	case EGrabType::FREE:
 	case EGrabType::SNAP:
+		{
+		bool bIsOtherGrab = false;
+		TArray<UGrabComponent*> tempGrabComps;
+		GetAttachParentActor()->GetComponents<UGrabComponent>(tempGrabComps);
+		for (int32 i = 0; i < tempGrabComps.Num(); i++)
+		{
+			if ((tempGrabComps[i] != this) && (tempGrabComps[i]->bIsHeld))
+			{
+				bIsOtherGrab = true;
+			}
+		}
+
 		if (bSimulateOnDrop)
 		{
-			SetPrimitiveCompPhysics(true);
+			if (!bIsOtherGrab)
+			{
+				SetPrimitiveCompPhysics(true);
+			}
 		}
 		else
 		{
 			GetAttachParent()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 		}
-		
+		}
 		bIsHeld = false;
 		break;
 	case EGrabType::LEVER:
+		bIsHeld = false;
+		break;
+	case EGrabType::GUNSLIDER:
+		bIsGunSlideGrabbed = false;
 		bIsHeld = false;
 		break;
 	default:
