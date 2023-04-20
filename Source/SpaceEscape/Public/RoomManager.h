@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "RoomManager.generated.h"
 
+DECLARE_DELEGATE(FStageClearDele)
+
 UCLASS()
 class SPACEESCAPE_API ARoomManager : public AActor
 {
@@ -39,5 +41,5 @@ public:
 	void MoveOnNextStage();
 	bool GetbCanOpenDoor();
 	void SetbCanOpenDoor(bool canOpenDoor);
-
+	FStageClearDele stageClearDele;
 };
