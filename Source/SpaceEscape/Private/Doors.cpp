@@ -34,7 +34,8 @@ void ADoors::BeginPlay()
 		FOnTimelineFloat TimeLineProgress;
 		TimeLineProgress.BindUFunction(this, FName("TimeLineProgress"));
 		curveTimeline.AddInterpFloat(curveFloat, TimeLineProgress);
-		triggerboxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoors::OnTriggeredOverlap);		
+		triggerboxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoors::OnTriggeredOverlap);
+
 		triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
 
 	}
@@ -49,7 +50,7 @@ void ADoors::Tick(float DeltaTime)
 
 void ADoors::OnTriggeredOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
+{	
 	bIsOpenOverlaping = true;
 	Open();
 }
@@ -66,6 +67,7 @@ void ADoors::OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 void ADoors::Open()
 {
 	startPoint = GetActorLocation();
+	endPoint = startPoint + FVector(0, yOffset, 0);
 	curveTimeline.PlayFromStart();
 	UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
 	bIsOpenOverlaping = false;
@@ -75,9 +77,9 @@ void ADoors::Open()
 void ADoors::Close()
 {
 	if (bIsOpenOverlaping == true) return;
-	endPoint = startPoint - FVector(0, yOffset, 0);	
-	curveTimeline.Reverse();
-	startPoint = initLoc;
+	startPoint = GetActorLocation();	
+	endPoint = initLoc;
+	curveTimeline.PlayFromStart();
 	bIsOpenOverlaping = true;
 	UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))
 }
