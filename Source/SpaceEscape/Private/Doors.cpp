@@ -3,6 +3,7 @@
 
 #include "Doors.h"
 #include "Components/BoxComponent.h"
+#include "Components/TimelineComponent.h"
 
 // Sets default values
 ADoors::ADoors()
@@ -11,68 +12,79 @@ ADoors::ADoors()
 	PrimaryActorTick.bCanEverTick = true;
 
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	leftDoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("leftDoorMesh"));
-	leftDoorMesh->SetupAttachment(RootComponent);
-	leftDoorMesh->SetRelativeLocation(FVector(0, -463, 0));
-	leftDoorMesh->SetRelativeScale3D(FVector(1, 4.625f, 2.4f));
-	rightDoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("rightDoorMesh"));
-	rightDoorMesh->SetupAttachment(RootComponent);
-	rightDoorMesh->SetRelativeLocation(FVector(0, 0, 0));
-	rightDoorMesh->SetRelativeScale3D(FVector(1, 4.625f, 2.4f));
 	triggerboxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("triggerboxComp"));
 	triggerboxComp->SetupAttachment(RootComponent);
-	triggerboxComp->SetRelativeLocation(FVector(-117, -233, -88));
-	triggerboxComp->SetRelativeScale3D(FVector(2, 3, 1));
+	triggerboxComp->SetRelativeLocation(FVector(0, 0, 0));
+	triggerboxComp->SetRelativeScale3D(FVector(5, 10, 1));
+	doorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("doorMesh"));
+	doorMesh->SetupAttachment(RootComponent);
+	doorMesh->SetRelativeLocation(FVector(0, 0, 0));
+	doorMesh->SetRelativeScale3D(FVector(1, 4.625f, 2.4f));
+	initLoc = GetActorLocation();
 }
 
 // Called when the game starts or when spawned
 void ADoors::BeginPlay()
 {
-	Super::BeginPlay();
+	Super::BeginPlay();	
 
-	triggerboxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoors::OnTriggeredOverlap);
-	triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
-	
+	initLoc = GetActorLocation();
+	if(curveFloat)
+	{
+		FOnTimelineFloat TimeLineProgress;
+		TimeLineProgress.BindUFunction(this, FName("TimeLineProgress"));
+		curveTimeline.AddInterpFloat(curveFloat, TimeLineProgress);
+		triggerboxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoors::OnTriggeredOverlap);		
+		triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
+
+	}
 }
 
 // Called every frame
 void ADoors::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	curveTimeline.TickTimeline(DeltaTime);
 }
 
 void ADoors::OnTriggeredOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	bIsOpenOverlaping = true;
 	Open();
 }
 
 void ADoors::OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	Close();
+	if(bIsOpenOverlaping == false)
+	{
+		Close();		
+	}
 }
 
 void ADoors::Open()
 {
-	leftDoorMesh->AddRelativeLocation(FVector(0, slideDist * -1, 0));
-	rightDoorMesh->AddRelativeLocation(FVector(0, slideDist, 0));
-	UE_LOG(LogTemp, Warning, TEXT("Overlapped Door"))
-
-	/*FTimeLine*/
-	/*UCurveFloat, 리셀란하우스*/
+	startPoint = GetActorLocation();
+	curveTimeline.PlayFromStart();
+	UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
+	bIsOpenOverlaping = false;
 
 }
 
 void ADoors::Close()
 {
-	FTimerHandle closeTimerHandle;
-	GetWorldTimerManager().SetTimer(closeTimerHandle, FTimerDelegate::CreateLambda([this]()->void
-	{
-		this->leftDoorMesh->SetRelativeLocation(FVector::ZeroVector);
-		this->rightDoorMesh->SetRelativeLocation(FVector::ZeroVector);
-	}
-	), 1, false);
+	if (bIsOpenOverlaping == true) return;
+	endPoint = startPoint - FVector(0, yOffset, 0);	
+	curveTimeline.Reverse();
+	startPoint = initLoc;
+	bIsOpenOverlaping = true;
+	UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))
+}
+
+void ADoors::TimeLineProgress(float val)
+{
+	FVector newLoc = FMath::Lerp(startPoint, endPoint, val);
+	SetActorLocation(newLoc);
 	
 }
