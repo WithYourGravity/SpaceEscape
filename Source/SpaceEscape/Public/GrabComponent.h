@@ -64,6 +64,8 @@ public:
 	FOnGrabbedDelegate onGrabbedDelegate;
 	FOnDroppedDelegate onDroppedDelegate;
 
+	bool bIsHeld = false;
+
 private:
 	UPROPERTY()
 	class UMotionControllerComponent* motionControllerComp;
@@ -71,5 +73,4 @@ private:
 	UPROPERTY()
 	class UHapticFeedbackEffect_Base* grabHapticEffect;
 
-	bool bIsHeld = false;
 };

@@ -10,6 +10,8 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Crosshair.h"
+#include "Magazine.h"
+#include "MotionControllerComponent.h"
 #include "Camera/CameraComponent.h"
 
 // Sets default values
@@ -21,7 +23,8 @@ AGun::AGun()
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
 	RootComponent = boxComp;
 	boxComp->SetSimulatePhysics(true);
-	boxComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	boxComp->SetBoxExtent(FVector(5, 15, 10));
+	boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 
 	gunMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunMeshComp"));
 	gunMeshComp->SetupAttachment(RootComponent);
@@ -33,7 +36,7 @@ AGun::AGun()
 		gunMeshComp->SetRelativeRotation(FRotator(0, 0, 30));
 		gunMeshComp->SetRelativeScale3D(FVector(0.15f));
 	}
-
+	
 	gunSlideMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunSlideMeshComp"));
 	gunSlideMeshComp->SetupAttachment(gunMeshComp);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempSlideMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Gun/0ae7c8526de44d0ab63e6b5d21341fd2_fbx_Slide_low.0ae7c8526de44d0ab63e6b5d21341fd2_fbx_Slide_low'"));
@@ -51,12 +54,20 @@ AGun::AGun()
 
 	slideGrabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("slideGrabComp"));
 	slideGrabComp->SetupAttachment(gunMeshComp);
+	slideGrabComp->SetRelativeLocation(FVector(-46.66f, 9.76f, 96.42f));
+	slideGrabComp->SetRelativeRotation(FRotator(-30, -90, 0));
 	slideGrabComp->grabType = EGrabType::GUNSLIDER;
 
 	muzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("muzzleLocation"));
 	muzzleLocation->SetupAttachment(gunMeshComp);
 	muzzleLocation->SetRelativeLocation(FVector(-47.0f, -140.0f, 13.33f));
 	muzzleLocation->SetRelativeRotation(FRotator(-30, -90, 0));
+
+	magazineBoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("magazineBoxComp"));
+	magazineBoxComp->SetupAttachment(gunMeshComp);
+	magazineBoxComp->SetRelativeLocation(FVector(-46.66f, 77.08f, 14.0f));
+	magazineBoxComp->SetRelativeRotation(FRotator(0, 0, -30));
+	magazineBoxComp->SetBoxExtent(FVector(15, 20, 8));
 }
 
 // Called when the game starts or when spawned
@@ -73,6 +84,11 @@ void AGun::BeginPlay()
 	{
 		crosshair = GetWorld()->SpawnActor<ACrosshair>(crosshairFactory);
 	}
+
+	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
+	initGunSlideCompLocation = slideGrabComp->GetRelativeLocation();
+	initGunSlideMeshLocation = gunSlideMeshComp->GetRelativeLocation();
 }
 
 // Called every frame
@@ -86,7 +102,14 @@ void AGun::Tick(float DeltaTime)
 
 		if (slideGrabComp->bIsGunSlideGrabbed)
 		{
-			
+			GrabSlider();
+		}
+		else
+		{
+			if (FVector::Dist(slideGrabComp->GetComponentLocation(), initGunSlideCompLocation) >= 0.1f)
+			{
+				ReleaseSlider();
+			}
 		}
 	}
 }
@@ -111,7 +134,11 @@ void AGun::OnGrabbed()
 			{
 				subSystem->AddMappingContext(IMC_WeaponLeft, 0);
 			}
-			Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->grabbedGun = this;
+
+			if (player)
+			{
+				player->grabbedGun = this;
+			}
 			bIsOnGrabbed = true;
 		}
 	}
@@ -136,7 +163,12 @@ void AGun::OnDropped()
 			{
 				subSystem->RemoveMappingContext(IMC_WeaponLeft);
 			}
-			Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->grabbedGun = nullptr;
+
+			if (player)
+			{
+				player->grabbedGun = nullptr;
+			}
+			
 			bIsOnGrabbed = false;
 			crosshair->crosshairComp->SetVisibility(false);
 		}
@@ -145,9 +177,24 @@ void AGun::OnDropped()
 
 void AGun::Fire()
 {
-	FVector loc = muzzleLocation->GetComponentLocation();
-	FRotator rot = muzzleLocation->GetComponentRotation();
-	GetWorld()->SpawnActor<AActor>(bulletFactory, loc, rot);
+	if (magazine && magazine->GetCurrentBulletCount() != 0)
+	{
+		FVector loc = muzzleLocation->GetComponentLocation();
+		FRotator rot = muzzleLocation->GetComponentRotation();
+		GetWorld()->SpawnActor<AActor>(bulletFactory, loc, rot);
+		magazine->FireBullet();
+	}
+}
+
+void AGun::DropMagazine()
+{
+	if (magazine)
+	{
+		magazine->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		magazine->boxComp->SetSimulatePhysics(true);
+		magazine->grabComp->grabType = EGrabType::SNAP;
+		magazine = nullptr;
+	}
 }
 
 // 거리에 따라서 Crosshair 크기가 같게 보이게 한다.
@@ -181,14 +228,39 @@ void AGun::DrawCrosshair()
 		crosshair->crosshairComp->SetVisibility(false);
 	}
 
-	crosshair->SetActorScale3D(FVector(FMath::Max<float>(1, distance *crosshairScale)));
+	crosshair->SetActorScale3D(FVector(FMath::Max<float>(1, distance * crosshairScale)));
 
 	// Crosshair 가 카메라를 바라보도록 처리
-	FVector direction = crosshair->GetActorLocation() - Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0))->vrCamera->GetComponentLocation();
-	crosshair->SetActorRotation(direction.Rotation());
+	if (player)
+	{
+		FVector direction = crosshair->GetActorLocation() - player->vrCamera->GetComponentLocation();
+		crosshair->SetActorRotation(direction.Rotation());
+	}
 }
 
 void AGun::GrabSlider()
 {
+	float dist;
+	if (slideGrabComp->GetHeldByHand() == EControllerHand::Right)
+	{
+		dist = FVector::DotProduct(player->rightHand->GetComponentLocation() - slideGrabComp->GetComponentLocation(),slideGrabComp->GetForwardVector());
+	}
+	else
+	{
+		dist = FVector::DotProduct(player->leftHand->GetComponentLocation() - slideGrabComp->GetComponentLocation(), slideGrabComp->GetForwardVector());
+	}
+	
+	if (FVector::Dist(initGunSlideCompLocation, slideGrabComp->GetRelativeLocation()) < 100.0f && dist < 0)
+	{
+		slideGrabComp->SetWorldLocation(slideGrabComp->GetComponentLocation() + slideGrabComp->GetForwardVector() * dist * 0.5f);
+		
+		gunSlideMeshComp->SetWorldLocation(gunSlideMeshComp->GetComponentLocation() + slideGrabComp->GetForwardVector() * dist * 0.5f);
+	}
+	
+}
 
+void AGun::ReleaseSlider()
+{
+	slideGrabComp->SetRelativeLocation(initGunSlideCompLocation);
+	gunSlideMeshComp->SetRelativeLocation(initGunSlideMeshLocation);
 }

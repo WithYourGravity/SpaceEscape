@@ -120,8 +120,6 @@ void AEscapePlayer::BeginPlay()
 		vrCamera->bUsePawnControlRotation = true;
 	}
 
-	
-
 	// moveMode 가 TELEPORT 이면 텔레포트 기능 초기화
 	if (moveMode == EMoveModeState::TELEPORT)
 	{
@@ -154,8 +152,6 @@ void AEscapePlayer::Tick(float DeltaTime)
 			UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(teleportCurveComp, FName("User.PointArray"), linePoints);
 		}
 	}
-	
-	//DrawCrosshair();
 }
 
 // Called to bind functionality to input
@@ -175,9 +171,10 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_GrabLeft, ETriggerEvent::Completed, this, &AEscapePlayer::UnTryGrabLeft);
 		InputSystem->BindAction(IA_GrabRight, ETriggerEvent::Started, this, &AEscapePlayer::TryGrabRight);
 		InputSystem->BindAction(IA_GrabRight, ETriggerEvent::Completed, this, &AEscapePlayer::UnTryGrabRight);
-		//InputSystem->BindAction(IA_Fire, ETriggerEvent::Started, this, &AEscapePlayer::Fire);
-		InputSystem->BindAction(IA_FireLeft, ETriggerEvent::Started, this, &AEscapePlayer::FireLeft);
-		InputSystem->BindAction(IA_FireRight, ETriggerEvent::Started, this, &AEscapePlayer::FireRight);
+		InputSystem->BindAction(IA_FireLeft, ETriggerEvent::Started, this, &AEscapePlayer::Fire);
+		InputSystem->BindAction(IA_FireRight, ETriggerEvent::Started, this, &AEscapePlayer::Fire);
+		InputSystem->BindAction(IA_DropMagazineLeft, ETriggerEvent::Started, this, &AEscapePlayer::DropMagazine);
+		InputSystem->BindAction(IA_DropMagazineRight, ETriggerEvent::Started, this, &AEscapePlayer::DropMagazine);
 	}
 	
 }
@@ -464,7 +461,7 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 	return nearestGrabComponent;
 }
 
-void AEscapePlayer::FireLeft(const FInputActionValue& values)
+void AEscapePlayer::Fire(const FInputActionValue& values)
 {
 	if (grabbedGun)
 	{
@@ -472,11 +469,11 @@ void AEscapePlayer::FireLeft(const FInputActionValue& values)
 	}
 }
 
-void AEscapePlayer::FireRight(const FInputActionValue& values)
+void AEscapePlayer::DropMagazine(const FInputActionValue& values)
 {
 	if (grabbedGun)
 	{
-		grabbedGun->Fire();
+		grabbedGun->DropMagazine();
 	}
 }
 

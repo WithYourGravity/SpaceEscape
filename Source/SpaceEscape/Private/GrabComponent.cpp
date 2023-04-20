@@ -106,8 +106,6 @@ bool UGrabComponent::TryGrab(UMotionControllerComponent* motionController)
 
 bool UGrabComponent::TryRelease()
 {
-	
-
 	switch (grabType)
 	{
 	case EGrabType::FREE:
