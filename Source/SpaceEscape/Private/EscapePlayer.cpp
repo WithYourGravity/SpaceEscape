@@ -412,7 +412,7 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 
 	FCollisionObjectQueryParams objectParams;
 	objectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldDynamic);
-	objectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel2);
+	objectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel6);
 
 	bool bHit = GetWorld()->OverlapMultiByObjectType(hitObjects, center, FQuat::Identity, objectParams, FCollisionShape::MakeSphere(grabRange), params);
 

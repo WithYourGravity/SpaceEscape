@@ -52,6 +52,7 @@ void ARoomManager::MoveOnNextStage()
 {
 	playingStage++;
 	solvedPuzzleCount = 0;
+	stageClearDele.Execute();
 }
 
 // 현재 스테이지에서 문을 열 수 있는지 여부를 리턴하는 함수
