@@ -23,31 +23,37 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	/*컴포넌트 생성*/
+	UPROPERTY(EditDefaultsOnly, Category = "Nail")
+		class UBoxComponent* boxComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Screw")
-	class UBoxComponent* boxComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Screw")
-	class UBoxComponent* handleBoxComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Screw")
-	class UStaticMeshComponent* meshComp;
-
-	//드라이버를 손에 붙인다
-	void AttachedByHand();
-	class AEscapePlayer* player;
-	class ANail* attachedNail;
-
-	//드라이버에 나사가 닿으면
+	UPROPERTY(EditDefaultsOnly, Category = "Nail")
+		class UStaticMeshComponent* meshComp;
+	/*
 	UFUNCTION()
-	void AttachNailtoScrew(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	//드라이버에 나사가 닿은 후
-	void AttachNailProcess();
-	void ComingoutNails();
+	void AttachScrewToNail(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	//값 초기화
-	void initNail();
+	UFUNCTION()
+	void DettachScrewToNail(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	//못이 다 나오면 바닥으로 떨어지도록
+
+	void AttachNailProcess();
+*/
+	int32 comeOutNailDist = 5; //나사 한번 돌렸을 때의 이동 거리		
+	int32 rotCount; //나사 한바퀴 돌린 횟수
+
+	class AEscapePlayer* player;
+
+	//회전한 값
+	double processedRot = 5;
+	FRotator initializedRot;
+
+	//screw값 초기화
+	void initScrewDriver();
 	bool isAttaching; //회전중인지 체크
+	class AScrew* attachedScrew;
+	//FRotator initNailRot;
 	double initRot;
 
 };
