@@ -7,6 +7,7 @@
 #include "EngineUtils.h"
 #include "EscapePlayer.h"
 #include "RemoteControlObject.h"
+#include "Haptics/HapticFeedbackEffect_Curve.h"
 
 // Sets default values
 ARemoteControlController::ARemoteControlController()
@@ -81,6 +82,12 @@ ARemoteControlController::ARemoteControlController()
 	tabletScreenComp->SetupAttachment(RootComponent);
 	tabletScreenComp->SetRelativeScale3D(FVector(0.56f, 0.29f, 1.f));
 	tabletScreenComp->SetCollisionProfileName(TEXT("NoCollision"));
+
+	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base>tempHaptic(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
+	if (tempHaptic.Succeeded())
+	{
+		hapticFeedback = tempHaptic.Object;
+	}
 }
 
 // Called when the game starts or when spawned

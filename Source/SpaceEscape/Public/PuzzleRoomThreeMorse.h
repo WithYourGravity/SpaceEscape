@@ -3,34 +3,30 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "PuzzleBase.h"
 #include "PuzzleRoomThreeMorse.generated.h"
 
+/**
+ * 
+ */
 UCLASS()
-class SPACEESCAPE_API APuzzleRoomThreeMorse : public AActor
+class SPACEESCAPE_API APuzzleRoomThreeMorse : public APuzzleBase
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	APuzzleRoomThreeMorse();
 
-protected:
-	// Called when the game starts or when spawned
+public:
+	APuzzleRoomThreeMorse();
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	UPROPERTY(EditDefaultsOnly)
-	class USceneComponent* sceneComp;
-	UPROPERTY(EditDefaultsOnly)
-	class UStaticMeshComponent* buttonBodyComp;
-	UPROPERTY(EditDefaultsOnly)
-	class UStaticMeshComponent* buttonComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UWidgetComponent* screenComp;
 	UPROPERTY(EditDefaultsOnly)
-	class ULeverComponent* leverComp;
+	class UPuzzleRoomThreeMorseScreenWidget* screenWidget;
+	UFUNCTION()
+	void addToTempString(float second);
+	void Enter();
+	FString Translater(FString code);
+
+private:
+	FString tempString;
 };

@@ -3,39 +3,56 @@
 
 #include "PuzzleRoomThreeMorse.h"
 
-#include "LeverComponent.h"
+#include "PuzzleRoomThreeMorseButton.h"
+#include "PuzzleRoomThreeMorseScreenWidget.h"
+#include "Components/TextBlock.h"
 #include "Components/WidgetComponent.h"
+#include "EngineUtils.h"
 
-// Sets default values
 APuzzleRoomThreeMorse::APuzzleRoomThreeMorse()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-	sceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("Scene Comp"));
-	SetRootComponent(sceneComp);
-	buttonBodyComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("buttonBodyComp"));
-	buttonBodyComp->SetupAttachment(RootComponent);
-	buttonBodyComp->SetCollisionProfileName(TEXT("NoCollision"));
-	buttonComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("buttonComp"));
-	buttonComp->SetupAttachment(buttonBodyComp);
-	buttonComp->SetCollisionProfileName(TEXT("PuzzleButtonPreset"));
-	screenComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("screenComp"));
-	screenComp->SetupAttachment(RootComponent);
-	//leverComp = CreateDefaultSubobject<ULeverComponent>(TEXT("LeverComp"));
-	//leverComp->SetupAttachment(RootComponent);
+	screenComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Screen Widget Comp"));
+	SetRootComponent(screenComp);
+	ConstructorHelpers::FClassFinder<UUserWidget>tempWidget(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/LTG/UI/WBP_MorseScreen.WBP_MorseScreen_C'"));
+	if (tempWidget.Succeeded())
+	{
+		screenComp->SetWidgetClass(tempWidget.Class);
+	}
 }
 
-// Called when the game starts or when spawned
 void APuzzleRoomThreeMorse::BeginPlay()
 {
 	Super::BeginPlay();
+	screenWidget = Cast<UPuzzleRoomThreeMorseScreenWidget>(screenComp->GetWidget());
 
+	// 모스 버튼 찾아서 캐싱
+	for (TActorIterator<APuzzleRoomThreeMorseButton> it(GetWorld()); it; ++it)
+	{
+		APuzzleRoomThreeMorseButton* btn = *it;
+		btn->morseButtonDele.BindUFunction(this, TEXT("addToTempString"));
+	}
 }
 
-// Called every frame
-void APuzzleRoomThreeMorse::Tick(float DeltaTime)
+void APuzzleRoomThreeMorse::addToTempString(float second)
 {
-	Super::Tick(DeltaTime);
+	if (second >= 1)
+	{
+		tempString.AppendChar('1');
+	}
+	else
+	{
+		tempString.AppendChar('0');
+	}
+	UE_LOG(LogTemp, Warning, TEXT("tempstring is : %s"), *tempString);
+}
 
+void APuzzleRoomThreeMorse::Enter()
+{
+	screenWidget->TextBlock_Morse->SetText(FText::FromString(Translater(tempString)));
+}
+
+FString APuzzleRoomThreeMorse::Translater(FString code)
+{
+	//임시
+	return code;
 }
