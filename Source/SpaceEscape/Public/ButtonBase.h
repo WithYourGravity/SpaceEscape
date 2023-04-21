@@ -40,6 +40,7 @@ public:
 
 private:
 
+	bool bBeginOverlapDelay;
 	FVector startLoc;
 	FVector endLoc;
 	UPROPERTY(EditDefaultsOnly)

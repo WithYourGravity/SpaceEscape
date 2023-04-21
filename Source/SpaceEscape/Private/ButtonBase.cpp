@@ -67,6 +67,19 @@ void AButtonBase::Tick(float DeltaTime)
 void AButtonBase::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// 버튼 오버랩 연속되지 않게 딜레이 처리
+	if (bBeginOverlapDelay)
+	{
+		return;
+	}
+	bBeginOverlapDelay = true;
+	FTimerHandle delayHandle;
+	GetWorldTimerManager().SetTimer(delayHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			bBeginOverlapDelay = false;
+		}), 0.2f, false);
+
+	// 버튼 들어가게
 	buttonComp->SetRelativeLocation(endLoc);
 	
 	// 손 콜리전 검출해서 왼손 오른손 진동처리 가능

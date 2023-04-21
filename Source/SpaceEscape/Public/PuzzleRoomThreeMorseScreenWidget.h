@@ -17,4 +17,7 @@ class SPACEESCAPE_API UPuzzleRoomThreeMorseScreenWidget : public UUserWidget
 public:
 	UPROPERTY()
 	class UTextBlock* TextBlock_Morse;
+	UPROPERTY()
+	class UTextBlock* TextBlock_E;
+
 };
