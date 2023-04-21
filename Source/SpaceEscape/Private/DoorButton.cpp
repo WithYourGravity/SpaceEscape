@@ -7,6 +7,8 @@
 #include "Doors.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "RoomManager.h"
+#include "EngineUtils.h"
 
 // Sets default values
 ADoorButton::ADoorButton()
@@ -25,10 +27,14 @@ void ADoorButton::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	door = Cast<ADoors>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoors::StaticClass()));
+	//door = Cast<ADoors>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoors::StaticClass()));
+	for (TActorIterator<ARoomManager> it(GetWorld()); it; ++it)
+	{
+		ARoomManager* rm = *it;
+		rm->stageClearDele.BindUFunction(this, FName("CheckClearStage"));
 
-	boxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoorButton::OnHandOverlap);
-
+		boxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoorButton::OnHandOverlap);		
+	}
 }
 
 // Called every frame
@@ -41,13 +47,29 @@ void ADoorButton::Tick(float DeltaTime)
 void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//문이 열린다
+	//플레이어와 닿으면 퍼즐 해결여부 체크
 	player = Cast<AEscapePlayer>(OtherActor);
-	if(player->rightHand)
+	if(player)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("On Hand Overlap : Character and DoorButton"))
-		openDoorDele.Execute();		
+		ReportOpen();
 	}
+}
+
+void ADoorButton::CheckClearStage()
+{
+	UE_LOG(LogTemp, Warning, TEXT("CheckClearStage"))
+}
+
+void ADoorButton::ReportOpen()
+{	
+	UE_LOG(LogTemp, Warning, TEXT("CheckClearStage : Puzzle Clear, Character and DoorButton"))
+	openDoorDele.Execute();
+}
+
+void ADoorButton::NoReportOpen()
+{
+	UE_LOG(LogTemp, Warning, TEXT("NoReportOpen"))
+	return;
 }
 
 

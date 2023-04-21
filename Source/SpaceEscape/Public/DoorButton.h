@@ -35,9 +35,13 @@ public:
 	void OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	//퀴즈가 다 풀렸다고 dele 받으면 충돌이 활성화된다.
-
-	//퍼즐을 다 풀었는가
+	//퍼즐을 다 풀었는지 확인한다
+	UFUNCTION()
+	void CheckClearStage();
+	//문을 열어라 지시할것
+	UFUNCTION()
+	void ReportOpen();
+	void NoReportOpen();
 
 
 public:

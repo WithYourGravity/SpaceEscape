@@ -2,10 +2,11 @@
 
 
 #include "Doors.h"
-//#include "Components/BoxComponent.h"
 #include "Components/TimelineComponent.h"
 #include "DoorButton.h"
 #include "EngineUtils.h"
+//#include "Components/BoxComponent.h"
+
 // Sets default values
 ADoors::ADoors()
 {
@@ -44,8 +45,7 @@ void ADoors::BeginPlay()
 			//triggerboxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoors::OnTriggeredOverlap);
 			//triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
 		}
-	}
-	
+	}	
 }
 
 // Called every frame
@@ -71,6 +71,12 @@ void ADoors::OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 	}
 }
 */
+
+void ADoors::ChangeDoorOverlaping()
+{
+	bIsOpenOverlaping == true ? Open() : Close();
+}
+
 void ADoors::Open()
 {
 	startPoint = GetActorLocation();
@@ -88,11 +94,6 @@ void ADoors::Close()
 	curveTimeline.PlayFromStart();
 	bIsOpenOverlaping = true;
 	UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))
-}
-
-void ADoors::ChangeDoorOverlaping()
-{
-	bIsOpenOverlaping == true ? Open() : Close();
 }
 
 void ADoors::TimeLineProgress(float val)
