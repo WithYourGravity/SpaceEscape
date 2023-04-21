@@ -2,8 +2,11 @@
 
 
 #include "Magazine.h"
+
+#include "EscapePlayer.h"
 #include "GrabComponent.h"
 #include "Gun.h"
+#include "MotionControllerComponent.h"
 #include "Components/BoxComponent.h"
 
 // Sets default values
@@ -44,8 +47,8 @@ void AMagazine::BeginPlay()
 	&AMagazine::OnEndOverlap);
 	boxComp->SetGenerateOverlapEvents(true);
 
-	grabComp->onGrabbedDelegate.BindUFunction(this, FName("OnGrabbed"));
-	grabComp->onDroppedDelegate.BindUFunction(this, FName("OnDropped"));
+	grabComp->onGrabbedDelegate.AddUFunction(this, FName("OnGrabbed"));
+	grabComp->onDroppedDelegate.AddUFunction(this, FName("OnDropped"));
 
 	currentBulletCount = maxBulletCount;
 }
@@ -55,6 +58,25 @@ void AMagazine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bIsOverlapGun && gun && gun->player && grabComp->bIsHeld)
+	{
+		auto playerHand = grabComp->GetHeldByHand() == EControllerHand::Right ? gun->player->rightHand : gun->player->leftHand;
+	
+		FVector handLocation = playerHand->GetComponentLocation();
+		//if (FVector::Dist(grabComp->GetComponentLocation(), handLocation) >= 20.0f)
+		if (FVector::Dist(gun->gunMeshComp->GetSocketLocation(FName("MagazineOverlapSocket")), handLocation) >= 20.0f)
+		{
+
+			grabComp->TryGrab(playerHand);
+			bIsOverlapGun = false;
+			gun->magazine = nullptr;
+			gun = nullptr;
+		}
+		else
+		{
+			GrabMagazine();
+		}
+	}
 }
 
 void AMagazine::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -65,7 +87,9 @@ void AMagazine::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 		gun = Cast<AGun>(OtherActor);
 		if (gun != nullptr && gun->bIsOnGrabbed)
 		{
+			gun->magazine = this;
 			AttachToComponent(gun->gunMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MagazineOverlapSocket"));
+			boxComp->SetSimulatePhysics(false);
 			bIsOverlapGun = true;
 		}
 	}
@@ -76,26 +100,46 @@ void AMagazine::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 {
 	if (bIsOverlapGun)
 	{
-		bIsOverlapGun = false;
-		gun = nullptr;
+		
 	}
 }
 
 void AMagazine::OnGrabbed()
 {
-
 }
 
 void AMagazine::OnDropped()
 {
-	if (bIsOverlapGun)
+	if (gun)
 	{
 		boxComp->SetSimulatePhysics(false);
-		if (gun)
+		grabComp->grabType = EGrabType::NONE;
+
+		if (bIsAttachGun)
 		{
 			gun->magazine = this;
-			AttachToComponent(gun->gunMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MagazineSocket"));
-			grabComp->grabType = EGrabType::NONE;
+			gun->bOnReloading = false;
+				AttachToComponent(gun->gunMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MagazineSocket"));
+		}
+		else
+		{
+			gun->DropMagazine();
 		}
 	}
+	
+}
+
+void AMagazine::GrabMagazine()
+{
+	float dist;
+	if (grabComp->GetHeldByHand() == EControllerHand::Right)
+	{
+		dist = FVector::DotProduct(gun->player->rightHand->GetComponentLocation() - grabComp->GetComponentLocation(), grabComp->GetForwardVector());
+	}
+	else
+	{
+		dist = FVector::DotProduct(gun->player->leftHand->GetComponentLocation() - grabComp->GetComponentLocation(), grabComp->GetForwardVector());
+	}
+
+	SetActorLocation(GetActorLocation() + grabComp->GetForwardVector() * dist * 0.5f);
 }

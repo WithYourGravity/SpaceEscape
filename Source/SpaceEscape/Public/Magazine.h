@@ -32,6 +32,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
 	class UGrabComponent* grabComp;
 
+	UPROPERTY()
+	class AGun* gun;
+
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
@@ -47,10 +50,10 @@ public:
 
 private:
 	bool bIsOverlapGun = false;
-
-	UPROPERTY()
-	class AGun* gun;
+	bool bIsAttachGun = false;
 
 	int32 maxBulletCount = 5;
 	int32 currentBulletCount;
+
+	void GrabMagazine();
 };

@@ -59,7 +59,12 @@ public:
 	UPROPERTY()
 	class AMagazine* magazine;
 
+	UPROPERTY()
+	class AEscapePlayer* player;
+
 	bool bIsOnGrabbed = false;
+	bool bOnReloading = false;
+	bool bDoReloading = false;
 
 	UFUNCTION()
 	void OnGrabbed();
@@ -83,13 +88,20 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
 	float fireDistance = 10000.0f;
 
-	UPROPERTY()
-	class AEscapePlayer* player;
+	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
+	float reloadSliderDistance = 30.0f;
 
 	FVector initGunSlideCompLocation;
 	FVector initGunSlideMeshLocation;
 
+	FTimerHandle magazineTimer;
+
+	float currentTime = 0.0f;
+	float dropMagazineTime = 0.2f;
+
 	void DrawCrosshair();
 	void GrabSlider();
-	void ReleaseSlider();
+
+	void OpenSlider();
+	void CloseSlider();
 };
