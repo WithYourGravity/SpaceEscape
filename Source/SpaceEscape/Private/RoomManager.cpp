@@ -22,7 +22,7 @@ void ARoomManager::BeginPlay()
 	for(TActorIterator<APuzzleBase> it(GetWorld()); it; ++it)
 	{
 		APuzzleBase* pz = *it;
-		pz->puzzleClearDele.BindUFunction(this, FName("AddSolvedPuzzleCount"));
+		pz->puzzleClearDele.AddUFunction(this, FName("AddSolvedPuzzleCount"));
 	}
 }
 
@@ -42,9 +42,8 @@ void ARoomManager::AddSolvedPuzzleCount()
 	{
 		MoveOnNextStage();
 	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("solved pulzze count is : %d"), solvedPuzzleCount);
-	//UE_LOG(LogTemp, Warning, TEXT("current stage is : %d"), playingStage);
+	UE_LOG(LogTemp, Warning, TEXT("solved pulzze count is : %d"), solvedPuzzleCount);
+	UE_LOG(LogTemp, Warning, TEXT("current stage is : %d"), playingStage);
 }
 
 // 다음 스테이지로 넘어가며 퍼즐카운트 초기화 해주는 함수
@@ -52,18 +51,9 @@ void ARoomManager::MoveOnNextStage()
 {
 	playingStage++;
 	solvedPuzzleCount = 0;
-	stageClearDele.Execute();
+	if (stageClearDele.IsBound())
+	{
+		stageClearDele.Broadcast();
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Excuted"));
 }
-
-// 현재 스테이지에서 문을 열 수 있는지 여부를 리턴하는 함수
-bool ARoomManager::GetbCanOpenDoor()
-{
-	return bCanOpenDoor;
-}
-
-// 다음 스테이지로 넘어갈 때 다시 문 잠그는 함수
-void ARoomManager::SetbCanOpenDoor(bool canOpenDoor)
-{
-	bCanOpenDoor = canOpenDoor;
-}
-
