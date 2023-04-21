@@ -26,7 +26,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Door Button Settings")
-	class UBoxComponent* boxComp;
+	class UBoxComponent*boxComp;
 	UPROPERTY(EditDefaultsOnly, Category = "Door Button Settings")
 	class UStaticMeshComponent* buttonMesh;
 
@@ -42,6 +42,8 @@ public:
 	UFUNCTION()
 	void ReportOpen();
 	void NoReportOpen();
+
+	//bool bIsOpen = true;
 
 
 public:
