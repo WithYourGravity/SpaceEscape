@@ -9,7 +9,8 @@
 #include "Components/TextBlock.h"
 #include "Components/WidgetComponent.h"
 #include "UObject/ConstructorHelpers.h"
-#include "Haptics/HapticFeedbackEffect_Base.h"
+#include "Haptics/HapticFeedbackEffect_Curve.h"
+
 
 APuzzleRoomOneTouchPad::APuzzleRoomOneTouchPad()
 {
@@ -95,6 +96,12 @@ APuzzleRoomOneTouchPad::APuzzleRoomOneTouchPad()
 	touchKeyCompDel->SetRelativeScale3D(FVector(0.2f, 0.1f, 0.15f));
 	touchKeyCompDel->SetRelativeLocation(FVector(-60.f, 14.f, -85.f));
 	touchKeyCompDel->SetCollisionProfileName(TEXT("PuzzleButtonPreset"));
+
+	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base>tempHaptic(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
+	if (tempHaptic.Succeeded())
+	{
+		hapticFeedback = tempHaptic.Object;
+	}
 }
 
 void APuzzleRoomOneTouchPad::BeginPlay()

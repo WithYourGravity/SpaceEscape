@@ -16,6 +16,7 @@ enum class EGrabType : uint8
 	FREE UMETA(DisplayName = "Free"),
 	SNAP UMETA(DisplayName = "Snap"),
 	LEVER UMETA(DisplayName = "Lever"),
+	GUNSLIDER UMETA(DisplayName = "GunSlider"),
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -58,8 +59,12 @@ public:
 
 	bool bSimulateOnDrop = false;
 
+	bool bIsGunSlideGrabbed = false;
+
 	FOnGrabbedDelegate onGrabbedDelegate;
 	FOnDroppedDelegate onDroppedDelegate;
+
+	bool bIsHeld = false;
 
 private:
 	UPROPERTY()
@@ -68,5 +73,4 @@ private:
 	UPROPERTY()
 	class UHapticFeedbackEffect_Base* grabHapticEffect;
 
-	bool bIsHeld = false;
 };

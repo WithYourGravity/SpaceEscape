@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PuzzleBase.generated.h"
 
-DECLARE_DELEGATE(FClearDele);
+DECLARE_MULTICAST_DELEGATE(FClearDele);
 
 UCLASS()
 class SPACEESCAPE_API APuzzleBase : public AActor

@@ -24,7 +24,7 @@ void ADoorLight::BeginPlay()
 	for (TActorIterator<APuzzleBase> it(GetWorld()); it; ++it)
 	{
 		APuzzleBase* pz = *it;
-		pz->puzzleClearDele.BindUFunction(this, FName("AddSolvedPuzzleCountForDoorLight"));
+		pz->puzzleClearDele.AddUFunction(this, FName("AddSolvedPuzzleCountForDoorLight"));
 	}
 
 	// 색 초기화

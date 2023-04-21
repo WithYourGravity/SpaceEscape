@@ -55,13 +55,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_GrabRight;
 	// Input Action for Fire
-	//UPROPERTY(EditDefaultsOnly, Category = "Input")
-	//class UInputAction* IA_Fire;
-	// Input Action for Fire
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_FireLeft;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_FireRight;
+	// Input Action for Magazine
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_DropMagazineLeft;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_DropMagazineRight;
 
 	// 이동처리 함수
 	void Move(const FInputActionValue& values);
@@ -90,7 +92,9 @@ public:
 	class USkeletalMeshComponent* rightHandMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "Collision")
-	class USphereComponent* indexFingerCollision;
+	class USphereComponent* rightIndexFingerCollision;
+	UPROPERTY(VisibleAnywhere, Category = "Collision")
+	class USphereComponent* leftIndexFingerCollision;
 
 // Teleport
 public:
@@ -174,9 +178,8 @@ public:
 
 // Fire
 private:
-	//void Fire(const FInputActionValue& values);
-	void FireLeft(const FInputActionValue& values);
-	void FireRight(const FInputActionValue& values);
+	void Fire(const FInputActionValue& values);
+	void DropMagazine(const FInputActionValue& values);
 
 public:
 	UPROPERTY()
