@@ -25,9 +25,9 @@ ADoorButton::ADoorButton()
 void ADoorButton::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	door = Cast<ADoors>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoors::StaticClass()));
 
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADoors::StaticClass(),outDoorActors); //배열 만들엇어
+	
 	ARoomManager* rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
 	rm->stageClearDele.AddUFunction(this, FName("CheckClearStage"));
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoorButton::OnHandOverlap);
@@ -64,7 +64,7 @@ void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 void ADoorButton::ReportOpen()
 {	
 	UE_LOG(LogTemp, Warning, TEXT("ReportOpen!!"))	
-	openDoorDele.Execute();
+	openDoorDele.Broadcast();
 	
 	if(bOpened == false)//한번 열렸다.
 	{

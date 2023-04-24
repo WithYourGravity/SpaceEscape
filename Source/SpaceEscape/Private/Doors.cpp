@@ -34,7 +34,8 @@ void ADoors::BeginPlay()
 	{
 		ADoorButton* db = *it;
 
-		db->openDoorDele.BindUFunction(this, FName("ChangeDoorOverlaping"));
+		//db->openDoorDele.BindUFunction(this, FName("ChangeDoorOverlaping"));
+		db->openDoorDele.AddUFunction(this, FName("ChangeDoorOverlaping"));
 
 		initLoc = GetActorLocation();
 		if (curveFloat)
@@ -66,8 +67,8 @@ void ADoors::Open()
 	startPoint = GetActorLocation();
 	endPoint = startPoint + FVector(0, yOffset, 0);
 	curveTimeline.PlayFromStart();
-	UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
 	bIsOpenOverlaping = false;	
+	UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
 }
 
 void ADoors::Close()
