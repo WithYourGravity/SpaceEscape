@@ -8,7 +8,6 @@
 #include "EscapePlayer.h"
 #include "Components/BoxComponent.h"
 #include "RoomManager.h"
-#include "EngineUtils.h"
 
 // Sets default values
 ADoorButton::ADoorButton()
@@ -31,7 +30,7 @@ void ADoorButton::BeginPlay()
 
 	ARoomManager* rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
 	rm->stageClearDele.AddUFunction(this, FName("CheckClearStage"));
-
+	boxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoorButton::OnHandOverlap);
 }
 
 // Called every frame
@@ -43,14 +42,8 @@ void ADoorButton::Tick(float DeltaTime)
 
 void ADoorButton::CheckClearStage()
 {
-	boxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoorButton::OnHandOverlap);
-	//문 열것인가 안열것인가
-	
-	
-	//boxComp->OnComponentEndOverlap.AddDynamic(this, &ADoorButton::OnHandEndOverlap);
-	UE_LOG(LogTemp, Warning, TEXT("CheckClearStage"))
-
-
+	UE_LOG(LogTemp, Warning, TEXT("CheckClearStage Function"))
+	bCanButtonClicked = true;
 }
 
 void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -59,44 +52,28 @@ void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	//Open한다면 플레이어와 닿았는가
 	UE_LOG(LogTemp, Warning, TEXT("ADoorButton::OnHandOverlap"))
 	AEscapePlayer* player = Cast<AEscapePlayer>(OtherActor);
-
-	if(player != nullptr)
+	if(bCanButtonClicked == true)
 	{
-		if (bOpen != true)
+		if (player != nullptr)
 		{
 			ReportOpen();
 		}
-		else if (bClose != true)
-		{
-			NoReportOpen();
-		}
-	}
-}
-
-void ADoorButton::OnHandEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	AEscapePlayer* player = Cast<AEscapePlayer>(OtherActor);
-	if(player != nullptr)
-	{
-		bClose = true;
-	}
+	}	
 }
 
 void ADoorButton::ReportOpen()
 {	
-	UE_LOG(LogTemp, Warning, TEXT("ReportOpen!!"))
-
+	UE_LOG(LogTemp, Warning, TEXT("ReportOpen!!"))	
 	openDoorDele.Execute();
-	bOpen = true;
-}
-
-void ADoorButton::NoReportOpen()
-{
-	UE_LOG(LogTemp, Warning, TEXT("NoReportOpen.."))
-	openDoorDele.Execute();
-	bClose = true;
 	
+	if(bOpened == false)//한번 열렸다.
+	{
+		bOpened = true;
+	}
+	else
+	{
+		bOpened = false;
+		bCanButtonClicked = false;
+	}
 }
-
 

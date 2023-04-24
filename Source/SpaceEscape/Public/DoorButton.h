@@ -36,26 +36,17 @@ public:
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnHandEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UFUNCTION()
 	void CheckClearStage();
-
 	UFUNCTION()
 	void ReportOpen();
-	void NoReportOpen();
-
-	//문이 한번 열고 닫히면, 다음 스테이지 클리어 할 때까지 문이 열리지 않도록
-
 
 public:
 	class ADoors* door;
-
 	FOpenDoorDele openDoorDele;
-
-	bool bOpen;
-
-	bool bClose;
+	//델리게이트 받으면 버튼 활성화 되도록
+	bool bCanButtonClicked;
+	//문이 한번 열고 닫혔었는지
+	bool bOpened;
 
 
 };
