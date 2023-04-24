@@ -26,10 +26,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	/*퍼즐풀기를 완료하면 양 옆으로 열리는 문*/
-	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
-	class UStaticMeshComponent* doorMesh;
-
 	//일단 trigger box에 닿으면 열리도록
 	//UPROPERTY(EditDefaultsOnly, Category="DoorSettings")
 	//class UBoxComponent* triggerboxComp;
@@ -39,6 +35,11 @@ public:
 	//	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	//UFUNCTION()
 	//void OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	/*퍼즐풀기를 완료하면 양 옆으로 열리는 문*/
+	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
+		class UStaticMeshComponent* doorMesh;
+
 	UFUNCTION()
 	void Open();
 	UFUNCTION()
@@ -67,6 +68,7 @@ public:
 	FVector initLoc;
 
 
+	
 
 };
 

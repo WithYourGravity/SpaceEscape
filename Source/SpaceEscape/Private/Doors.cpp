@@ -14,26 +14,26 @@ ADoors::ADoors()
 	PrimaryActorTick.bCanEverTick = true;
 
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	//triggerboxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("triggerboxComp"));
-	//triggerboxComp->SetupAttachment(RootComponent);
-	//triggerboxComp->SetRelativeLocation(FVector(0, 0, 0));
-	//triggerboxComp->SetRelativeScale3D(FVector(5, 10, 1));
 	doorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("doorMesh"));
 	doorMesh->SetupAttachment(RootComponent);
 	doorMesh->SetRelativeLocation(FVector(0, 0, 0));
 	doorMesh->SetRelativeScale3D(FVector(1, 4.625f, 2.4f));
 	initLoc = GetActorLocation();
+	//triggerboxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("triggerboxComp"));
+	//triggerboxComp->SetupAttachment(RootComponent);
+	//triggerboxComp->SetRelativeLocation(FVector(0, 0, 0));
+	//triggerboxComp->SetRelativeScale3D(FVector(5, 10, 1));
 }
 
 // Called when the game starts or when spawned
 void ADoors::BeginPlay()
 {
-	Super::BeginPlay();	
+	Super::BeginPlay();
 
-	for(TActorIterator<ADoorButton> it(GetWorld()); it; ++it)
+	for (TActorIterator<ADoorButton> it(GetWorld()); it; ++it)
 	{
 		ADoorButton* db = *it;
-				
+
 		db->openDoorDele.BindUFunction(this, FName("ChangeDoorOverlaping"));
 
 		initLoc = GetActorLocation();
@@ -45,7 +45,8 @@ void ADoors::BeginPlay()
 			//triggerboxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoors::OnTriggeredOverlap);
 			//triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
 		}
-	}	
+	}
+	
 }
 
 // Called every frame
@@ -54,27 +55,10 @@ void ADoors::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	curveTimeline.TickTimeline(DeltaTime);
 }
-/*
-void ADoors::OnTriggeredOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{	
-	bIsOpenOverlaping = true;
-	Open();
-}
-
-void ADoors::OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if(bIsOpenOverlaping == false)
-	{
-		Close();		
-	}
-}
-*/
 
 void ADoors::ChangeDoorOverlaping()
-{
-	bIsOpenOverlaping == true ? Open() : Close();
+{	
+	bIsOpenOverlaping == true ? Open() : Close();	
 }
 
 void ADoors::Open()
@@ -83,7 +67,7 @@ void ADoors::Open()
 	endPoint = startPoint + FVector(0, yOffset, 0);
 	curveTimeline.PlayFromStart();
 	UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
-	bIsOpenOverlaping = false;
+	bIsOpenOverlaping = false;	
 }
 
 void ADoors::Close()
@@ -94,6 +78,7 @@ void ADoors::Close()
 	curveTimeline.PlayFromStart();
 	bIsOpenOverlaping = true;
 	UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))
+	
 }
 
 void ADoors::TimeLineProgress(float val)
@@ -101,3 +86,21 @@ void ADoors::TimeLineProgress(float val)
 	FVector newLoc = FMath::Lerp(startPoint, endPoint, val);
 	SetActorLocation(newLoc);	
 }
+
+/*
+void ADoors::OnTriggeredOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	bIsOpenOverlaping = true;
+	Open();
+}
+
+void ADoors::OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+								   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if(bIsOpenOverlaping == false)
+	{
+		Close();
+	}
+}
+*/

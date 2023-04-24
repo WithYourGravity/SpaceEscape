@@ -35,20 +35,27 @@ public:
 	void OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	//퍼즐을 다 풀었는지 확인한다
+	UFUNCTION()
+	void OnHandEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 	UFUNCTION()
 	void CheckClearStage();
-	//문을 열어라 지시할것
+
 	UFUNCTION()
 	void ReportOpen();
 	void NoReportOpen();
 
-	//bool bIsOpen = true;
+	//문이 한번 열고 닫히면, 다음 스테이지 클리어 할 때까지 문이 열리지 않도록
 
 
 public:
 	class ADoors* door;
-	class AEscapePlayer* player;
+
 	FOpenDoorDele openDoorDele;
+
+	bool bOpen;
+
+	bool bClose;
+
 
 };
