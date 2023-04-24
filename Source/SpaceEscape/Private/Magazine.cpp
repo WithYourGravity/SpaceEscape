@@ -2,7 +2,6 @@
 
 
 #include "Magazine.h"
-
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
 #include "Gun.h"
@@ -43,8 +42,6 @@ void AMagazine::BeginPlay()
 	Super::BeginPlay();
 
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AMagazine::OnBeginOverlap);
-	boxComp->OnComponentEndOverlap.AddDynamic(this, 
-	&AMagazine::OnEndOverlap);
 	boxComp->SetGenerateOverlapEvents(true);
 
 	grabComp->onGrabbedDelegate.AddUFunction(this, FName("OnGrabbed"));
@@ -61,9 +58,8 @@ void AMagazine::Tick(float DeltaTime)
 	if (bIsOverlapGun && gun && gun->player && grabComp->bIsHeld)
 	{
 		auto playerHand = grabComp->GetHeldByHand() == EControllerHand::Right ? gun->player->rightHand : gun->player->leftHand;
-	
 		FVector handLocation = playerHand->GetComponentLocation();
-		//if (FVector::Dist(grabComp->GetComponentLocation(), handLocation) >= 20.0f)
+
 		if (FVector::Dist(gun->gunMeshComp->GetSocketLocation(FName("MagazineOverlapSocket")), handLocation) >= 20.0f)
 		{
 
@@ -95,15 +91,6 @@ void AMagazine::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	}
 }
 
-void AMagazine::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (bIsOverlapGun)
-	{
-		
-	}
-}
-
 void AMagazine::OnGrabbed()
 {
 }
@@ -115,11 +102,12 @@ void AMagazine::OnDropped()
 		boxComp->SetSimulatePhysics(false);
 		grabComp->grabType = EGrabType::NONE;
 
-		if (bIsAttachGun)
+		//if (bIsAttachGun)
+		if (grabValue >= 1.0f)
 		{
 			gun->magazine = this;
 			gun->bOnReloading = false;
-				AttachToComponent(gun->gunMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MagazineSocket"));
+			AttachToComponent(gun->gunMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MagazineSocket"));
 		}
 		else
 		{
@@ -141,5 +129,12 @@ void AMagazine::GrabMagazine()
 		dist = FVector::DotProduct(gun->player->leftHand->GetComponentLocation() - grabComp->GetComponentLocation(), grabComp->GetForwardVector());
 	}
 
-	SetActorLocation(GetActorLocation() + grabComp->GetForwardVector() * dist * 0.5f);
+	FVector startPos = gun->gunMeshComp->GetSocketLocation(FName("MagazineOverlapSocket"));
+	FVector endPos = gun->gunMeshComp->GetSocketLocation(FName("MagazineSocket"));
+
+	grabValue += dist * 0.1f;
+
+	grabValue = FMath::Clamp(grabValue, 0.0f, 1.0f);
+
+	SetActorLocation(FMath::Lerp<FVector>(startPos, endPos, grabValue));
 }

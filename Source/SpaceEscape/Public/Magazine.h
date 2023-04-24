@@ -37,15 +37,13 @@ public:
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
+	
 	UFUNCTION()
 	void OnGrabbed();
 	UFUNCTION()
 	void OnDropped();
 
-	FORCEINLINE int32 GetCurrentBulletCount() { return currentBulletCount; }
+	FORCEINLINE int32 GetCurrentBulletCount() const { return currentBulletCount; }
 	FORCEINLINE void FireBullet() { currentBulletCount--; }
 
 private:
@@ -54,6 +52,9 @@ private:
 
 	int32 maxBulletCount = 5;
 	int32 currentBulletCount;
+
+	float grabValue = 0.0f;
+	bool bIsLoadingMagazine = false;
 
 	void GrabMagazine();
 };

@@ -479,24 +479,5 @@ void AEscapePlayer::DropMagazine(const FInputActionValue& values)
 	}
 }
 
-//void AEscapePlayer::Fire(const FInputActionValue& values)
-//{
-//	FVector startPos = rightAim->GetComponentLocation();
-//	FVector endPos = startPos + rightAim->GetForwardVector() * fireDistance;
-//
-//	FHitResult hitInfo;
-//	bool bHit = HitTest(startPos, endPos, hitInfo);
-//
-//	// 만약 부딪힌 것이 있으면
-//	if (bHit)
-//	{
-//		auto hitComp = hitInfo.GetComponent();
-//		if (hitComp && hitComp->IsSimulatingPhysics())
-//		{
-//			// 날려보낸다.
-//			hitComp->AddForceAtLocation((endPos - startPos).GetSafeNormal() * 150000, hitInfo.Location);
-//		}
-//	}
-//}
 
 
