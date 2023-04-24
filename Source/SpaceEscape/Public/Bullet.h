@@ -37,4 +37,7 @@ public:
 
 	UFUNCTION()
 	void OnStop(const FHitResult& ImpactResult);
+
+private:
+	int32 bulletPower = 3;
 };

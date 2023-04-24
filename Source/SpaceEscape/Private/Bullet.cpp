@@ -2,6 +2,9 @@
 
 
 #include "Bullet.h"
+
+#include "EnemyFSM.h"
+#include "ResearcherEnemy.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -13,7 +16,7 @@ ABullet::ABullet()
 
 	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("sphereComp"));
 	SetRootComponent(sphereComp);
-	sphereComp->SetSphereRadius(2.0f);
+	sphereComp->SetSphereRadius(3.0f);
 	sphereComp->SetCollisionProfileName(FName("BulletPreset"));
 
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("meshComp"));
@@ -23,6 +26,7 @@ ABullet::ABullet()
 	if (tempMesh.Succeeded())
 	{
 		meshComp->SetStaticMesh(tempMesh.Object);
+		meshComp->SetRelativeScale3D(FVector(2.0f));
 	}
 
 	movementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("movementComp"));
@@ -60,6 +64,13 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 		Destroy();
 	}
 	
+	auto enemy = OtherActor->GetDefaultSubobjectByName(TEXT("enemyFSM"));
+	if (enemy)
+	{
+		auto enemyFSM = Cast<UEnemyFSM>(enemy);
+		enemyFSM->OnDamageProcess(bulletPower);
+		Destroy();
+	}
 }
 
 void ABullet::OnStop(const FHitResult& ImpactResult)
