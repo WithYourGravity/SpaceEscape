@@ -17,6 +17,7 @@ enum class EGrabType : uint8
 	SNAP UMETA(DisplayName = "Snap"),
 	LEVER UMETA(DisplayName = "Lever"),
 	GUNSLIDER UMETA(DisplayName = "GunSlider"),
+	CLIMB UMETA(DisplayName = "Climb"),
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )

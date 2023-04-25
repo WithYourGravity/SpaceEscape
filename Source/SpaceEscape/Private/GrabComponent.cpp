@@ -68,13 +68,15 @@ bool UGrabComponent::TryGrab(UMotionControllerComponent* motionController)
 		newLocation += (GetComponentLocation() - GetAttachParent()->GetComponentLocation()) * -1.0f;
 		GetAttachParent()->SetWorldLocation(newLocation, false, nullptr, ETeleportType::TeleportPhysics);
 		}
-
 		break;
 	case EGrabType::LEVER:
 		bIsHeld = true;
 		break;
 	case EGrabType::GUNSLIDER:
 		bIsGunSlideGrabbed = true;
+		bIsHeld = true;
+		break;
+	case EGrabType::CLIMB:
 		bIsHeld = true;
 		break;
 	default:
@@ -140,6 +142,9 @@ bool UGrabComponent::TryRelease()
 		break;
 	case EGrabType::GUNSLIDER:
 		bIsGunSlideGrabbed = false;
+		bIsHeld = false;
+		break;
+	case EGrabType::CLIMB:
 		bIsHeld = false;
 		break;
 	default:
