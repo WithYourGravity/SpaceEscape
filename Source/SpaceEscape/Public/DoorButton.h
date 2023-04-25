@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "DoorButton.generated.h"
 
-DECLARE_DELEGATE(FOpenDoorDele)
+DECLARE_MULTICAST_DELEGATE(FOpenDoorDele)
 
 UCLASS()
 class SPACEESCAPE_API ADoorButton : public AActor
@@ -30,25 +30,24 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Door Button Settings")
 	class UStaticMeshComponent* buttonMesh;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Door Button Settings")
+	TArray<class AActor*> outDoorActors;
+
 	//손이 버튼에 닿으면 문이 열린다
 	UFUNCTION()
 	void OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	//퍼즐을 다 풀었는지 확인한다
 	UFUNCTION()
 	void CheckClearStage();
-	//문을 열어라 지시할것
 	UFUNCTION()
 	void ReportOpen();
-	void NoReportOpen();
-
-	//bool bIsOpen = true;
-
 
 public:
-	class ADoors* door;
-	class AEscapePlayer* player;
 	FOpenDoorDele openDoorDele;
+	//델리게이트 받으면 버튼 활성화 되도록
+	bool bCanButtonClicked;
+	//문이 한번 열고 닫혔었는지
+	bool bOpened;
 
 };
