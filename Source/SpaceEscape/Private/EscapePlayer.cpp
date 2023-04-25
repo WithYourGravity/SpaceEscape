@@ -68,10 +68,12 @@ AEscapePlayer::AEscapePlayer()
 	// Right Index Finger Collision
 	rightIndexFingerCollision = CreateDefaultSubobject<USphereComponent>(TEXT("rightIndexFingerCollision"));
 	rightIndexFingerCollision->SetupAttachment(rightHandMesh, FName("indexCollision_r"));
+	rightIndexFingerCollision->SetCollisionProfileName(FName("FingerPreset"));
 	rightIndexFingerCollision->SetSphereRadius(0.5f);
 	// Left Index Finger Collision
 	leftIndexFingerCollision = CreateDefaultSubobject<USphereComponent>(TEXT("leftIndexFingerCollision"));
 	leftIndexFingerCollision->SetupAttachment(leftHandMesh, FName("indexCollision_l"));
+	leftIndexFingerCollision->SetCollisionProfileName(FName("FingerPreset"));
 	leftIndexFingerCollision->SetSphereRadius(0.5f);
 
 	// Teleport
@@ -477,24 +479,5 @@ void AEscapePlayer::DropMagazine(const FInputActionValue& values)
 	}
 }
 
-//void AEscapePlayer::Fire(const FInputActionValue& values)
-//{
-//	FVector startPos = rightAim->GetComponentLocation();
-//	FVector endPos = startPos + rightAim->GetForwardVector() * fireDistance;
-//
-//	FHitResult hitInfo;
-//	bool bHit = HitTest(startPos, endPos, hitInfo);
-//
-//	// 만약 부딪힌 것이 있으면
-//	if (bHit)
-//	{
-//		auto hitComp = hitInfo.GetComponent();
-//		if (hitComp && hitComp->IsSimulatingPhysics())
-//		{
-//			// 날려보낸다.
-//			hitComp->AddForceAtLocation((endPos - startPos).GetSafeNormal() * 150000, hitInfo.Location);
-//		}
-//	}
-//}
 
 

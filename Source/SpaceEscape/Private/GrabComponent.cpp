@@ -2,7 +2,6 @@
 
 
 #include "GrabComponent.h"
-
 #include "Gun.h"
 #include "MotionControllerComponent.h"
 #include "Haptics/HapticFeedbackEffect_Base.h"
@@ -92,7 +91,7 @@ bool UGrabComponent::TryGrab(UMotionControllerComponent* motionController)
 	// grabbed delegate
 	if (onGrabbedDelegate.IsBound())
 	{
-		onGrabbedDelegate.Execute();
+		onGrabbedDelegate.Broadcast();
 	}
 
 	// haptic effect
@@ -155,7 +154,7 @@ bool UGrabComponent::TryRelease()
 	// On Dropped Delegate
 	if (onDroppedDelegate.IsBound())
 	{
-		onDroppedDelegate.Execute();
+		onDroppedDelegate.Broadcast();
 	}
 
 	return true;

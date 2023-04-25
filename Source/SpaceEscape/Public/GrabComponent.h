@@ -6,8 +6,8 @@
 #include "Components/SceneComponent.h"
 #include "GrabComponent.generated.h"
 
-DECLARE_DELEGATE(FOnGrabbedDelegate);
-DECLARE_DELEGATE(FOnDroppedDelegate)
+DECLARE_MULTICAST_DELEGATE(FOnGrabbedDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnDroppedDelegate)
 
 UENUM(BlueprintType)
 enum class EGrabType : uint8

@@ -75,8 +75,8 @@ void AGun::BeginPlay()
 {
 	Super::BeginPlay();
 
-	grabComp->onGrabbedDelegate.BindUFunction(this, FName("OnGrabbed"));
-	grabComp->onDroppedDelegate.BindUFunction(this, FName("OnDropped"));
+	grabComp->onGrabbedDelegate.AddUFunction(this, FName("OnGrabbed"));
+	grabComp->onDroppedDelegate.AddUFunction(this, FName("OnDropped"));
 	
 
 	// Crosshair °´Ã¼ »ý¼º
@@ -106,9 +106,9 @@ void AGun::Tick(float DeltaTime)
 		}
 		else
 		{
-			if (FVector::Dist(slideGrabComp->GetComponentLocation(), initGunSlideCompLocation) >= 0.1f)
+			if (bOnReloading && FVector::Dist(slideGrabComp->GetComponentLocation(), initGunSlideCompLocation) >= 0.1f)
 			{
-				ReleaseSlider();
+				CloseSlider();
 			}
 		}
 	}
@@ -177,12 +177,17 @@ void AGun::OnDropped()
 
 void AGun::Fire()
 {
-	if (magazine && magazine->GetCurrentBulletCount() != 0)
+	if (magazine && magazine->GetCurrentBulletCount() != 0 && bDoReloading)
 	{
 		FVector loc = muzzleLocation->GetComponentLocation();
 		FRotator rot = muzzleLocation->GetComponentRotation();
 		GetWorld()->SpawnActor<AActor>(bulletFactory, loc, rot);
 		magazine->FireBullet();
+
+		if (magazine->GetCurrentBulletCount() == 0)
+		{
+			OpenSlider();
+		}
 	}
 }
 
@@ -190,10 +195,30 @@ void AGun::DropMagazine()
 {
 	if (magazine)
 	{
-		magazine->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		magazine->boxComp->SetSimulatePhysics(true);
-		magazine->grabComp->grabType = EGrabType::SNAP;
-		magazine = nullptr;
+		GetWorld()->GetTimerManager().SetTimer(magazineTimer, FTimerDelegate::CreateLambda([this]()->void
+		{
+			currentTime += GetWorld()->DeltaTimeSeconds;
+
+			FVector curPos = magazine->GetActorLocation();
+			FVector endPos = gunMeshComp->GetSocketLocation(FName("MagazineDropSocket"));
+
+			curPos = FMath::Lerp<FVector>(curPos, endPos, currentTime / dropMagazineTime);
+
+			magazine->SetActorLocation(curPos);
+
+			if (currentTime >= dropMagazineTime)
+			{
+				currentTime = 0.0f;
+				magazine->SetActorLocation(endPos);
+				GetWorld()->GetTimerManager().ClearTimer(magazineTimer);
+
+				magazine->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+				magazine->boxComp->SetSimulatePhysics(true);
+				magazine->grabComp->grabType = EGrabType::SNAP;
+				magazine->gun = nullptr;
+				magazine = nullptr;
+			}
+		}), 0.02f, true);
 	}
 }
 
@@ -250,17 +275,33 @@ void AGun::GrabSlider()
 		dist = FVector::DotProduct(player->leftHand->GetComponentLocation() - slideGrabComp->GetComponentLocation(), slideGrabComp->GetForwardVector());
 	}
 	
-	if (FVector::Dist(initGunSlideCompLocation, slideGrabComp->GetRelativeLocation()) < 100.0f && dist < 0)
+	if (dist < 0)
 	{
-		slideGrabComp->SetWorldLocation(slideGrabComp->GetComponentLocation() + slideGrabComp->GetForwardVector() * dist * 0.5f);
-		
-		gunSlideMeshComp->SetWorldLocation(gunSlideMeshComp->GetComponentLocation() + slideGrabComp->GetForwardVector() * dist * 0.5f);
+		if (FVector::Dist(initGunSlideCompLocation, slideGrabComp->GetRelativeLocation()) < reloadSliderDistance)
+		{
+			slideGrabComp->SetWorldLocation(slideGrabComp->GetComponentLocation() + slideGrabComp->GetForwardVector() * dist * 0.5f);
+
+			gunSlideMeshComp->SetWorldLocation(gunSlideMeshComp->GetComponentLocation() + slideGrabComp->GetForwardVector() * dist * 0.5f);
+		}
 	}
-	
+
+	bOnReloading = true;
+	bDoReloading = false;
 }
 
-void AGun::ReleaseSlider()
+void AGun::OpenSlider()
+{
+	slideGrabComp->SetRelativeLocation(FVector(-46.66f, 32.76f, 96.42f));
+	gunSlideMeshComp->SetRelativeLocation(FVector(0.0f, 23.0f, 13.33f));
+
+	bOnReloading = false;
+	bDoReloading = false;
+}
+
+void AGun::CloseSlider()
 {
 	slideGrabComp->SetRelativeLocation(initGunSlideCompLocation);
 	gunSlideMeshComp->SetRelativeLocation(initGunSlideMeshLocation);
+
+	bDoReloading = true;
 }
