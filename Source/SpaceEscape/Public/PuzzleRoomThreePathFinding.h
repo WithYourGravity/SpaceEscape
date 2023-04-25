@@ -119,5 +119,30 @@ public:
 	class UStaticMeshComponent* groundBox49;
 	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* groundBox50;
-	
+	UPROPERTY(EditDefaultsOnly)
+	class UTimelineComponent* timelineComp;
+
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void BeginPlay() override;
+
+	void PickBoxRandomly(int number);
+	void MovingTrigger();
+	void AddAllBoxCompToArray();
+	void MovingFunctionAtTick(float deltaTime);
+
+private:
+
+	UPROPERTY()
+	TArray<class UStaticMeshComponent*> groundBoxArray;
+	TArray<int> selectedBoxIndexArray;
+	TArray<FVector> startLocArray;
+	int NumberOfPopUpBox = 7;
+	int countForRecordStartLoc;
+	bool bIsMoving;
+	float zPos;
+	float lerpTime;
+
+
+	int regularlyUpCount;
+	FTimerHandle hd;
 };

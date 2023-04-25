@@ -217,3 +217,147 @@ APuzzleRoomThreePathFinding::APuzzleRoomThreePathFinding()
 		groundBox50->SetStaticMesh(tempMesh.Object);
 	}
 }
+
+void APuzzleRoomThreePathFinding::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
+	{
+		if (regularlyUpCount % 2 == 0)
+		{
+			PickBoxRandomly(NumberOfPopUpBox);
+		}
+		MovingTrigger();
+		regularlyUpCount++;
+	}), 4, true);
+}
+
+void APuzzleRoomThreePathFinding::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if (bIsMoving)
+	{
+		MovingFunctionAtTick(DeltaSeconds);
+	}
+}
+void APuzzleRoomThreePathFinding::PickBoxRandomly(int number)
+{
+	// 초기화
+	groundBoxArray.Empty();
+	selectedBoxIndexArray.Empty();
+	AddAllBoxCompToArray();
+
+	// 시작과 끝점을 제외하고
+	groundBoxArray.Remove(groundBox1);
+	groundBoxArray.Remove(groundBox50);
+
+	for(int i = 0; i < number; i++)
+	{
+		// 랜덤하게 골라서
+		int idx = FMath::RandRange(0, groundBoxArray.Num() - 1);
+
+		// 중복된거 선택되면 다시
+		if (selectedBoxIndexArray.Contains(idx))
+		{
+			i--;
+			continue;
+		}
+		selectedBoxIndexArray.Add(idx);
+	}
+}
+
+void APuzzleRoomThreePathFinding::MovingFunctionAtTick(float deltaTime)
+{
+	lerpTime += deltaTime;
+	if (lerpTime > 0.95)
+	{
+		lerpTime = 1;
+		bIsMoving = false;
+	}
+
+	for(int i = 0; i < selectedBoxIndexArray.Num(); i++)
+	{
+		UStaticMeshComponent* selectedMeshComp = groundBoxArray[selectedBoxIndexArray[i]];
+		if (countForRecordStartLoc <= selectedBoxIndexArray.Num())
+		{
+			startLocArray.Add(selectedMeshComp->GetRelativeLocation());
+			countForRecordStartLoc++;
+		}
+		selectedMeshComp->SetRelativeLocation(FMath::Lerp(startLocArray[i], startLocArray[i] + FVector(0, 0, zPos), lerpTime));
+	}
+}
+
+void APuzzleRoomThreePathFinding::MovingTrigger()
+{
+	// 이동방향 설정
+	if (groundBoxArray[selectedBoxIndexArray[0]]->GetRelativeLocation().Z < 10)
+	{
+		zPos = 100;
+	}
+	else
+	{
+		zPos = -100;
+	}
+
+	countForRecordStartLoc = 0;
+	startLocArray.Empty();
+	lerpTime = 0;
+	bIsMoving = true;
+}
+
+void APuzzleRoomThreePathFinding::AddAllBoxCompToArray()
+{
+	groundBoxArray = {
+		groundBox1,
+		groundBox2,
+		groundBox3,
+		groundBox4,
+		groundBox5,
+		groundBox6,
+		groundBox7,
+		groundBox8,
+		groundBox9,
+		groundBox10,
+		groundBox11,
+		groundBox12,
+		groundBox13,
+		groundBox14,
+		groundBox15,
+		groundBox16,
+		groundBox17,
+		groundBox18,
+		groundBox19,
+		groundBox20,
+		groundBox21,
+		groundBox22,
+		groundBox23,
+		groundBox24,
+		groundBox25,
+		groundBox26,
+		groundBox27,
+		groundBox28,
+		groundBox29,
+		groundBox30,
+		groundBox31,
+		groundBox32,
+		groundBox33,
+		groundBox34,
+		groundBox35,
+		groundBox36,
+		groundBox37,
+		groundBox38,
+		groundBox39,
+		groundBox40,
+		groundBox41,
+		groundBox42,
+		groundBox43,
+		groundBox44,
+		groundBox45,
+		groundBox46,
+		groundBox47,
+		groundBox48,
+		groundBox49,
+		groundBox50,
+	};
+}
