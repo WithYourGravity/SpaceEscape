@@ -51,8 +51,8 @@ void ALeverBase::BeginPlay()
 	Super::BeginPlay();
 
 	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-	grabComp->onDroppedDelegate.BindUFunction(this, TEXT("ChangeIsGrabed"));
-	grabComp->onGrabbedDelegate.BindUFunction(this, TEXT("ChangeIsGrabed"));
+	grabComp->onDroppedDelegate.AddUFunction(this, TEXT("ChangeIsGrabed"));
+	grabComp->onGrabbedDelegate.AddUFunction(this, TEXT("ChangeIsGrabed"));
 }
 
 // Called every frame
