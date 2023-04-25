@@ -27,7 +27,7 @@ ALeverBase::ALeverBase()
 	leverComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("leverMeshComp"));
 	leverComp->SetupAttachment(leverBodyComp);
 	leverComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
-	leverComp->SetRelativeLocation(FVector(0, -5.f, 0));
+	leverComp->SetRelativeLocation(FVector(0, 0, 5.f));
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempLeverMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/switchers/source/switchers_handle.switchers_handle'"));
 	if (tempLeverMesh.Succeeded())
 	{
@@ -77,7 +77,7 @@ void ALeverBase::LeverShouldBeZero()
 
 	if (rot.Roll > 5)
 	{
-		rot.Roll -= 5;
+		rot.Roll -= 2;
 		leverComp->SetRelativeRotation(rot);
 	}
 	else
