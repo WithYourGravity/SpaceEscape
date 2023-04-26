@@ -67,6 +67,8 @@ public:
 
 	bool bIsHeld = false;
 
+	FVector grabLocation;
+
 private:
 	UPROPERTY()
 	class UMotionControllerComponent* motionControllerComp;

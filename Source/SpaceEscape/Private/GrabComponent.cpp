@@ -2,7 +2,6 @@
 
 
 #include "GrabComponent.h"
-#include "Gun.h"
 #include "MotionControllerComponent.h"
 #include "Haptics/HapticFeedbackEffect_Base.h"
 
@@ -13,7 +12,7 @@ UGrabComponent::UGrabComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base> tempHapticEffect(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/VRTemplate/Haptics/GrabHapticEffect.GrabHapticEffect'"));
+	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base> tempHapticEffect(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
 	if (tempHapticEffect.Succeeded())
 	{
 		grabHapticEffect = tempHapticEffect.Object;
@@ -78,6 +77,7 @@ bool UGrabComponent::TryGrab(UMotionControllerComponent* motionController)
 		break;
 	case EGrabType::CLIMB:
 		bIsHeld = true;
+		grabLocation = motionController->GetComponentLocation();
 		break;
 	default:
 		break;

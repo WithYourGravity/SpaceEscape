@@ -154,6 +154,23 @@ void AEscapePlayer::Tick(float DeltaTime)
 			UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(teleportCurveComp, FName("User.PointArray"), linePoints);
 		}
 	}
+
+
+	if (bIsClimbing)
+	{
+		if (bIsGrabbedLeft && heldComponentLeft && heldComponentLeft->grabType == EGrabType::CLIMB)
+		{
+			FVector moveLocation = heldComponentLeft->grabLocation - leftHand->GetComponentLocation();
+			SetActorLocation(GetActorLocation() + moveLocation);
+			leftHand->SetWorldLocation(heldComponentLeft->grabLocation);
+		}
+		if (bIsGrabbedRight && heldComponentRight && heldComponentRight->grabType == EGrabType::CLIMB)
+		{
+			FVector moveLocation = heldComponentRight->grabLocation - rightHand->GetComponentLocation();
+			SetActorLocation(GetActorLocation() + moveLocation);
+			rightHand->SetWorldLocation(heldComponentRight->grabLocation);
+		}
+	}
 }
 
 // Called to bind functionality to input

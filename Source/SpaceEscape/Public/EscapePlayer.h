@@ -184,4 +184,15 @@ private:
 public:
 	UPROPERTY()
 	class AGun* grabbedGun;
+
+
+// Zero gravity
+public:
+	bool bIsZeroGravity = false;
+	float gravityScale = 1.0f;
+
+
+// Climbing
+public:
+	bool bIsClimbing = false;
 };

@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Ladder.generated.h"
+#include "GravityChange.generated.h"
 
 UCLASS()
-class SPACEESCAPE_API ALadder : public AActor
+class SPACEESCAPE_API AGravityChange : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ALadder();
+	AGravityChange();
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,20 +26,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class UBoxComponent* boxComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Ladder")
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity")
 	class UStaticMeshComponent* meshComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Ladder")
-	TArray<class UGrabComponent*> grabComps;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Ladder")
-	int32 barNum = 7;
-
-	UPROPERTY()
-	class AEscapePlayer* player;
-
 	UFUNCTION()
-	void OnGrabbed();
-	UFUNCTION()
-	void OnDropped();
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
