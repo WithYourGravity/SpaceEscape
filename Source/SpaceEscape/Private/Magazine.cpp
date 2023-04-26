@@ -108,6 +108,7 @@ void AMagazine::OnDropped()
 			gun->magazine = this;
 			gun->bOnReloading = false;
 			AttachToComponent(gun->gunMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MagazineSocket"));
+			boxComp->SetCollisionProfileName(FName("NoCollision"));
 		}
 		else
 		{

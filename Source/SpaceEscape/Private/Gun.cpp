@@ -215,6 +215,7 @@ void AGun::DropMagazine()
 				magazine->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 				magazine->boxComp->SetSimulatePhysics(true);
 				magazine->grabComp->grabType = EGrabType::SNAP;
+				magazine->boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 				magazine->gun = nullptr;
 				magazine = nullptr;
 			}
