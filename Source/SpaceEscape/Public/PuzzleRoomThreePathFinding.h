@@ -6,9 +6,18 @@
 #include "PuzzleBase.h"
 #include "PuzzleRoomThreePathFinding.generated.h"
 
-/**
- * 
- */
+USTRUCT()
+struct FNodeInfo
+{
+	GENERATED_BODY()
+public:
+	int nodeIndex;
+	int parentNodeIndex;
+	float gValue;
+	float hValue;
+	float fValue;
+};
+
 UCLASS()
 class SPACEESCAPE_API APuzzleRoomThreePathFinding : public APuzzleBase
 {
@@ -30,13 +39,12 @@ public:
 
 private:
 
-	UPROPERTY()
 	TArray<class UStaticMeshComponent*> groundBoxArray;
 	TArray<int> selectedBoxIndexArray;
 	TArray<FVector> startLocArray;
 	int width = 10;
 	int length = 20;
-	int NumberOfPopUpBox = width * length * 0.2;
+	int NumberOfPopUpBox = width * length * 0.4;
 	int countForRecordStartLoc;
 	int beginPointIndex;
 	int endPointIndex;
@@ -47,4 +55,21 @@ private:
 
 	int regularlyUpCount;
 	FTimerHandle hd;
+
+
+	// 알고리즘 부분
+
+	TArray<FNodeInfo> possibleNodeList;
+	TArray<FNodeInfo> pickedNodeList;
+
+	bool FindPossibleNode(int currentNodeIndex);
+	bool CheckMovable(int nextNodeIndex);
+	void AddIndexPossibleList(int nodeIndex);
+	void AddBestIndexPickedList();
+	int GetYourParentIndex(int nodeIndex);
+	bool LetsFindPath();
+	void PathLight();
+
+	int currentNodeIndex;
+	int parentIndex;
 };

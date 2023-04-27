@@ -99,7 +99,7 @@ void ALeverBase::ControlByPlayerHand()
 		bIsLeftHand = true;
 		handLocation = player->leftHandMesh->GetComponentLocation();
 	}
-	else if (player && player->heldComponentRight == this->grabComp)
+	else
 	{
 		bIsLeftHand = false;
 		handLocation = player->rightHandMesh->GetComponentLocation();
