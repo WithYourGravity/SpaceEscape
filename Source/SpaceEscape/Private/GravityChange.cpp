@@ -2,11 +2,8 @@
 
 
 #include "GravityChange.h"
-
 #include "EscapePlayer.h"
 #include "Components/BoxComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AGravityChange::AGravityChange()
@@ -59,8 +56,5 @@ void AGravityChange::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 			worldSettings->bGlobalGravitySet = true;
 			worldSettings->GlobalGravityZ = -980.0f;
 		}
-		
-
-		UE_LOG(LogTemp, Warning, TEXT("%d"), player->bIsZeroGravity);
 	}
 }

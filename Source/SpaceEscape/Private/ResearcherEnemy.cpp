@@ -21,6 +21,13 @@ AResearcherEnemy::AResearcherEnemy()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("enemyFSM"));
+
+	// 애니메이션 블루프린트 할당
+	ConstructorHelpers::FClassFinder<UAnimInstance> tempAnimClass(TEXT("/Script/Engine.AnimBlueprint'/Game/YSY/Blueprints/ABP_ResearcherEnemy.ABP_ResearcherEnemy_C'"));
+	if (tempAnimClass.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(tempAnimClass.Class);
+	}
 }
 
 // Called when the game starts or when spawned
