@@ -161,13 +161,17 @@ void AEscapePlayer::Tick(float DeltaTime)
 		if (bIsGrabbedLeft && heldComponentLeft && heldComponentLeft->grabType == EGrabType::CLIMB)
 		{
 			FVector moveLocation = heldComponentLeft->grabLocation - leftHand->GetComponentLocation();
+			
 			SetActorLocation(GetActorLocation() + moveLocation);
+			
 			leftHand->SetWorldLocation(heldComponentLeft->grabLocation);
 		}
 		if (bIsGrabbedRight && heldComponentRight && heldComponentRight->grabType == EGrabType::CLIMB)
 		{
 			FVector moveLocation = heldComponentRight->grabLocation - rightHand->GetComponentLocation();
+			
 			SetActorLocation(GetActorLocation() + moveLocation);
+			
 			rightHand->SetWorldLocation(heldComponentRight->grabLocation);
 		}
 	}

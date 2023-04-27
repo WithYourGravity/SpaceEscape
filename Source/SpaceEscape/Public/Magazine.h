@@ -29,6 +29,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
 	class UStaticMeshComponent* magazineMeshComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Gun")
+	class UStaticMeshComponent* bulletMeshComp1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gun")
+	class UStaticMeshComponent* bulletMeshComp2;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
 	class UGrabComponent* grabComp;
 
@@ -48,7 +54,6 @@ public:
 
 private:
 	bool bIsOverlapGun = false;
-	bool bIsAttachGun = false;
 
 	int32 maxBulletCount = 5;
 	int32 currentBulletCount;

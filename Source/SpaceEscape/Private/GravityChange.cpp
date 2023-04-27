@@ -5,6 +5,7 @@
 
 #include "EscapePlayer.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -45,15 +46,20 @@ void AGravityChange::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	{
 		player->bIsZeroGravity = !(player->bIsZeroGravity);
 
-		player->SetActorLocation(player->GetActorLocation() + FVector(0, 0, 1000), true, nullptr, ETeleportType::None);
+		player->SetActorLocation(player->GetActorLocation() + FVector(0, 100, 1000), true, nullptr, ETeleportType::None);
+
+		AWorldSettings* worldSettings = GetWorldSettings();
 		if (player->bIsZeroGravity)
 		{
-			player->GetCharacterMovement()->GravityScale = 0.0f;
+			worldSettings->bGlobalGravitySet = true;
+			worldSettings->GlobalGravityZ = -10.0f;
 		}
 		else
 		{
-			player->GetCharacterMovement()->GravityScale = 1.0f;
+			worldSettings->bGlobalGravitySet = true;
+			worldSettings->GlobalGravityZ = -980.0f;
 		}
+		
 
 		UE_LOG(LogTemp, Warning, TEXT("%d"), player->bIsZeroGravity);
 	}

@@ -22,11 +22,34 @@ AMagazine::AMagazine()
 
 	magazineMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("magazineMeshComp"));
 	magazineMeshComp->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Gun/0ae7c8526de44d0ab63e6b5d21341fd2_fbx_Clip_low.0ae7c8526de44d0ab63e6b5d21341fd2_fbx_Clip_low'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/Pistol_Cube_008.Pistol_Cube_008'"));
 	if (tempMesh.Succeeded())
 	{
 		magazineMeshComp->SetStaticMesh(tempMesh.Object);
-		magazineMeshComp->SetRelativeScale3D(FVector(0.15f));
+		magazineMeshComp->SetRelativeRotation(FRotator(0, -90, -90));
+		magazineMeshComp->SetRelativeScale3D(FVector(0.36f));
+	}
+
+	bulletMeshComp1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("bulletMeshComp1"));
+	bulletMeshComp1->SetupAttachment(RootComponent);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempBulletMesh1(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/Pistol_Cylinder_005.Pistol_Cylinder_005'"));
+	if (tempBulletMesh1.Succeeded())
+	{
+		bulletMeshComp1->SetStaticMesh(tempBulletMesh1.Object);
+		bulletMeshComp1->SetRelativeRotation(FRotator(0, -90, -90));
+		bulletMeshComp1->SetRelativeScale3D(FVector(0.36f));
+		bulletMeshComp1->SetCollisionProfileName(FName("NoCollision"));
+	}
+
+	bulletMeshComp2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("bulletMeshComp2"));
+	bulletMeshComp2->SetupAttachment(RootComponent);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempBulletMesh2(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/Pistol_Cylinder_002.Pistol_Cylinder_002'"));
+	if (tempBulletMesh2.Succeeded())
+	{
+		bulletMeshComp2->SetStaticMesh(tempBulletMesh2.Object);
+		bulletMeshComp2->SetRelativeRotation(FRotator(0, -90, -90));
+		bulletMeshComp2->SetRelativeScale3D(FVector(0.36f));
+		bulletMeshComp2->SetCollisionProfileName(FName("NoCollision"));
 	}
 
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
@@ -59,8 +82,11 @@ void AMagazine::Tick(float DeltaTime)
 	{
 		auto playerHand = grabComp->GetHeldByHand() == EControllerHand::Right ? gun->player->rightHand : gun->player->leftHand;
 		FVector handLocation = playerHand->GetComponentLocation();
+		FVector magazineOverlapLocation = gun->gunMeshComp->GetSocketLocation(FName("MagazineOverlapSocket"));
+		
+		float dir =  FVector::DotProduct(handLocation - magazineOverlapLocation, gun->gunMeshComp->GetSocketLocation(FName("MagazineSocket")) - magazineOverlapLocation);
 
-		if (FVector::Dist(gun->gunMeshComp->GetSocketLocation(FName("MagazineOverlapSocket")), handLocation) >= 20.0f)
+		if (FVector::Dist(magazineOverlapLocation, handLocation) >= 20.0f && dir < 0)
 		{
 
 			grabComp->TryGrab(playerHand);
@@ -101,8 +127,7 @@ void AMagazine::OnDropped()
 	{
 		boxComp->SetSimulatePhysics(false);
 		grabComp->grabType = EGrabType::NONE;
-
-		//if (bIsAttachGun)
+		
 		if (grabValue >= 1.0f)
 		{
 			gun->magazine = this;
