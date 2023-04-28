@@ -4,6 +4,7 @@
 #include "EnemyFSM.h"
 #include "EscapePlayer.h"
 #include "ResearcherEnemy.h"
+#include "ResearcherEnemyAnim.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -25,6 +26,8 @@ void UEnemyFSM::BeginPlay()
 
 	target = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	me = Cast<AResearcherEnemy>(GetOwner());
+
+	anim = Cast<UResearcherEnemyAnim>(me->GetMesh()->GetAnimInstance());
 
 	HP = maxHP;
 }
@@ -65,11 +68,23 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue)
 	{
 		state = EEnemyState::DIE;
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		// 죽음 애니메이션 재생
+		anim->PlayDamageAnim(TEXT("Die"));
 	}
 	else
 	{
 		state = EEnemyState::DAMAGE;
+
+		currentTime = 0;
+
+		// 피격 애니메이션 재생
+		int32 index = FMath::RandRange(0, 1);
+		FString sectionName = FString::Printf(TEXT("Damage%d"), index);
+		anim->PlayDamageAnim(*sectionName);
 	}
+
+	anim->animState = state;
 }
 
 void UEnemyFSM::TickIdle()
@@ -81,6 +96,9 @@ void UEnemyFSM::TickIdle()
 		{
 			state = EEnemyState::MOVE;
 			currentTime = 0.0f;
+
+			// 애니메이션 상태 동기화
+			anim->animState = state;
 		}
 	}
 }
@@ -94,6 +112,13 @@ void UEnemyFSM::TickMove()
 	if (dir.Size() < attackRange)
 	{
 		state = EEnemyState::ATTACK;
+
+		// 애니메이션 상태 동기화
+		anim->animState = state;
+		// 공격 애니메이션 재생 활성화
+		anim->bAttackPlay = true;
+		// 공격 상태 전환 시 대기 시간이 바로 끝나도록 처리
+		currentTime = attackDelayTime;
 	}
 }
 
@@ -103,7 +128,10 @@ void UEnemyFSM::TickAttack()
 	currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime > attackDelayTime)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("ATTACK"));
+
 		currentTime = 0.0f;
+		anim->bAttackPlay = true;
 	}
 
 	// 타깃이 공격 범위를 벗어나면 상태를 이동으로 전환
@@ -111,6 +139,7 @@ void UEnemyFSM::TickAttack()
 	if (distance > attackRange)
 	{
 		state = EEnemyState::MOVE;
+		anim->animState = state;
 	}
 }
 
@@ -121,11 +150,17 @@ void UEnemyFSM::TickDamage()
 	{
 		state = EEnemyState::IDLE;
 		currentTime = 0.0f;
+		anim->animState = state;
 	}
 }
 
 void UEnemyFSM::TickDie()
 {
+	if (anim->bDieDone == false)
+	{
+		return;
+	}
+
 	currentTime += GetWorld()->DeltaTimeSeconds;
 
 	// P = P0 + vt

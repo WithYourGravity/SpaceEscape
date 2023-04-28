@@ -23,51 +23,55 @@ AGun::AGun()
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
 	RootComponent = boxComp;
 	boxComp->SetSimulatePhysics(true);
-	boxComp->SetBoxExtent(FVector(5, 15, 10));
+	boxComp->SetBoxExtent(FVector(2.5f, 15.0f, 10.0f));
 	boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 
 	gunMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunMeshComp"));
 	gunMeshComp->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Gun/0ae7c8526de44d0ab63e6b5d21341fd2_fbx_Frame_low.0ae7c8526de44d0ab63e6b5d21341fd2_fbx_Frame_low'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/Gun.Gun'"));
 	if (tempMesh.Succeeded())
 	{
 		gunMeshComp->SetStaticMesh(tempMesh.Object);
-		gunMeshComp->SetRelativeLocation(FVector(6.5f, 0.617f, -5.06f));
-		gunMeshComp->SetRelativeRotation(FRotator(0, 0, 30));
-		gunMeshComp->SetRelativeScale3D(FVector(0.15f));
+		gunMeshComp->SetRelativeLocation(FVector(0.0f, 9.0f, -1.0f));
+		gunMeshComp->SetRelativeRotation(FRotator(0, -90, 0));
+		gunMeshComp->SetRelativeScale3D(FVector(0.36f));
 	}
 	
 	gunSlideMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunSlideMeshComp"));
 	gunSlideMeshComp->SetupAttachment(gunMeshComp);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempSlideMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Gun/0ae7c8526de44d0ab63e6b5d21341fd2_fbx_Slide_low.0ae7c8526de44d0ab63e6b5d21341fd2_fbx_Slide_low'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempSlideMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/GunSlider.GunSlider'"));
 	if (tempSlideMesh.Succeeded())
 	{
 		gunSlideMeshComp->SetStaticMesh(tempSlideMesh.Object);
+	}
 
+	gunTriggerMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunTriggerMeshComp"));
+	gunTriggerMeshComp->SetupAttachment(gunMeshComp);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempTriggerMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/Pistol_Cube_006.Pistol_Cube_006'"));
+	if (tempTriggerMesh.Succeeded())
+	{
+		gunTriggerMeshComp->SetStaticMesh(tempTriggerMesh.Object);
 	}
 
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(gunMeshComp);
-	grabComp->SetRelativeLocation(FVector(-46.66f, 35.52f, 42.67f));
-	grabComp->SetRelativeRotation(FRotator(50, -90, 0));
+	grabComp->SetRelativeLocation(FVector(-2.73f, 0.0f, -3.78f));
+	grabComp->SetRelativeRotation(FRotator(75, 0, 0));
 	grabComp->grabType = EGrabType::SNAP;
 
 	slideGrabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("slideGrabComp"));
 	slideGrabComp->SetupAttachment(gunMeshComp);
-	slideGrabComp->SetRelativeLocation(FVector(-46.66f, 9.76f, 96.42f));
-	slideGrabComp->SetRelativeRotation(FRotator(-30, -90, 0));
+	slideGrabComp->SetRelativeLocation(FVector(11.0f, 0.0f, 22.0f));
 	slideGrabComp->grabType = EGrabType::GUNSLIDER;
 
 	muzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("muzzleLocation"));
 	muzzleLocation->SetupAttachment(gunMeshComp);
-	muzzleLocation->SetRelativeLocation(FVector(-47.0f, -140.0f, 13.33f));
-	muzzleLocation->SetRelativeRotation(FRotator(-30, -90, 0));
+	muzzleLocation->SetRelativeLocation(FVector(70.0f, 0.0f, 25.0f));
 
 	magazineBoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("magazineBoxComp"));
 	magazineBoxComp->SetupAttachment(gunMeshComp);
-	magazineBoxComp->SetRelativeLocation(FVector(-46.66f, 77.08f, 14.0f));
-	magazineBoxComp->SetRelativeRotation(FRotator(0, 0, -30));
-	magazineBoxComp->SetBoxExtent(FVector(15, 20, 8));
+	magazineBoxComp->SetRelativeLocation(FVector(-5.0f, 0.0f, -16.0f));
+	magazineBoxComp->SetBoxExtent(FVector(10, 6, 7));
 }
 
 // Called when the game starts or when spawned
@@ -186,7 +190,12 @@ void AGun::Fire()
 
 		if (magazine->GetCurrentBulletCount() == 0)
 		{
+			magazine->bulletMeshComp1->SetVisibility(false);
 			OpenSlider();
+		}
+		else if (magazine->GetCurrentBulletCount() == 1)
+		{
+			magazine->bulletMeshComp2->SetVisibility(false);
 		}
 	}
 }
@@ -215,6 +224,7 @@ void AGun::DropMagazine()
 				magazine->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 				magazine->boxComp->SetSimulatePhysics(true);
 				magazine->grabComp->grabType = EGrabType::SNAP;
+				magazine->boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 				magazine->gun = nullptr;
 				magazine = nullptr;
 			}
@@ -291,8 +301,8 @@ void AGun::GrabSlider()
 
 void AGun::OpenSlider()
 {
-	slideGrabComp->SetRelativeLocation(FVector(-46.66f, 32.76f, 96.42f));
-	gunSlideMeshComp->SetRelativeLocation(FVector(0.0f, 23.0f, 13.33f));
+	slideGrabComp->SetRelativeLocation(initGunSlideCompLocation + FVector(reloadSliderDistance * -1.0f, 0.0f, 0.0f));
+	gunSlideMeshComp->SetRelativeLocation(initGunSlideMeshLocation + FVector(reloadSliderDistance * -1.0f, 0.0f, 0.0f));
 
 	bOnReloading = false;
 	bDoReloading = false;

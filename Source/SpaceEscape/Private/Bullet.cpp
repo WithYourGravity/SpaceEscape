@@ -22,17 +22,17 @@ ABullet::ABullet()
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("meshComp"));
 	meshComp->SetupAttachment(RootComponent);
 	meshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Gun/Bullet/Bullet.Bullet'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/Bullet.Bullet'"));
 	if (tempMesh.Succeeded())
 	{
 		meshComp->SetStaticMesh(tempMesh.Object);
-		meshComp->SetRelativeScale3D(FVector(2.0f));
+		meshComp->SetRelativeScale3D(FVector(0.5f));
 	}
 
 	movementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("movementComp"));
 	movementComp->SetUpdatedComponent(sphereComp);
-	movementComp->InitialSpeed = 1000;
-	movementComp->MaxSpeed = 1000;
+	movementComp->InitialSpeed = 2000;
+	movementComp->MaxSpeed = 2000;
 	movementComp->bShouldBounce = true;
 	movementComp->Bounciness = 0.5f;
 }

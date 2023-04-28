@@ -11,7 +11,7 @@ AResearcherEnemy::AResearcherEnemy()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/YSY/Assets/Enemy/Vanguard_By_T__Choonyung.Vanguard_By_T__Choonyung'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/YSY/Assets/Enemy/Zombie/Agony.Agony'"));
 	if (tempMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);
@@ -21,6 +21,13 @@ AResearcherEnemy::AResearcherEnemy()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("enemyFSM"));
+
+	// 애니메이션 블루프린트 할당
+	ConstructorHelpers::FClassFinder<UAnimInstance> tempAnimClass(TEXT("/Script/Engine.AnimBlueprint'/Game/YSY/Blueprints/ABP_Enemy.ABP_Enemy_C'"));
+	if (tempAnimClass.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(tempAnimClass.Class);
+	}
 }
 
 // Called when the game starts or when spawned

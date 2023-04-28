@@ -153,7 +153,7 @@ private:
 public:
 	// Grab 범위
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	float grabRange = 10;
+	float grabRange = 4;
 	// Grab Object 기억
 	UPROPERTY()
 	class UGrabComponent* heldComponentRight;
@@ -184,4 +184,15 @@ private:
 public:
 	UPROPERTY()
 	class AGun* grabbedGun;
+
+
+// Zero gravity
+public:
+	bool bIsZeroGravity = false;
+	float gravityScale = 1.0f;
+
+
+// Climbing
+public:
+	bool bIsClimbing = false;
 };

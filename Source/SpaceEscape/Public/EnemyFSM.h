@@ -43,6 +43,9 @@ public:
 	UPROPERTY()
 	class AResearcherEnemy* me;
 
+	UPROPERTY()
+	class UResearcherEnemyAnim* anim;
+
 	// 대기 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
 	float idleDelayTime = 2.0f;
@@ -56,7 +59,7 @@ public:
 
 	// 공격 대기 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
-	float attackDelayTime = 2.0f;
+	float attackDelayTime = 3.0f;
 
 	// 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FSM")

@@ -41,6 +41,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
 	class UStaticMeshComponent* gunSlideMeshComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Gun")
+	class UStaticMeshComponent* gunTriggerMeshComp;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
 	class UGrabComponent* grabComp;
 
@@ -89,7 +92,7 @@ private:
 	float fireDistance = 10000.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
-	float reloadSliderDistance = 30.0f;
+	float reloadSliderDistance = 25.0f;
 
 	FVector initGunSlideCompLocation;
 	FVector initGunSlideMeshLocation;
