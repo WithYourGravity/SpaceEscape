@@ -46,6 +46,12 @@ public:
 	UPROPERTY()
 	class UResearcherEnemyAnim* anim;
 
+	UPROPERTY()
+	class AAIController* ai;
+
+	// 길 찾기 수행시 랜덤 위치
+	FVector randomPos;
+
 	// 대기 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
 	float idleDelayTime = 2.0f;
@@ -69,8 +75,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "FSM")
 	float damageDelayTime = 2.0f;
 
+	UPROPERTY(EditAnywhere, Category = "FSM")
+	float randomPositionRadius = 500.0f;
+
 	// 피격 알림 이벤트 함수
 	void OnDamageProcess(int32 damageValue);
+
+	// 랜덤 위치 가져오기
+	bool GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
 
 private:
 	// 대기 상태
@@ -85,5 +97,4 @@ private:
 	void TickDie();
 
 	int32 HP;
-	
 };

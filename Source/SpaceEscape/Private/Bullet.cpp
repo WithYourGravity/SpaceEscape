@@ -2,11 +2,11 @@
 
 
 #include "Bullet.h"
-
 #include "EnemyFSM.h"
 #include "ResearcherEnemy.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -63,13 +63,22 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 		OtherComp->AddImpulse(movementComp->Velocity * 1.0f);
 		Destroy();
 	}
-	
-	auto enemy = OtherActor->GetDefaultSubobjectByName(TEXT("enemyFSM"));
+
+	auto enemy = Cast<AResearcherEnemy>(OtherActor);
 	if (enemy)
 	{
-		auto enemyFSM = Cast<UEnemyFSM>(enemy);
-		enemyFSM->OnDamageProcess(bulletPower);
-		Destroy();
+
+		if (SweepResult.PhysMaterial.Get())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *SweepResult.PhysMaterial.Get()->GetName());
+		}
+
+		auto enemyFSM = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(TEXT("enemyFSM")));
+		if (enemyFSM)
+		{
+			enemyFSM->OnDamageProcess(bulletPower);
+			Destroy();
+		}
 	}
 }
 

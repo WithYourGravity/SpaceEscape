@@ -29,6 +29,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FSM")
 	class UEnemyFSM* enemyFSM;
 
-
-
+	UPROPERTY(EditDefaultsOnly)
+	class UNavigationInvokerComponent* navInvokerComp;
 };

@@ -3,6 +3,7 @@
 
 #include "ResearcherEnemy.h"
 #include "EnemyFSM.h"
+#include "NavigationInvokerComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -21,6 +22,9 @@ AResearcherEnemy::AResearcherEnemy()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("enemyFSM"));
+
+	navInvokerComp = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("navInvokerComp"));
+	navInvokerComp->SetGenerationRadii(500.0f, 800.0f);
 
 	// 애니메이션 블루프린트 할당
 	ConstructorHelpers::FClassFinder<UAnimInstance> tempAnimClass(TEXT("/Script/Engine.AnimBlueprint'/Game/YSY/Blueprints/ABP_Enemy.ABP_Enemy_C'"));
