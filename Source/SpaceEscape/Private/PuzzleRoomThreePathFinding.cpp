@@ -28,25 +28,10 @@ void APuzzleRoomThreePathFinding::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ResetBeginAndEndPoint();
-	PickBoxRandomly(NumberOfPopUpBox);
-	MovingTrigger();
-
-	/*
-	GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
-	{
-		if (regularlyUpCount % 2 == 0)
-		{
-			ResetBeginAndEndPoint();
-			PickBoxRandomly(NumberOfPopUpBox);
-		}
-		MovingTrigger();
-		regularlyUpCount++;
-	}), 4, true);
-	*/
+	ResetThisPuzzle();
 
 	// find node test
-	UE_LOG(LogTemp, Warning, TEXT("is reached : %s"), LetsFindPath() ? TEXT("Yes") : TEXT("No"));
+	//UE_LOG(LogTemp, Warning, TEXT("is reached : %s"), LetsFindPath() ? TEXT("Yes") : TEXT("No"));
 	/*
 	UE_LOG(LogTemp, Warning, TEXT("possible node list num : %d"), possibleNodeList.Num());
 	for (int i = 0; i < possibleNodeList.Num(); i++)
@@ -58,12 +43,13 @@ void APuzzleRoomThreePathFinding::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("fValue : %f"), possibleNodeList[i].fValue);
 	}
 	*/
-
+	/*
 	UE_LOG(LogTemp, Warning, TEXT("picked node list num : %d"), pickedNodeList.Num());
 	for (int i = 0; i < pickedNodeList.Num(); i++)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("node index : %d\nparentNode : %d\ngVal : %f\nhVal : %f\nfVal : %f"), pickedNodeList[i].nodeIndex, pickedNodeList[i].parentNodeIndex, pickedNodeList[i].gValue, pickedNodeList[i].hValue, pickedNodeList[i].fValue);
 	}
+	*/
 }
 
 void APuzzleRoomThreePathFinding::Tick(float DeltaSeconds)
@@ -121,7 +107,7 @@ void APuzzleRoomThreePathFinding::MovingFunctionAtTick(float deltaTime)
 // 시작점과 끝점을 다시 고르는 함수
 void APuzzleRoomThreePathFinding::ResetBeginAndEndPoint()
 {
-	if (beginPointIndex != 0)
+	if (beginPointIndex != -1)
 	{
 		groundBoxArray[beginPointIndex]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Yellow);
 		groundBoxArray[endPointIndex]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Yellow);
@@ -130,6 +116,26 @@ void APuzzleRoomThreePathFinding::ResetBeginAndEndPoint()
 	endPointIndex = (width * length - 1) - FMath::RandRange(0, width - 1);
 	groundBoxArray[beginPointIndex]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Red);
 	groundBoxArray[endPointIndex]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Blue);
+}
+
+// 퍼즐이 답이 있을 때까지 계속 리셋하는 함수
+void APuzzleRoomThreePathFinding::ResetThisPuzzle()
+{
+	GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
+	{
+		if (regularlyUpCount % 2 == 0)
+		{
+			ResetBeginAndEndPoint();
+			PickBoxRandomly(NumberOfPopUpBox);
+		}
+		MovingTrigger();
+		regularlyUpCount++;
+
+		if (LetsFindPath() == true)
+		{
+			GetWorldTimerManager().ClearTimer(hd);
+		}
+	}), 2, true);
 }
 
 // 박스를 이동시키는 함수를 발동시키는 함수
@@ -253,6 +259,7 @@ void APuzzleRoomThreePathFinding::AddIndexPossibleList(int nodeIndex)
 	possibleNodeList.Add(tempStruct);
 }
 
+// possible리스트에 있는 노드 중 가장 F값이 낮은 노드를 Picked리스트로 옮기는 함수
 void APuzzleRoomThreePathFinding::AddBestIndexPickedList()
 {
 	possibleNodeList.Sort([](const FNodeInfo& A, const FNodeInfo& B)
@@ -266,6 +273,7 @@ void APuzzleRoomThreePathFinding::AddBestIndexPickedList()
 	pickedNodeList.Add(tempInfo);
 }
 
+// 노드인덱스를 전달하면 부모인덱스를 반환하는 함수 (배열에 존재하지 않는 노드라면 -1반환)
 int APuzzleRoomThreePathFinding::GetYourParentIndex(int childNodeIndex)
 {
 	// possible 리스트와 picked 리스트에서 해당 인덱스의 구조체를 찾는다
@@ -287,6 +295,7 @@ int APuzzleRoomThreePathFinding::GetYourParentIndex(int childNodeIndex)
 	return -1;
 }
 
+// 길찾기 알고리즘 실행함수
 bool APuzzleRoomThreePathFinding::LetsFindPath()
 {
 	// 시작점을 현재노드로 기록하고 리스트에 추가
@@ -301,28 +310,45 @@ bool APuzzleRoomThreePathFinding::LetsFindPath()
 		// 접근 가능한 노드 탐색
 		FindPossibleNode(currentNodeIndex);
 
-		// 가장 F값 낮은 노드 선택
-		AddBestIndexPickedList();
-
 		// 이동 불가시 
 		if (possibleNodeList.IsEmpty())
 		{
 			return false;
 		}
+
+		// 가장 F값 낮은 노드 선택
+		AddBestIndexPickedList();
 	}
 
-	PathLight();
+	//PathLight();
 	return true;
 }
 
+// 구한 최단경로를 배열에 저장하고 시각화해주는 함수
 void APuzzleRoomThreePathFinding::PathLight()
 {
 	parentIndex = GetYourParentIndex(pickedNodeList[pickedNodeList.Num() - 1].nodeIndex);
-
+	
 	while (parentIndex != beginPointIndex)
 	{
-		groundBoxArray[parentIndex]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Green);
+		// 배열에 최단거리루트 기록
+		AnswerPathArray.Add(parentIndex);
 		parentIndex = GetYourParentIndex(parentIndex);
 	}
+
+	Algo::Reverse(AnswerPathArray);
+
+	// 기록된 배열을 토대로 시각화
+	GetWorldTimerManager().SetTimer(answerPathHandle, [&]()
+		{
+			groundBoxArray[AnswerPathArray[answerPathIndex]]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Green);
+
+			if (answerPathIndex == AnswerPathArray.Num() - 1)
+			{
+				GetWorldTimerManager().ClearTimer(answerPathHandle);
+			}
+
+			answerPathIndex++;
+		}, 0.4f, true);
 }
 

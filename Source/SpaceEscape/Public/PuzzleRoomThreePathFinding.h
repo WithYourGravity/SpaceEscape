@@ -36,18 +36,20 @@ public:
 	void MovingTrigger();
 	void MovingFunctionAtTick(float deltaTime);
 	void ResetBeginAndEndPoint();
+	void ResetThisPuzzle();
 
 private:
 
 	TArray<class UStaticMeshComponent*> groundBoxArray;
 	TArray<int> selectedBoxIndexArray;
 	TArray<FVector> startLocArray;
+
 	int width = 10;
 	int length = 20;
-	int NumberOfPopUpBox = width * length * 0.4;
+	int NumberOfPopUpBox = width * length * 0.25;
 	int countForRecordStartLoc;
-	int beginPointIndex;
-	int endPointIndex;
+	int beginPointIndex = -1;
+	int endPointIndex = -1;
 	bool bIsMoving;
 	float zPos;
 	float lerpTime;
@@ -61,7 +63,8 @@ private:
 
 	TArray<FNodeInfo> possibleNodeList;
 	TArray<FNodeInfo> pickedNodeList;
-
+	TArray<int> AnswerPathArray;
+	FTimerHandle answerPathHandle;
 	bool FindPossibleNode(int currentNodeIndex);
 	bool CheckMovable(int nextNodeIndex);
 	void AddIndexPossibleList(int nodeIndex);
@@ -72,4 +75,5 @@ private:
 
 	int currentNodeIndex;
 	int parentIndex;
+	int answerPathIndex;
 };
