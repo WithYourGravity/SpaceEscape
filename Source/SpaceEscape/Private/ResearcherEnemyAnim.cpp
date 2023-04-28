@@ -3,3 +3,7 @@
 
 #include "ResearcherEnemyAnim.h"
 
+void UResearcherEnemyAnim::OnEndAttackAnimation()
+{
+	bAttackPlay = false;
+}
