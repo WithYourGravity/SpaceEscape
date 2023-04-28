@@ -47,6 +47,14 @@ public:
 	//값 초기화
 	void initScrew();
 	bool isAttaching; //회전중인지 체크
-	double initRot;
+	float initRot;
+
+	//회전된 값?
+	float newRot;
+	//변화되는 값?
+	float deltaRot;
+
+	//회전을 더해주어라
+	void AddRotation();
 
 };
