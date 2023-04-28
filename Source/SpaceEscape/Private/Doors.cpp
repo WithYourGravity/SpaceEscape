@@ -46,8 +46,7 @@ void ADoors::BeginPlay()
 			//triggerboxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoors::OnTriggeredOverlap);
 			//triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
 		}
-	}
-	
+	}	
 }
 
 // Called every frame
@@ -68,7 +67,7 @@ void ADoors::Open()
 	endPoint = startPoint + FVector(0, yOffset, 0);
 	curveTimeline.PlayFromStart();
 	bIsOpenOverlaping = false;	
-	UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
+	//UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
 }
 
 void ADoors::Close()
@@ -78,8 +77,7 @@ void ADoors::Close()
 	endPoint = initLoc;
 	curveTimeline.PlayFromStart();
 	bIsOpenOverlaping = true;
-	UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))
-	
+	//UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))	
 }
 
 void ADoors::TimeLineProgress(float val)

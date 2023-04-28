@@ -45,15 +45,15 @@ public:
 
 	class AEscapePlayer* player;
 
-	//회전한 값
+	//회전 값
 	double processedRot = 5;
 	FRotator initializedRot;
 
 	//screw값 초기화
 	void initScrewDriver();
 	bool isAttaching; //회전중인지 체크
-	class AScrew* attachedScrew;
 	//FRotator initNailRot;
 	double initRot;
+	class AScrew* attachedScrew;
 
 };
