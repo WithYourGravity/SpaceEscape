@@ -173,9 +173,13 @@ void APuzzleRoomOneTouchPad::TouchPadOverlap(UPrimitiveComponent* OverlappedComp
 
 	UE_LOG(LogTemp, Warning, TEXT("compName is : %s"), *compName);
 
-	// 오버랩된 물체가 플레이어라면 오른손 진동울리게 처리
+	// 오버랩된 물체가 플레이어라면 진동울리게 처리
 	auto player = Cast<AEscapePlayer>(OtherActor);
-	if (player)
+	if (player && OtherComp->GetName().Contains("left"))
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+	}
+	else
 	{
 		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
 	}
