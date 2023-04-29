@@ -189,7 +189,6 @@ public:
 // Zero gravity
 public:
 	bool bIsZeroGravity = false;
-	float gravityScale = 1.0f;
 
 
 // Climbing

@@ -500,5 +500,3 @@ void AEscapePlayer::DropMagazine(const FInputActionValue& values)
 	}
 }
 
-
-
