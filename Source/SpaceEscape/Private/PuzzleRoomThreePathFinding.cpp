@@ -320,7 +320,7 @@ bool APuzzleRoomThreePathFinding::LetsFindPath()
 		AddBestIndexPickedList();
 	}
 
-	//PathLight();
+	PathLight();
 	return true;
 }
 
