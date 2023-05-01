@@ -194,8 +194,10 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_GrabLeft, ETriggerEvent::Completed, this, &AEscapePlayer::UnTryGrabLeft);
 		InputSystem->BindAction(IA_GrabRight, ETriggerEvent::Started, this, &AEscapePlayer::TryGrabRight);
 		InputSystem->BindAction(IA_GrabRight, ETriggerEvent::Completed, this, &AEscapePlayer::UnTryGrabRight);
-		InputSystem->BindAction(IA_FireLeft, ETriggerEvent::Started, this, &AEscapePlayer::Fire);
-		InputSystem->BindAction(IA_FireRight, ETriggerEvent::Started, this, &AEscapePlayer::Fire);
+		InputSystem->BindAction(IA_FireLeft, ETriggerEvent::Triggered, this, &AEscapePlayer::Fire);
+		InputSystem->BindAction(IA_FireLeft, ETriggerEvent::Completed, this, &AEscapePlayer::FireCompleted);
+		InputSystem->BindAction(IA_FireRight, ETriggerEvent::Triggered, this, &AEscapePlayer::Fire);
+		InputSystem->BindAction(IA_FireRight, ETriggerEvent::Completed, this, &AEscapePlayer::FireCompleted);
 		InputSystem->BindAction(IA_DropMagazineLeft, ETriggerEvent::Started, this, &AEscapePlayer::DropMagazine);
 		InputSystem->BindAction(IA_DropMagazineRight, ETriggerEvent::Started, this, &AEscapePlayer::DropMagazine);
 	}
@@ -488,7 +490,16 @@ void AEscapePlayer::Fire(const FInputActionValue& values)
 {
 	if (grabbedGun)
 	{
-		grabbedGun->Fire();
+		grabbedGun->Fire(fireAlpha);
+	}
+}
+
+void AEscapePlayer::FireCompleted()
+{
+	if (grabbedGun)
+	{
+		grabbedGun->Fire(0.0f);
+		grabbedGun->bFireCompleted = false;
 	}
 }
 

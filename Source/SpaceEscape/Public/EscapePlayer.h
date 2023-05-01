@@ -179,11 +179,15 @@ public:
 // Fire
 private:
 	void Fire(const FInputActionValue& values);
+	void FireCompleted();
 	void DropMagazine(const FInputActionValue& values);
 
 public:
 	UPROPERTY()
 	class AGun* grabbedGun;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
+	float fireAlpha = 0.0f;
 
 
 // Zero gravity
