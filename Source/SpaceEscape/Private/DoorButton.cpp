@@ -26,7 +26,7 @@ void ADoorButton::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADoors::StaticClass(),outDoorActors); //배열 만들엇어
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADoors::StaticClass(),outDoorActors);
 	
 	ARoomManager* rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
 	rm->stageClearDele.AddUFunction(this, FName("CheckClearStage"));
@@ -42,7 +42,6 @@ void ADoorButton::Tick(float DeltaTime)
 
 void ADoorButton::CheckClearStage()
 {
-	UE_LOG(LogTemp, Warning, TEXT("CheckClearStage Function"))
 	bCanButtonClicked = true;
 }
 
@@ -56,24 +55,28 @@ void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	{
 		if (player != nullptr)
 		{
-			ReportOpen();
+			if(player->rightHandMesh && player->leftHandMesh)
+			{				
+				ReportOpen();
+			}
 		}
 	}	
 }
 
 void ADoorButton::ReportOpen()
 {	
-	UE_LOG(LogTemp, Warning, TEXT("ReportOpen!!"))	
 	openDoorDele.Broadcast();
 	
 	if(bOpened == false)//한번 열렸다.
 	{
 		bOpened = true;
+		UE_LOG(LogTemp, Warning, TEXT("ReportOpen() : Opened Onced"))
 	}
 	else
 	{
 		bOpened = false;
 		bCanButtonClicked = false;
+		UE_LOG(LogTemp, Warning, TEXT("ReportOpen() : Not to be Opened"))
 	}
 }
 
