@@ -46,7 +46,7 @@ private:
 
 	int width = 10;
 	int length = 20;
-	int NumberOfPopUpBox = width * length * 0.25;
+	int NumberOfPopUpBox = width * length * 0.3;
 	int countForRecordStartLoc;
 	int beginPointIndex = -1;
 	int endPointIndex = -1;

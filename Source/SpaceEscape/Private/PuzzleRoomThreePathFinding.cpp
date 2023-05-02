@@ -298,6 +298,10 @@ int APuzzleRoomThreePathFinding::GetYourParentIndex(int childNodeIndex)
 // 길찾기 알고리즘 실행함수
 bool APuzzleRoomThreePathFinding::LetsFindPath()
 {
+	// 초기화
+	possibleNodeList.Empty();
+	pickedNodeList.Empty();
+
 	// 시작점을 현재노드로 기록하고 리스트에 추가
 	currentNodeIndex = beginPointIndex;
 	AddIndexPossibleList(beginPointIndex);
@@ -349,6 +353,6 @@ void APuzzleRoomThreePathFinding::PathLight()
 			}
 
 			answerPathIndex++;
-		}, 0.4f, true);
+		}, 0.2f, true);
 }
 
