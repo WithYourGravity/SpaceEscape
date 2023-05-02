@@ -282,7 +282,7 @@ bool AEscapePlayer::CheckHitTeleport(FVector lastPos, FVector& curPos)
 	bool bHit = HitTest(lastPos, curPos, hitInfo);
 	
 	// ¸¸¾à ºÎµúÈù ´ë»óÀÌ ¹Ù´ÚÀÌ¶ó¸é
-	if (bHit && hitInfo.GetActor()->GetActorLabel().Contains(TEXT("Floor")))
+	if (bHit && hitInfo.GetActor()->GetActorNameOrLabel().Contains(TEXT("Floor")))
 	{
 		// endPos ¸¦ ºÎµúÈù °÷À¸·Î ¼öÁ¤
 		curPos = hitInfo.Location;
@@ -296,6 +296,7 @@ bool AEscapePlayer::CheckHitTeleport(FVector lastPos, FVector& curPos)
 	{
 		teleportCircle->SetVisibility(false);
 	}
+	
 
 	return bHit;
 }
