@@ -42,5 +42,5 @@ public:
 
 private:
 	float moveSpeed = 400;
-	float turnSpeed = 100;
+	float turnSpeed = 200;
 };

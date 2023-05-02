@@ -5,6 +5,7 @@
 
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AAmmoBox::AAmmoBox()
@@ -42,8 +43,8 @@ void AAmmoBox::BeginPlay()
 	Super::BeginPlay();
 
 	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-	grabComp->onDroppedDelegate.AddUFunction(this, TEXT("ChangeIsGrabed"));
-	grabComp->onGrabbedDelegate.AddUFunction(this, TEXT("ChangeIsGrabed"));
+	grabComp->onDroppedDelegate.AddUFunction(this, TEXT("OnDroped"));
+	grabComp->onGrabbedDelegate.AddUFunction(this, TEXT("OnGrabed"));
 }
 
 // Called every frame
@@ -66,7 +67,7 @@ void AAmmoBox::BoxShouldBeClosed()
 
 	if (rot.Roll < -2)
 	{
-		rot.Roll += 5;
+		rot.Roll += 4;
 		coverMeshComp->SetRelativeRotation(rot);
 	}
 	else
@@ -79,36 +80,67 @@ void AAmmoBox::BoxShouldBeClosed()
 
 void AAmmoBox::ControlByPlayerHand()
 {
-	bool bIsLeftHand;
+	// 잡은 손이 왼손인지 오른손인지 판단
 	FVector handLocation;
 	if (player && player->heldComponentLeft == this->grabComp)
 	{
-		bIsLeftHand = true;
+		// 손 바뀌면 바뀐 손과의 벡터차를 구해서 스타트벡터에 더해줌
 		handLocation = player->leftHandMesh->GetComponentLocation();
+		if (!bRecordLeftOnce)
+		{
+			bRecordLeftOnce = true;
+			bRecordRightOnce = false;
+			deltaVector = (handLocation - coverMeshComp->GetComponentLocation()).GetSafeNormal() - afterVector;
+			startVector += deltaVector;
+		}
 	}
-	else if (player && player->heldComponentRight == this->grabComp)
+	else
 	{
-		bIsLeftHand = false;
 		handLocation = player->rightHandMesh->GetComponentLocation();
+		if (!bRecordRightOnce)
+		{
+			bRecordRightOnce = true;
+			bRecordLeftOnce = false;
+			deltaVector = (handLocation - coverMeshComp->GetComponentLocation()).GetSafeNormal() - afterVector;
+			startVector += deltaVector;
+		}
 	}
 
+	// 기준 벡터 처음 잡을때 한번만 초기화
 	if (!bRecordOnce)
 	{
 		startVector = (handLocation - coverMeshComp->GetComponentLocation()).GetSafeNormal();
 		bRecordOnce = true;
+		//UE_LOG(LogTemp, Error, TEXT("Start Vector Recorded"));
 	}
-	FVector afterVector = (handLocation - coverMeshComp->GetComponentLocation()).GetSafeNormal();
+
+	// 현재 손 위치와 박스커버 사이의 벡터를 구해서 기준벡터와 내적
+	afterVector = (handLocation - coverMeshComp->GetComponentLocation()).GetSafeNormal();
 	float degree = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(startVector, afterVector)));
+
+	// 사이각 만큼 박스 Roll값 변경하여 열어주기
 	FRotator rot = coverMeshComp->GetRelativeRotation();
-	rot.Roll = FMath::Clamp(degree * 1.75f, 0, 90.f) * -1;
+	rot.Roll = FMath::Clamp(degree * 1.5f, 0, 90.f) * -1;
 	coverMeshComp->SetRelativeRotation(rot);
 
-	//UE_LOG(LogTemp, Warning, TEXT("degree is %f"), degree);
-	//UE_LOG(LogTemp, Warning, TEXT("bisGrabis %d"), bIsGrabed);
+	//UE_LOG(LogTemp, Warning, TEXT("degree is : %f"), degree);
 }
 
-void AAmmoBox::ChangeIsGrabed()
+void AAmmoBox::OnGrabed()
 {
-	bIsGrabed = !bIsGrabed;
+	if (!bIsGrabed)
+	{
+		bIsGrabed = true;
+		//UE_LOG(LogTemp, Error, TEXT("On Grabed"));
+	}
+}
+
+void AAmmoBox::OnDroped()
+{
+	if (bIsGrabed)
+	{
+		bIsGrabed = false;
+		//UE_LOG(LogTemp, Error, TEXT("On Droped"));
+	}
 }
 
