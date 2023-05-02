@@ -2,7 +2,9 @@
 
 
 #include "EnemyFSM.h"
+#include "AIController.h"
 #include "EscapePlayer.h"
+#include "NavigationSystem.h"
 #include "ResearcherEnemy.h"
 #include "ResearcherEnemyAnim.h"
 #include "Components/CapsuleComponent.h"
@@ -28,6 +30,8 @@ void UEnemyFSM::BeginPlay()
 	me = Cast<AResearcherEnemy>(GetOwner());
 
 	anim = Cast<UResearcherEnemyAnim>(me->GetMesh()->GetAnimInstance());
+
+	ai = Cast<AAIController>(me->GetController());
 
 	HP = maxHP;
 }
@@ -85,6 +89,17 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue)
 	}
 
 	anim->animState = state;
+
+	ai->StopMovement();
+}
+
+bool UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest)
+{
+	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+	FNavLocation loc;
+	bool result = ns->GetRandomReachablePointInRadius(centerLocation, radius, loc);
+	dest = loc.Location;
+	return result;
 }
 
 void UEnemyFSM::TickIdle()
@@ -99,18 +114,54 @@ void UEnemyFSM::TickIdle()
 
 			// 애니메이션 상태 동기화
 			anim->animState = state;
+
+			// 최초 랜덤한 위치 정해주기
+			GetRandomPositionInNavMesh(me->GetActorLocation(), randomPositionRadius, randomPos);
 		}
 	}
 }
 
 void UEnemyFSM::TickMove()
 {
-	FVector dir = target->GetActorLocation() - me->GetActorLocation();
+	FVector destination = target->GetActorLocation();
 
-	me->AddMovementInput(dir.GetSafeNormal());
+	FVector dir = destination - me->GetActorLocation();
 
+	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+
+	// 목적지 길 찾기 경로 데이터 검색
+	FPathFindingQuery query;
+	FAIMoveRequest req;
+	req.SetAcceptanceRadius(3);
+	req.SetGoalLocation(destination);
+	// 길 찾기를 위한 쿼리 생성
+	ai->BuildPathfindingQuery(req, query);
+	// 길 찾기 결과 가져오기
+	FPathFindingResult r = ns->FindPathSync(query);
+
+	// 목적지까지의 길찾기 성공 여부 확인
+	if (r.Result == ENavigationQueryResult::Success)
+	{
+		ai->MoveToLocation(destination);
+	}
+	else
+	{
+		// 랜덤 위치로 이동
+		auto result = ai->MoveToLocation(randomPos);
+		// 목적지에 도착하면
+		if (result == EPathFollowingRequestResult::AlreadyAtGoal)
+		{
+			// 새로운 랜덤 위치 가져오기
+			GetRandomPositionInNavMesh(me->GetActorLocation(), randomPositionRadius, randomPos);
+		}
+	}
+
+	// target 과 가까워지면 공격 상태로 전환
 	if (dir.Size() < attackRange)
 	{
+		// 길 찾기 기능 정지
+		ai->StopMovement();
+
 		state = EEnemyState::ATTACK;
 
 		// 애니메이션 상태 동기화
@@ -140,6 +191,8 @@ void UEnemyFSM::TickAttack()
 	{
 		state = EEnemyState::MOVE;
 		anim->animState = state;
+
+		GetRandomPositionInNavMesh(me->GetActorLocation(), randomPositionRadius, randomPos);
 	}
 }
 

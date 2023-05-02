@@ -40,9 +40,12 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
 	class UStaticMeshComponent* gunSlideMeshComp;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
 	class UStaticMeshComponent* gunTriggerMeshComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gun")
+	class USceneComponent* triggerSceneComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
 	class UGrabComponent* grabComp;
@@ -57,7 +60,7 @@ public:
 	class UBoxComponent* magazineBoxComp;
 
 	UPROPERTY(EditAnywhere, Category = "Fire")
-	TSubclassOf<class AActor> bulletFactory;
+	TSubclassOf<class ABullet> bulletFactory;
 
 	UPROPERTY()
 	class AMagazine* magazine;
@@ -68,13 +71,14 @@ public:
 	bool bIsOnGrabbed = false;
 	bool bOnReloading = false;
 	bool bDoReloading = false;
+	bool bFireCompleted = false;
 
 	UFUNCTION()
 	void OnGrabbed();
 	UFUNCTION()
 	void OnDropped();
 
-	void Fire();
+	void Fire(float fireAlpha);
 	void DropMagazine();
 
 private:

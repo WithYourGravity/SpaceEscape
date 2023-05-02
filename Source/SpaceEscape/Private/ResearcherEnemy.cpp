@@ -3,6 +3,7 @@
 
 #include "ResearcherEnemy.h"
 #include "EnemyFSM.h"
+#include "NavigationInvokerComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -22,12 +23,18 @@ AResearcherEnemy::AResearcherEnemy()
 
 	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("enemyFSM"));
 
+	navInvokerComp = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("navInvokerComp"));
+	navInvokerComp->SetGenerationRadii(500.0f, 800.0f);
+
 	// 애니메이션 블루프린트 할당
 	ConstructorHelpers::FClassFinder<UAnimInstance> tempAnimClass(TEXT("/Script/Engine.AnimBlueprint'/Game/YSY/Blueprints/ABP_Enemy.ABP_Enemy_C'"));
 	if (tempAnimClass.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(tempAnimClass.Class);
 	}
+
+	// 월드에 배치되거나 스폰될 때 자동으로 AIController부터 Possess될 수 있도록 설정
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 // Called when the game starts or when spawned

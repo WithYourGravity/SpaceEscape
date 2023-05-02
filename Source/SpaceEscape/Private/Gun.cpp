@@ -11,8 +11,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Crosshair.h"
 #include "Magazine.h"
+#include "Bullet.h"
 #include "MotionControllerComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AGun::AGun()
@@ -45,13 +47,20 @@ AGun::AGun()
 		gunSlideMeshComp->SetStaticMesh(tempSlideMesh.Object);
 	}
 
+	triggerSceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("triggerSceneComp"));
+	triggerSceneComp->SetupAttachment(gunMeshComp);
+	triggerSceneComp->SetRelativeLocation(FVector(18.0f, 0.0f, 13.0f));
+
 	gunTriggerMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunTriggerMeshComp"));
-	gunTriggerMeshComp->SetupAttachment(gunMeshComp);
+	gunTriggerMeshComp->SetupAttachment(triggerSceneComp);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempTriggerMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/Pistol_Cube_006.Pistol_Cube_006'"));
 	if (tempTriggerMesh.Succeeded())
 	{
 		gunTriggerMeshComp->SetStaticMesh(tempTriggerMesh.Object);
+		gunTriggerMeshComp->SetRelativeLocation(FVector(-18.0f, 0.0f, -13.0f));
 	}
+
+	
 
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(gunMeshComp);
@@ -179,23 +188,39 @@ void AGun::OnDropped()
 	}
 }
 
-void AGun::Fire()
+void AGun::Fire(float fireAlpha)
 {
-	if (magazine && magazine->GetCurrentBulletCount() != 0 && bDoReloading)
-	{
-		FVector loc = muzzleLocation->GetComponentLocation();
-		FRotator rot = muzzleLocation->GetComponentRotation();
-		GetWorld()->SpawnActor<AActor>(bulletFactory, loc, rot);
-		magazine->FireBullet();
+	// Trigger Rotation
+	FRotator startRot = FRotator(0.0f, 0.0f, 0.0f);
+	FRotator endRot = FRotator(-30.0f, 0.0f, 0.0f);
+	//triggerSceneComp->SetRelativeRotation(FMath::Lerp<FRotator>(startRot, endRot, fireAlpha));
+	triggerSceneComp->SetRelativeRotation(FQuat::Slerp(startRot.Quaternion(), endRot.Quaternion(), fireAlpha));
 
-		if (magazine->GetCurrentBulletCount() == 0)
+	if (bFireCompleted)
+	{
+		return;
+	}
+
+	if (fireAlpha >= 0.9f)
+	{
+		bFireCompleted = true;
+	
+		if (magazine && magazine->GetCurrentBulletCount() != 0 && bDoReloading)
 		{
-			magazine->bulletMeshComp1->SetVisibility(false);
-			OpenSlider();
-		}
-		else if (magazine->GetCurrentBulletCount() == 1)
-		{
-			magazine->bulletMeshComp2->SetVisibility(false);
+			FVector loc = muzzleLocation->GetComponentLocation();
+			FRotator rot = muzzleLocation->GetComponentRotation();
+			GetWorld()->SpawnActor<ABullet>(bulletFactory, loc, rot);
+			magazine->FireBullet();
+
+			if (magazine->GetCurrentBulletCount() == 0)
+			{
+				magazine->bulletMeshComp1->SetVisibility(false);
+				OpenSlider();
+			}
+			else if (magazine->GetCurrentBulletCount() == 1)
+			{
+				magazine->bulletMeshComp2->SetVisibility(false);
+			}
 		}
 	}
 }
