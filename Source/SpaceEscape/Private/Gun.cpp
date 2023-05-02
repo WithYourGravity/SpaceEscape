@@ -193,7 +193,8 @@ void AGun::Fire(float fireAlpha)
 	// Trigger Rotation
 	FRotator startRot = FRotator(0.0f, 0.0f, 0.0f);
 	FRotator endRot = FRotator(-30.0f, 0.0f, 0.0f);
-	triggerSceneComp->SetRelativeRotation(FMath::Lerp<FRotator>(startRot, endRot, fireAlpha));
+	//triggerSceneComp->SetRelativeRotation(FMath::Lerp<FRotator>(startRot, endRot, fireAlpha));
+	triggerSceneComp->SetRelativeRotation(FQuat::Slerp(startRot.Quaternion(), endRot.Quaternion(), fireAlpha));
 
 	if (bFireCompleted)
 	{
