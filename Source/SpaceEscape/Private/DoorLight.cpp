@@ -13,6 +13,19 @@ ADoorLight::ADoorLight()
 
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
 	SetRootComponent(meshComp);
+	meshComp->SetRelativeScale3D(FVector(2.f));
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/BigStarStation/StaticMesh/Props/SM_LightSource06.SM_LightSource06'"));
+    if (tempMesh.Succeeded())
+    {
+		meshComp->SetStaticMesh(tempMesh.Object);
+    }
+
+	ConstructorHelpers::FObjectFinder<UMaterial>tempMaterial(TEXT("/Script/Engine.Material'/Game/LTG/Materials/M_DoorLight.M_DoorLight'"));
+    if (tempMaterial.Succeeded())
+    {
+		meshComp->SetMaterial(1, tempMaterial.Object);
+    }
 }
 
 // Called when the game starts or when spawned

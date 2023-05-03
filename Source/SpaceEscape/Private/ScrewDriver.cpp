@@ -6,6 +6,7 @@
 #include "Screw.h"
 #include "EscapePlayer.h"
 #include "MotionControllerComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AScrewDriver::AScrewDriver()
@@ -24,6 +25,7 @@ AScrewDriver::AScrewDriver()
 	boxComp->SetRelativeRotation(FRotator(0, 90, 90));
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ScrewMesh"));
 	meshComp->SetupAttachment(RootComponent);
+
 }
 
 // Called when the game starts or when spawned
@@ -42,6 +44,17 @@ void AScrewDriver::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Driver의 최초 회전 값을 구한다.
+
+	//Driver을 잡았을 때 최초 회전 값보다 얼마나 회전했는지 구한다
+
+	//그 값만큼 회전해준다 (Transform, lerp)
+
+	deltaRot = initRot - newRot;
+	if(deltaRot > 0)
+	{
+		
+	}
 }
 
 void AScrewDriver::AttachedByHand()
@@ -53,6 +66,7 @@ void AScrewDriver::AttachedByHand()
 		//드라이버가 손에 붙으면
 		SetActorRotation(player->GetActorRotation());
 		SetActorLocation(player->rightAim->GetComponentLocation());
+		AttachNailProcess();
 	}
 }
 
@@ -65,8 +79,9 @@ void AScrewDriver::AttachNailtoScrew(UPrimitiveComponent* OverlappedComponent, A
 		isAttaching = true;
 		attachedScrew->boxComp->SetSimulatePhysics(false);
 		attachedScrew->boxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
 		//attachedScrew->AttachToComponent(boxComp, FAttachmentTransformRules::KeepWorldTransform);
-		attachedScrew->SetActorLocation(attachedScrew->GetActorLocation());
+		//attachedScrew->SetActorLocation(attachedScrew->GetActorLocation());
 		//auto y = attachedNail->GetActorRotation().Yaw;
 		//auto p = attachedNail->GetActorRotation().Pitch;
 		//DisableInput(attachedNail->GetActorRotation().Yaw);
@@ -81,18 +96,19 @@ void AScrewDriver::AttachNailProcess()
 
 	//드라이버의 이전 회전
 	//auto prevScrewRot = GetActorRotation().Roll - 10;
-
 	//나사의 회전값
 	//auto nailRot = attachedNail->GetActorRotation().Roll;
-	if (isAttaching == true)
+	/*if (isAttaching == true)
 	{
 		double currentRot = GetActorRotation().Roll;
 		if (initRot - currentRot > 10)
 		{
 			ComingoutNails();
 		}
-	}
-
+	}*/
+	AttachToActor(attachedScrew, FAttachmentTransformRules::KeepWorldTransform);
+	auto fromTransform = attachedScrew->boxComp->GetRelativeTransform();
+	auto toTransform = UKismetMathLibrary::MakeTransform(FVector(0, 0, 0), FRotator(0, 180, 0));
 }
 
 void AScrewDriver::ComingoutNails()
@@ -110,4 +126,10 @@ void AScrewDriver::initScrew()
 }
 
 //드라이버가 나사에 닿으면 드라이버의 회전 값에 맞춰서 나사를 회전시킨다
+void AScrewDriver::AddRotation()
+{
+	//attachedScrew->AddActorWorldRotation(UKismetMathLibrary::MakeRotFromX());
+	//attachedScrew->AddActorWorldOffset()
+}
+
 

@@ -31,7 +31,9 @@ public:
 	class UGrabComponent* grabComp;
 
 	UFUNCTION()
-	void ChangeIsGrabed();
+	void OnGrabed();
+	UFUNCTION()
+	void OnDroped();
 	void BoxShouldBeClosed();
 	void ControlByPlayerHand();
 
@@ -42,5 +44,9 @@ private:
 	// 플레이어가 커버 잡았는지 여부
 	bool bIsGrabed;
 	bool bRecordOnce;
+	bool bRecordRightOnce;
+	bool bRecordLeftOnce;
 	FVector startVector;
+	FVector afterVector;
+	FVector deltaVector;
 };

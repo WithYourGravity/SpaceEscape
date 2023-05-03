@@ -17,7 +17,7 @@ ARemoteControlController::ARemoteControlController()
 
 	tabletMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TabletMeshComp"));
 	SetRootComponent(tabletMeshComp);
-	tabletMeshComp->SetRelativeScale3D(FVector(0.2f));
+	tabletMeshComp->SetRelativeScale3D(FVector(0.15f));
 	tabletMeshComp->SetSimulatePhysics(true);
 	tabletMeshComp->SetGenerateOverlapEvents(false);
 	tabletMeshComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
@@ -127,7 +127,11 @@ void ARemoteControlController::OnOverlap(UPrimitiveComponent* OverlappedComponen
 	remoteObject->ControlManager(compName);
 
 	auto player = Cast<AEscapePlayer>(OtherActor);
-	if (player)
+	if (player && OtherComp->GetName().Contains("left"))
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+	}
+	else
 	{
 		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
 	}

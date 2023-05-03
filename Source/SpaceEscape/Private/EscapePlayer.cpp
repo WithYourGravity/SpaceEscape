@@ -280,7 +280,6 @@ bool AEscapePlayer::CheckHitTeleport(FVector lastPos, FVector& curPos)
 	// 두 점 사이에 충돌체 있는지 확인
 	FHitResult hitInfo;
 	bool bHit = HitTest(lastPos, curPos, hitInfo);
-	
 	// 만약 부딪힌 대상이 바닥이라면
 	if (bHit && hitInfo.GetActor()->GetActorNameOrLabel().Contains(TEXT("Floor")))
 	{
@@ -296,8 +295,6 @@ bool AEscapePlayer::CheckHitTeleport(FVector lastPos, FVector& curPos)
 	{
 		teleportCircle->SetVisibility(false);
 	}
-	
-
 	return bHit;
 }
 

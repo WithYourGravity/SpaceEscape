@@ -36,7 +36,7 @@ public:
 	//UFUNCTION()
 	//void OnTriggeredEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	/*퍼즐풀기를 완료하면 양 옆으로 열리는 문*/
+	/*퍼즐풀기를 완료하면 옆으로 열리는 문*/
 	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
 		class UStaticMeshComponent* doorMesh;
 
@@ -59,9 +59,9 @@ public:
 	FVector startPoint;
 	UPROPERTY()
 	FVector endPoint;
-	UPROPERTY(EditDefaultsOnly, Category = "DoorTimeLine")
+	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
 	float yOffset = 200;
-	UPROPERTY(EditDefaultsOnly, Category = "DoorTimeLine")
+	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
 	UCurveFloat* curveFloat;
 	
 	//문 최초 위치
