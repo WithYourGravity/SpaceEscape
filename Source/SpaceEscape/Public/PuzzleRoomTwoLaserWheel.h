@@ -20,8 +20,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
-	//UPROPERTY(EditDefaultsOnly)
-	//class UBoxComponent* boxComp;
+	UPROPERTY(EditDefaultsOnly)
+	class USceneComponent* sceneComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* meshComp;
 	UPROPERTY(EditDefaultsOnly)

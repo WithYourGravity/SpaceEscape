@@ -11,11 +11,11 @@
 
 APuzzleRoomTwoLaserWheel::APuzzleRoomTwoLaserWheel()
 {
-	//boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
-	//SetRootComponent(boxComp);
+	sceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("sceneComp"));
+	SetRootComponent(sceneComp);
 
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("meshComp"));
-	SetRootComponent(meshComp);
+	meshComp->SetupAttachment(RootComponent);
 	meshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/SM_Wheel.SM_Wheel'"));
@@ -25,7 +25,7 @@ APuzzleRoomTwoLaserWheel::APuzzleRoomTwoLaserWheel()
 	}
 
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
-	grabComp->SetupAttachment(RootComponent);
+	grabComp->SetupAttachment(meshComp);
 	grabComp->grabType = EGrabType::LEVER;
 
 	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base>tempHaptic(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
@@ -39,8 +39,7 @@ void APuzzleRoomTwoLaserWheel::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 플레이어 캐싱
-	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	
 	// 맵에 있는 모든 laser를 캐싱해온다
 	UGameplayStatics::GetAllActorsOfClass(this, APuzzleRoomTwoLaser::StaticClass(), laserArray);
 	currentLaser = Cast<APuzzleRoomTwoLaser>(laserArray[arrayIndex]);
@@ -49,8 +48,11 @@ void APuzzleRoomTwoLaserWheel::BeginPlay()
 	// 레버가 당겨지면 laser index가 증가한다
 	laserLever->laserLaverDele.BindUFunction(this, FName("ChangeLaserIndex"));
 	// 플레이어 grab delegate 바인딩
-	grabComp->onGrabbedDelegate.AddUFunction(this, TEXT("ChangeIsGrabed"));
-	grabComp->onDroppedDelegate.AddUFunction(this, TEXT("ChangeIsGrabed"));
+	grabComp->onGrabbedDelegate.AddUFunction(this, FName("ChangeIsGrabed"));
+	grabComp->onDroppedDelegate.AddUFunction(this, FName("ChangeIsGrabed"));
+
+	// 플레이어 캐싱
+	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 }
 
 void APuzzleRoomTwoLaserWheel::Tick(float DeltaSeconds)
