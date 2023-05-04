@@ -41,7 +41,10 @@ void APuzzleRoomTwoLaser::LetsTraceLaser(class UStaticMeshComponent* startPointM
 	FVector endLoc = startLoc + startPointMeshComp->GetForwardVector() * 1500;
 	FCollisionQueryParams params;
 	params.AddIgnoredComponent(startPointMeshComp);
+	
 	GetWorld()->LineTraceSingleByChannel(hitResult, startLoc, endLoc, ECC_Visibility, params);
-	DrawDebugLine(GetWorld(), startLoc, hitResult.ImpactPoint, FColor::Blue, false, -1, 0, 5);
-	laserNiagaraComp->SetVectorParameter(FName("LaserEnd"), hitResult.ImpactPoint);
+	//DrawDebugLine(GetWorld(), startLoc, hitResult.ImpactPoint, FColor::Blue, false, -1, 0, 5);
+
+	// Niagara User Parameter¿¡ ³ÖÀ¸´Ï »ó´ëÁÂÇ¥¶ó¼­ ½ÃÀÛÁ¡ »©ÁÜ
+	laserNiagaraComp->SetVectorParameter(FName("LaserEnd"), hitResult.ImpactPoint - startLoc);
 }

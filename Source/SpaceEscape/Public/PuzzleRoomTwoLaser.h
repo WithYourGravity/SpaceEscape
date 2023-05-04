@@ -3,14 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PuzzleBase.h"
 #include "PuzzleRoomTwoLaser.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SPACEESCAPE_API APuzzleRoomTwoLaser : public APuzzleBase
+class SPACEESCAPE_API APuzzleRoomTwoLaser : public AActor
 {
 	GENERATED_BODY()
 
