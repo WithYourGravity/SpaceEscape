@@ -2,9 +2,8 @@
 
 
 #include "Clipboard.h"
-
 #include "GrabComponent.h"
-#include "Pencil.h"
+#include "Marker.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
@@ -16,20 +15,14 @@ AClipboard::AClipboard()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
-	SetRootComponent(boxComp);
-	boxComp->SetBoxExtent(FVector(22.5f, 34.0f, 0.6f));
-	boxComp->SetSimulatePhysics(true);
-	boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
-
 	boardMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("boardMeshComp"));
-	boardMeshComp->SetupAttachment(RootComponent);
+	SetRootComponent(boardMeshComp);
+	boardMeshComp->SetSimulatePhysics(true);
+	boardMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempBoardMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/BoardNPencil/ClipBoard_board_1.ClipBoard_board_1'"));
 	if (tempBoardMesh.Succeeded())
 	{
 		boardMeshComp->SetStaticMesh(tempBoardMesh.Object);
-		boardMeshComp->SetCollisionProfileName(FName("NoCollision"));
-		boardMeshComp->SetRelativeLocation(FVector(0.0f, -6.0f, -2.0f));
 		boardMeshComp->SetRelativeScale3D(FVector(0.5f));
 	}
 
@@ -40,14 +33,18 @@ AClipboard::AClipboard()
 	{
 		pageMeshComp->SetStaticMesh(tempPageMesh.Object);
 		pageMeshComp->SetCollisionProfileName(FName("BoardPreset"));
-		pageMeshComp->SetRelativeLocation(FVector(0.0f, -6.0f, -2.0f));
-		pageMeshComp->SetRelativeScale3D(FVector(0.5f));
+	}
+
+	ConstructorHelpers::FObjectFinder<UMaterialInstance> tempMat(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/YSY/Assets/BoardNPencil/MI_Page.MI_Page'"));
+	if (tempMat.Succeeded())
+	{
+		pageMeshComp->SetMaterial(0, tempMat.Object);
 	}
 
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(RootComponent);
-	grabComp->grabType = EGrabType::SNAP;
-	grabComp->SetRelativeLocation(FVector(-21.0f, 20.0f, 0.0f));
+	grabComp->grabType = EGrabType::FREE;
+	grabComp->SetRelativeLocation(FVector(0.0f, 24.0f, 4.0f));
 	grabComp->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> tempPageMaterialInst(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/YSY/Assets/BoardNPencil/MI_Page.MI_Page'"));
@@ -83,17 +80,17 @@ void AClipboard::Tick(float DeltaTime)
 
 }
 
-void AClipboard::OnPaintVisualTraceLine(APencil* brush, const FHitResult& hitInfo)
+void AClipboard::OnPaintVisualTraceLine(AMarker* brush, const FHitResult& hitInfo)
 {
-	pencil = brush;
+	marker = brush;
 
 	FVector2D collisionUV;
 	UGameplayStatics::FindCollisionUV(hitInfo, 0, collisionUV);
 
 	brushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4(collisionUV.X, collisionUV.Y, 0.0f, 1.0f));
-	brushMaterialInstance->SetScalarParameterValue(FName("BrushSize"), pencil->brushSize);
-	brushMaterialInstance->SetVectorParameterValue(FName("BrushColor"), pencil->brushColor);
-	brushMaterialInstance->SetScalarParameterValue(FName("BrushStrength"), pencil->brushStrength);
+	brushMaterialInstance->SetScalarParameterValue(FName("BrushSize"), marker->brushSize);
+	brushMaterialInstance->SetVectorParameterValue(FName("BrushColor"), marker->brushColor);
+	brushMaterialInstance->SetScalarParameterValue(FName("BrushStrength"), marker->brushStrength);
 
 	UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), renderToTexture, brushMaterialInstance);
 }

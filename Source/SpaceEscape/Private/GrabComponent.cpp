@@ -68,6 +68,10 @@ bool UGrabComponent::TryGrab(UMotionControllerComponent* motionController)
 		GetAttachParent()->SetWorldLocation(newLocation, false, nullptr, ETeleportType::TeleportPhysics);
 		}
 		break;
+	case EGrabType::MARKER:
+		SetPrimitiveCompPhysics(false);
+		bIsHeld = true;
+		break;
 	case EGrabType::LEVER:
 		bIsHeld = true;
 		break;
@@ -111,6 +115,7 @@ bool UGrabComponent::TryRelease()
 	{
 	case EGrabType::FREE:
 	case EGrabType::SNAP:
+	case EGrabType::MARKER:
 		{
 		bool bIsOtherGrab = false;
 		TArray<UGrabComponent*> tempGrabComps;

@@ -23,9 +23,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly)
-	class UBoxComponent* boxComp;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Clipboard")
 	class UStaticMeshComponent* boardMeshComp;
 
@@ -35,7 +32,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
 	class UGrabComponent* grabComp;
 
-	void OnPaintVisualTraceLine(class APencil* brush, const FHitResult& hitInfo);
+	void OnPaintVisualTraceLine(class AMarker* brush, const FHitResult& hitInfo);
 
 private:
 	UPROPERTY()
@@ -53,5 +50,5 @@ private:
 	class UMaterialInterface* paintBrushMaterialInterface;
 
 	UPROPERTY()
-	class APencil* pencil;
+	class AMarker* marker;
 };
