@@ -49,5 +49,6 @@ private:
 	int arrayIndex;
 	bool bIsGrabed;
 	bool bRecordOnce;
+	float laserRotateSpeed = 0.4f;
 	FVector startVector;
 };

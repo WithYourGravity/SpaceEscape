@@ -69,10 +69,6 @@ void APuzzleRoomTwoLaserWheel::ChangeLaserIndex()
 {
 	arrayIndex++;
 	currentLaser = Cast<APuzzleRoomTwoLaser>(laserArray[arrayIndex % laserArray.Num()]);
-	UE_LOG(LogTemp, Warning, TEXT("it works!"));
-	// 레이저 회전 부분
-	currentLaser->SetActorRotation(GetActorRotation() + FRotator(0, 30, 0));
-
 }
 
 void APuzzleRoomTwoLaserWheel::ChangeIsGrabed()
@@ -96,6 +92,7 @@ void APuzzleRoomTwoLaserWheel::ControlByPlayerHand()
 		handLocation = player->rightHandMesh->GetComponentLocation();
 	}
 
+	// 처음 위치값 한 번 갱신
 	if (!bRecordOnce)
 	{
 		startVector = (handLocation - GetActorLocation()).GetSafeNormal();
@@ -105,13 +102,23 @@ void APuzzleRoomTwoLaserWheel::ControlByPlayerHand()
 
 	FVector afterVector = (handLocation - GetActorLocation()).GetSafeNormal();
 	float degree = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(startVector, afterVector)));
-
-	//FRotator rot = GetActorRotation();
-	//rot.Yaw = degree;
-	startVector = (handLocation - GetActorLocation()).GetSafeNormal();
-	//rot.Yaw = rot.Yaw + degree;
-
+	// 두 벡터를 외적해서 수직인 벡터를 구해 좌우 방향을 정해준다
+	FVector crossVec = FVector::CrossProduct(startVector, afterVector);
+	if (crossVec.Z < 0)
+	{
+		degree *= -1;
+	}
+	// 휠 돌리기
 	AddActorLocalRotation(FRotator(0, degree, 0));
-	//SetActorRotation(rot);
-	UE_LOG(LogTemp, Warning, TEXT("degree is %f"), degree);
+	// 레이저 각도 돌리기
+	float currentLaserRoll = currentLaser->laserTopMeshComp->GetRelativeRotation().Roll;
+	if (currentLaserRoll <= 90 && currentLaserRoll >= -90)
+	{
+		currentLaser->laserTopMeshComp->AddLocalRotation(FRotator(0, 0, degree * laserRotateSpeed));
+	}
+
+	startVector = (handLocation - GetActorLocation()).GetSafeNormal();
+
+	//UE_LOG(LogTemp, Warning, TEXT("degree is %f"), degree);
+	//UE_LOG(LogTemp, Warning, TEXT("currentLaserRoll is %f"), currentLaserRoll);
 }
