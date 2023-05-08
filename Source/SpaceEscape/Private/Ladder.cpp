@@ -2,10 +2,8 @@
 
 
 #include "Ladder.h"
-
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
-#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -14,12 +12,9 @@ ALadder::ALadder()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
-	SetRootComponent(boxComp);
-	boxComp->SetBoxExtent(FVector(7, 46, 210));
-
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("meshComp"));
-	meshComp->SetupAttachment(RootComponent);
+	SetRootComponent(meshComp);
+	meshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Ladder/Ladder.Ladder'"));
 	if (tempMesh.Succeeded())
@@ -33,7 +28,7 @@ ALadder::ALadder()
 	{
 		FString compName = FString::Printf(TEXT("grabComp%d"), i + 1);
 		auto grabComp = CreateDefaultSubobject<UGrabComponent>(FName(*compName));
-		grabComp->SetupAttachment(meshComp);
+		grabComp->SetupAttachment(RootComponent);
 		grabComp->grabType = EGrabType::CLIMB;
 		grabComps.Add(grabComp);
 	}

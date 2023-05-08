@@ -23,9 +23,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly)
-	class UBoxComponent* boxComp;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Ladder")
 	class UStaticMeshComponent* meshComp;
 
