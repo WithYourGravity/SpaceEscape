@@ -27,5 +27,15 @@ public:
 	class UStaticMeshComponent* meshComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UWidgetComponent* wallScreenComp;
+	UPROPERTY(EditDefaultsOnly)
+	class UBoxComponent* boxComp;
+	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+private:
+	UPROPERTY()
+	class ARoomManager* rm;
+	UPROPERTY()
+	class UPuzzleRoomTwoWallPadWidget* gravityWidget;
+	bool bActiveOnce;
 };

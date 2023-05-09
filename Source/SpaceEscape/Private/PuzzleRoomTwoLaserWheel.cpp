@@ -104,7 +104,7 @@ void APuzzleRoomTwoLaserWheel::ControlByPlayerHand()
 	float degree = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(startVector, afterVector)));
 	// 두 벡터를 외적해서 수직인 벡터를 구해 좌우 방향을 정해준다
 	FVector crossVec = FVector::CrossProduct(startVector, afterVector);
-	if (crossVec.Z < 0)
+	if (crossVec.Y > 0)
 	{
 		degree *= -1;
 	}
