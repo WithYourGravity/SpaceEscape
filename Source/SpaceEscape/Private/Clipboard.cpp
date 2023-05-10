@@ -80,9 +80,9 @@ void AClipboard::Tick(float DeltaTime)
 
 }
 
-void AClipboard::OnPaintVisualTraceLine(AMarker* brush, const FHitResult& hitInfo)
+void AClipboard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo)
 {
-	marker = brush;
+	marker = Cast<AMarker>(brush);
 
 	FVector2D collisionUV;
 	UGameplayStatics::FindCollisionUV(hitInfo, 0, collisionUV);

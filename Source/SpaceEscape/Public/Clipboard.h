@@ -32,7 +32,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
 	class UGrabComponent* grabComp;
 
-	void OnPaintVisualTraceLine(class AMarker* brush, const FHitResult& hitInfo);
+	void OnPaintVisualTraceLine(class AActor* brush, const FHitResult& hitInfo);
 
 private:
 	UPROPERTY()

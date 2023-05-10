@@ -45,13 +45,12 @@ public:
 	FLinearColor brushColor = FLinearColor::Blue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marker")
-	float brushSize = 0.05f;
+	float brushSize = 0.02f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marker")
 	float brushStrength = 1.0f;
 
 	bool bUsing = false;
-	bool bIsOverlappedTip = false;
 
 	UPROPERTY()
 	class AEscapePlayer* player;
