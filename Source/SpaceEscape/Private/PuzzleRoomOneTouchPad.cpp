@@ -121,6 +121,7 @@ void APuzzleRoomOneTouchPad::BeginPlay()
 	touchKeyCompEnt->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomOneTouchPad::TouchPadOverlap);
 	touchKeyCompDel->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomOneTouchPad::TouchPadOverlap);
 
+	// 세팅된 Widget Blueprint에 따라 동작하게 if문으로 나눔
 	rmOnePanelWidget = Cast<UPuzzleRoomOneTouchPadPanelWidget>(screenWidgetComp->GetWidget());
 	if (rmOnePanelWidget)
 	{
@@ -234,13 +235,11 @@ void APuzzleRoomOneTouchPad::CheckPassword()
 	{
 		if (rmTwoPanelWidget->GetCurrentScreen() == answer)
 		{
-			// 성공 처리
 			ReportClear();
 			UE_LOG(LogTemp, Warning, TEXT("Succeeded"));
 		}
 		else
 		{
-			// 실패 처리
 			UE_LOG(LogTemp, Warning, TEXT("Failed"));
 		}
 	}
