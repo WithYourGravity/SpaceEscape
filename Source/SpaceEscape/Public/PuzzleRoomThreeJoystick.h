@@ -24,6 +24,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditDefaultsOnly)
+	class UBoxComponent* boxComp;
+	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* stickMeshComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* baseMeshComp;
@@ -32,8 +34,8 @@ public:
 
 	UFUNCTION()
 	void ChangeIsGrabed();
-	void SetJoystickDefault(float deltaSeconds);
 	void ControlByPlayerHand();
+	void SetStickDefault();
 
 
 private:
