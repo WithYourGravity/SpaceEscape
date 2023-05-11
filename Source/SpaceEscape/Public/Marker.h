@@ -55,6 +55,9 @@ public:
 	UPROPERTY()
 	class AEscapePlayer* player;
 
+	UPROPERTY()
+	class UMaterialInstance* colorMaterialInst;
+
 	UFUNCTION()
 	void OnGrabbed();
 	UFUNCTION()

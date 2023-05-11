@@ -36,10 +36,13 @@ public:
 	FLinearColor brushColor = FLinearColor::White;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eraser")
-	float brushSize = 0.02f;
+	float brushSize = 0.15f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eraser")
 	float brushStrength = 1.0f;
+
+	UPROPERTY()
+	class AEscapePlayer* player;
 
 	bool bUsing = false;
 

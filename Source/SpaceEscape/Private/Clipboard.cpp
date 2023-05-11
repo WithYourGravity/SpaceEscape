@@ -2,6 +2,7 @@
 
 
 #include "Clipboard.h"
+#include "Eraser.h"
 #include "GrabComponent.h"
 #include "Marker.h"
 #include "Components/BoxComponent.h"
@@ -57,6 +58,12 @@ AClipboard::AClipboard()
 	{
 		paintBrushMaterialInterface = tempPaintBrushMaterialInterface.Object;
 	}
+
+	ConstructorHelpers::FObjectFinder<UMaterialInterface> tempEraseBrushMaterialInterface(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/YSY/Assets/BoardNPencil/MI_EraseBrush.MI_EraseBrush'"));
+	if (tempEraseBrushMaterialInterface.Succeeded())
+	{
+		eraseBrushMaterialInterface = tempEraseBrushMaterialInterface.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -69,6 +76,7 @@ void AClipboard::BeginPlay()
 	renderToTexture = UKismetRenderingLibrary::CreateRenderTarget2D(GetWorld(), renderTextureSizeX, renderTextureSizeY);
 
 	brushMaterialInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), paintBrushMaterialInterface);
+	eraseBrushMaterialInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), eraseBrushMaterialInterface);
 
 	pageDynamicMaterial->SetTextureParameterValue(FName("BrushStroke"), renderToTexture);
 }
@@ -82,15 +90,28 @@ void AClipboard::Tick(float DeltaTime)
 
 void AClipboard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo)
 {
-	marker = Cast<AMarker>(brush);
+	AMarker* marker = Cast<AMarker>(brush);
+	AEraser* eraser = Cast<AEraser>(brush);
 
 	FVector2D collisionUV;
 	UGameplayStatics::FindCollisionUV(hitInfo, 0, collisionUV);
 
-	brushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4(collisionUV.X, collisionUV.Y, 0.0f, 1.0f));
-	brushMaterialInstance->SetScalarParameterValue(FName("BrushSize"), marker->brushSize);
-	brushMaterialInstance->SetVectorParameterValue(FName("BrushColor"), marker->brushColor);
-	brushMaterialInstance->SetScalarParameterValue(FName("BrushStrength"), marker->brushStrength);
+	if (marker)
+	{
+		brushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4(collisionUV.X, collisionUV.Y, 0.0f, 1.0f));
+		brushMaterialInstance->SetScalarParameterValue(FName("BrushSize"), marker->brushSize);
+		brushMaterialInstance->SetVectorParameterValue(FName("BrushColor"), marker->brushColor);
+		brushMaterialInstance->SetScalarParameterValue(FName("BrushStrength"), marker->brushStrength);
 
-	UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), renderToTexture, brushMaterialInstance);
+		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), renderToTexture, brushMaterialInstance);
+	}
+	else if (eraser)
+	{
+		eraseBrushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4(collisionUV.X, collisionUV.Y, 0.0f, 1.0f));
+		eraseBrushMaterialInstance->SetScalarParameterValue(FName("BrushSize"), eraser->brushSize);
+		eraseBrushMaterialInstance->SetVectorParameterValue(FName("BrushColor"), eraser->brushColor);
+		eraseBrushMaterialInstance->SetScalarParameterValue(FName("BrushStrength"), eraser->brushStrength);
+
+		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), renderToTexture, eraseBrushMaterialInstance);
+	}
 }

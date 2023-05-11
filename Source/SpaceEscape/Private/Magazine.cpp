@@ -28,6 +28,7 @@ AMagazine::AMagazine()
 		magazineMeshComp->SetStaticMesh(tempMesh.Object);
 		magazineMeshComp->SetRelativeRotation(FRotator(0, -90, -90));
 		magazineMeshComp->SetRelativeScale3D(FVector(0.36f));
+		magazineMeshComp->SetCollisionProfileName(FName("NoCollision"));
 	}
 
 	bulletMeshComp1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("bulletMeshComp1"));
@@ -55,7 +56,7 @@ AMagazine::AMagazine()
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(RootComponent);
 	grabComp->grabType = EGrabType::SNAP;
-	grabComp->SetRelativeLocation(FVector(6, 1, 0));
+	grabComp->SetRelativeLocation(FVector(5, 2, 0));
 	grabComp->SetRelativeRotation(FRotator(0, 180, 270));
 }
 
@@ -88,7 +89,6 @@ void AMagazine::Tick(float DeltaTime)
 
 		if (FVector::Dist(magazineOverlapLocation, handLocation) >= 20.0f && dir < 0)
 		{
-
 			grabComp->TryGrab(playerHand);
 			bIsOverlapGun = false;
 			gun->magazine = nullptr;

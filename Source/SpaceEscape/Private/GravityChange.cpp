@@ -2,9 +2,7 @@
 
 
 #include "GravityChange.h"
-
 #include "DoorButton.h"
-#include "EscapePlayer.h"
 #include "RoomManager.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -14,22 +12,12 @@ AGravityChange::AGravityChange()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
-	//SetRootComponent(boxComp);
-
-	//meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("meshComp"));
-	//meshComp->SetupAttachment(RootComponent);
-
 }
 
 // Called when the game starts or when spawned
 void AGravityChange::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//boxComp->OnComponentBeginOverlap.AddDynamic(this, &AGravityChange::OnOverlap);
-
-	//player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	worldSettings = GetWorldSettings();
 	worldSettings->bGlobalGravitySet = true;
@@ -67,7 +55,10 @@ void AGravityChange::ChangeGravity(bool bCurGravity)
 
 void AGravityChange::ChangeStageTwoGravity()
 {
-	//if (roomManager->playingStage)
+	if (roomManager == nullptr || roomManager->GetCurrentPlayingStage() != 2 || doorButton->bOpened)
+	{
+		return;
+	}
 
 	ChangeGravity(bIsZeroGravity);
 }

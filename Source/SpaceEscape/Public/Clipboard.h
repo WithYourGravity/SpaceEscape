@@ -47,8 +47,9 @@ private:
 	UPROPERTY()
 	class UMaterialInstanceDynamic* brushMaterialInstance;
 	UPROPERTY()
-	class UMaterialInterface* paintBrushMaterialInterface;
-
+	class UMaterialInstanceDynamic* eraseBrushMaterialInstance;
 	UPROPERTY()
-	class AMarker* marker;
+	class UMaterialInterface* paintBrushMaterialInterface;
+	UPROPERTY()
+	class UMaterialInterface* eraseBrushMaterialInterface;
 };

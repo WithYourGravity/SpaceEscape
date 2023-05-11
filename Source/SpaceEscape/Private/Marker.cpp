@@ -64,6 +64,8 @@ AMarker::AMarker()
 	{
 		tipMeshComp->SetMaterial(0, tempMat.Object);
 		cylinderMeshComp1->SetMaterial(0, tempMat.Object);
+
+		colorMaterialInst = tempMat.Object;
 	}
 
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
@@ -80,6 +82,11 @@ void AMarker::BeginPlay()
 
 	grabComp->onGrabbedDelegate.AddUFunction(this, FName("OnGrabbed"));
 	grabComp->onDroppedDelegate.AddUFunction(this, FName("OnDropped"));
+
+	UMaterialInstanceDynamic* tipColorDynamicMaterial = tipMeshComp->CreateDynamicMaterialInstance(0, colorMaterialInst);
+	tipColorDynamicMaterial->SetVectorParameterValue(FName("PencilColor"), brushColor);
+	UMaterialInstanceDynamic* cylinderColorDynamicMaterial = cylinderMeshComp1->CreateDynamicMaterialInstance(0, colorMaterialInst);
+	cylinderColorDynamicMaterial->SetVectorParameterValue(FName("PencilColor"), brushColor);
 }
 
 // Called every frame

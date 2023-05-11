@@ -22,9 +22,12 @@ AEscapePlayer::AEscapePlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	GetCapsuleComponent()->SetCapsuleHalfHeight(73.0f);
+
 	vrCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("VRCamera"));
 	vrCamera->SetupAttachment(RootComponent);
 	vrCamera->bUsePawnControlRotation = false;
+	vrCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 35.0f));
 
 	// MotionController
 	leftHand = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftHand"));

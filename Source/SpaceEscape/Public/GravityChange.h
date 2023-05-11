@@ -23,12 +23,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//UPROPERTY(EditDefaultsOnly)
-	//class UBoxComponent* boxComp;
-
-	//UPROPERTY(EditDefaultsOnly, Category = "Gravity")
-	//class UStaticMeshComponent* meshComp;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gravity")
 	bool bIsZeroGravity = false;
 
@@ -37,8 +31,6 @@ public:
 
 	UPROPERTY()
 	class ADoorButton* doorButton;
-	//UPROPERTY()
-	//class AEscapePlayer* player;
 
 	UPROPERTY()
 	class AWorldSettings* worldSettings;

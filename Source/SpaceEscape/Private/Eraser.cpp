@@ -3,8 +3,10 @@
 
 #include "Eraser.h"
 #include "Clipboard.h"
+#include "EscapePlayer.h"
 #include "GrabComponent.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEraser::AEraser()
@@ -32,13 +34,15 @@ AEraser::AEraser()
 
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(RootComponent);
-	grabComp->grabType = EGrabType::SNAP;
+	grabComp->grabType = EGrabType::MARKER;
 }
 
 // Called when the game starts or when spawned
 void AEraser::BeginPlay()
 {
 	Super::BeginPlay();
+
+	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	grabComp->onGrabbedDelegate.AddUFunction(this, FName("OnGrabbed"));
 	grabComp->onDroppedDelegate.AddUFunction(this, FName("OnDropped"));
@@ -58,6 +62,15 @@ void AEraser::Tick(float DeltaTime)
 void AEraser::OnGrabbed()
 {
 	bUsing = true;
+
+	if (grabComp->GetHeldByHand() == EControllerHand::Right)
+	{
+		AttachToComponent(player->rightHandMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("eraserSocket_r"));
+	}
+	else
+	{
+		AttachToComponent(player->leftHandMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("eraserSocket_l"));
+	}
 }
 
 void AEraser::OnDropped()
@@ -69,7 +82,7 @@ void AEraser::DetectHitBoard()
 {
 	FHitResult hitInfo;
 	FVector start = GetActorLocation();
-	FVector end = start + GetActorUpVector() * 4.0f;
+	FVector end = start + GetActorUpVector() * -2.0f;
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(this);
 	params.bTraceComplex = true;
@@ -82,7 +95,7 @@ void AEraser::DetectHitBoard()
 		AClipboard* board = Cast<AClipboard>(hitInfo.GetActor());
 		if (board)
 		{
-			//board->OnPaintVisualTraceLine(this, hitInfo);
+			board->OnPaintVisualTraceLine(this, hitInfo);
 		}
 	}
 }
