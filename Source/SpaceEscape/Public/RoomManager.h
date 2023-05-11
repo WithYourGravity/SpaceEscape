@@ -39,5 +39,6 @@ public:
 	UFUNCTION()
 	void AddSolvedPuzzleCount();
 	void MoveOnNextStage();
+	int GetCurrentPlayingStage();
 	FStageClearDele stageClearDele;
 };

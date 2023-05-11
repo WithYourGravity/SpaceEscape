@@ -5,6 +5,7 @@
 
 #include "EscapePlayer.h"
 #include "PuzzleRoomOneTouchPadPanelWidget.h"
+#include "PuzzleRoomTwoTouchPadPanelWidget.h"
 #include "Components/BoxComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/WidgetComponent.h"
@@ -21,7 +22,7 @@ APuzzleRoomOneTouchPad::APuzzleRoomOneTouchPad()
 	{
 		meshComp->SetStaticMesh(tempMesh.Object);
 	}
-	meshComp->SetRelativeScale3D(FVector(0.1f));
+	meshComp->SetRelativeScale3D(FVector(0.4f));
 	meshComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
 
 	screenWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Screen Widget"));
@@ -120,13 +121,19 @@ void APuzzleRoomOneTouchPad::BeginPlay()
 	touchKeyCompEnt->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomOneTouchPad::TouchPadOverlap);
 	touchKeyCompDel->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomOneTouchPad::TouchPadOverlap);
 
-	panelWidgetClass = Cast<UPuzzleRoomOneTouchPadPanelWidget>(screenWidgetComp->GetWidget());
-	if (panelWidgetClass == nullptr)
+	// 세팅된 Widget Blueprint에 따라 동작하게 if문으로 나눔
+	rmOnePanelWidget = Cast<UPuzzleRoomOneTouchPadPanelWidget>(screenWidgetComp->GetWidget());
+	if (rmOnePanelWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Panel Widget Casting Failed!!"));
+		rmOnePanelWidget->deleteCurrentScreen();
+		answer = "0714";
 	}
-
-	panelWidgetClass->deleteCurrentScreen();
+	else
+	{
+		rmTwoPanelWidget = Cast<UPuzzleRoomTwoTouchPadPanelWidget>(screenWidgetComp->GetWidget());
+		rmTwoPanelWidget->deleteCurrentScreen();
+		answer = "4514";
+	}	
 }
 
 // 터치패드의 입력에 따라 기능을 실행하는 함수
@@ -136,18 +143,40 @@ void APuzzleRoomOneTouchPad::TouchPadInput(FString number)
 	{
 		// Enter 처리
 		CheckPassword();
-		panelWidgetClass->deleteCurrentScreen();
+		if (rmOnePanelWidget)
+		{
+			rmOnePanelWidget->deleteCurrentScreen();
+		}
+		else
+		{
+			rmTwoPanelWidget->deleteCurrentScreen();
+		}
+
 		return;
 	}
 
 	if (number == "e")
 	{
 		// Delete 처리
-		panelWidgetClass->deleteCurrentScreen();
+		if (rmOnePanelWidget)
+		{
+			rmOnePanelWidget->deleteCurrentScreen();
+		}
+		else
+		{
+			rmTwoPanelWidget->deleteCurrentScreen();
+		}
 		return;
 	}
 
-	panelWidgetClass->addCurrentScreen(number);
+	if (rmOnePanelWidget)
+	{
+		rmOnePanelWidget->addCurrentScreen(number);
+	}
+	else
+	{
+		rmTwoPanelWidget->addCurrentScreen(number);
+	}
 }
 
 // 터치패드에 오버랩되면 실행되는 함수
@@ -188,15 +217,30 @@ void APuzzleRoomOneTouchPad::TouchPadOverlap(UPrimitiveComponent* OverlappedComp
 // 엔터입력 들어왔을 때 패스워드 확인하는 함수
 void APuzzleRoomOneTouchPad::CheckPassword()
 {
-	if (panelWidgetClass->GetCurrentScreen() == answer)
+	if (rmOnePanelWidget)
 	{
-		// 성공 처리
-		ReportClear();
-		UE_LOG(LogTemp, Warning, TEXT("Succeeded"));
+		if (rmOnePanelWidget->GetCurrentScreen() == answer)
+		{
+			// 성공 처리
+			ReportClear();
+			UE_LOG(LogTemp, Warning, TEXT("Succeeded"));
+		}
+		else
+		{
+			// 실패 처리
+			UE_LOG(LogTemp, Warning, TEXT("Failed"));
+		}
 	}
 	else
 	{
-		// 실패 처리
-		UE_LOG(LogTemp, Warning, TEXT("Failed"));
+		if (rmTwoPanelWidget->GetCurrentScreen() == answer)
+		{
+			ReportClear();
+			UE_LOG(LogTemp, Warning, TEXT("Succeeded"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed"));
+		}
 	}
 }

@@ -29,5 +29,5 @@ public:
 
 	void ReportClear();
 private:
-
+	bool bReportClearOnce;
 };

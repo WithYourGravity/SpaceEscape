@@ -3,14 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PuzzleBase.h"
 #include "PuzzleRoomTwoLaser.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SPACEESCAPE_API APuzzleRoomTwoLaser : public APuzzleBase
+class SPACEESCAPE_API APuzzleRoomTwoLaser : public AActor
 {
 	GENERATED_BODY()
 
@@ -23,11 +22,21 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class USceneComponent* sceneComp;
 	UPROPERTY(EditDefaultsOnly)
-	class UStaticMeshComponent* laserStartMeshComp;
+	class UStaticMeshComponent* laserTopMeshComp;
+	UPROPERTY(EditDefaultsOnly)
+	class UStaticMeshComponent* laserBaseMeshComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UNiagaraComponent* laserNiagaraComp;
 
-	void LetsTraceLaser(class UStaticMeshComponent* startPointMeshComp);
+	void LetsTraceLaser();
+	void LaserPlayerTouched();
+	void ChangeLaserColor();
 
+private:
 
+	UPROPERTY()
+	class ARoomManager* rm;
+
+	bool bTouchLaserOnce;
+	bool bChangeColorOnce;
 };
