@@ -178,9 +178,9 @@ public:
 
 // Fire
 private:
-	void Fire(const FInputActionValue& values);
+	void Fire();
 	void FireCompleted();
-	void DropMagazine(const FInputActionValue& values);
+	void DropMagazine();
 
 public:
 	UPROPERTY()
@@ -191,8 +191,8 @@ public:
 
 
 // Zero gravity
-public:
-	bool bIsZeroGravity = false;
+//public:
+	//bool bIsZeroGravity = false;
 
 
 // Climbing

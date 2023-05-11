@@ -484,7 +484,7 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 	return nearestGrabComponent;
 }
 
-void AEscapePlayer::Fire(const FInputActionValue& values)
+void AEscapePlayer::Fire()
 {
 	if (grabbedGun)
 	{
@@ -501,7 +501,7 @@ void AEscapePlayer::FireCompleted()
 	}
 }
 
-void AEscapePlayer::DropMagazine(const FInputActionValue& values)
+void AEscapePlayer::DropMagazine()
 {
 	if (grabbedGun)
 	{
