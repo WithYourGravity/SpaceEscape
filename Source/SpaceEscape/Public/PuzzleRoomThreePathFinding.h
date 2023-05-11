@@ -18,6 +18,15 @@ public:
 	float fValue;
 };
 
+UENUM()
+enum class EMoveDir : uint8
+{
+	Forward,
+	Back,
+	Left,
+	Right
+};
+
 UCLASS()
 class SPACEESCAPE_API APuzzleRoomThreePathFinding : public APuzzleBase
 {
@@ -76,4 +85,13 @@ private:
 	int currentNodeIndex;
 	int parentIndex;
 	int answerPathIndex;
+
+public:
+
+	// 조이스틱과 연동 부분
+	TArray<int> PlayedPathArray;
+	bool CheckPlayable(EMoveDir direction);
+	void MovePlayingNode(EMoveDir direction);
+	int playingNodeIndex;
+
 };

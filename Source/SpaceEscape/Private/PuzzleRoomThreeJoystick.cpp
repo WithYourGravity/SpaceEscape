@@ -6,9 +6,11 @@
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
 #include "MotionControllerComponent.h"
+#include "PuzzleRoomThreePathFinding.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APuzzleRoomThreeJoystick::APuzzleRoomThreeJoystick()
@@ -95,7 +97,7 @@ void APuzzleRoomThreeJoystick::BeginPlay()
 {
 	Super::BeginPlay();
 	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-
+	puzzlePathFinding = Cast<APuzzleRoomThreePathFinding>(UGameplayStatics::GetActorOfClass(this, APuzzleRoomThreePathFinding::StaticClass()));
 	constraintComp->SetConstrainedComponents(baseMeshComp, FName("None"), stickMeshComp, FName("None"));
 
 	grabComp->onGrabbedDelegate.AddUFunction(this, TEXT("ChangeIsGrabed"));
@@ -134,21 +136,25 @@ void APuzzleRoomThreeJoystick::OnOverlap(UPrimitiveComponent* OverlappedComponen
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Forward"));
 		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+		puzzlePathFinding->MovePlayingNode(EMoveDir::Forward);
 	}
 	else if (OtherComp->GetName()[0] == 'b')
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Back"));
 		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+		puzzlePathFinding->MovePlayingNode(EMoveDir::Back);
 	}
 	else if (OtherComp->GetName()[0] == 'l')
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Left"));
 		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+		puzzlePathFinding->MovePlayingNode(EMoveDir::Left);
 	}
 	else if (OtherComp->GetName()[0] == 'r')
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Right"));
 		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+		puzzlePathFinding->MovePlayingNode(EMoveDir::Right);
 	}
 }
 

@@ -54,6 +54,8 @@ private:
 
 	UPROPERTY()
 	class AEscapePlayer* player;
+	UPROPERTY()
+	class APuzzleRoomThreePathFinding* puzzlePathFinding;
 	UPROPERTY(EditDefaultsOnly)
 	class UHapticFeedbackEffect_Base* hapticFeedback;
 
