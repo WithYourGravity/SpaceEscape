@@ -24,36 +24,39 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	/*컴포넌트 생성*/
-	UPROPERTY(EditDefaultsOnly, Category = "Nail")
-		class UBoxComponent* boxComp;
+	UPROPERTY(EditDefaultsOnly, Category = "Screw")
+	class UBoxComponent* boxComp;
+	UPROPERTY(EditDefaultsOnly, Category = "Screw")
+	class UStaticMeshComponent* meshComp;
+	UPROPERTY(EditDefaultsOnly, Category = "Screw")
+	class UArrowComponent* arrowComp;
+	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
+	class UGrabComponent* grabComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Nail")
-		class UStaticMeshComponent* meshComp;
-	/*
-	UFUNCTION()
-	void AttachScrewToNail(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UPROPERTY()
+	class AScrewDriver* driver;
 
-	UFUNCTION()
-	void DettachScrewToNail(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	//회전하는가
+	bool isRotating;
+	void bRotating();
 
-	//못이 다 나오면 바닥으로 떨어지도록
+	//나사 시작 위치
+	FVector startLoc;
+	//나사가 나올만큼 다 나왔는가
+	bool isEnoughRotated;
+	void bEnoughCameOut();
 
-	void AttachNailProcess();
-*/
-	int32 comeOutNailDist = 5; //나사 한번 돌렸을 때의 이동 거리		
-	int32 rotCount; //나사 한바퀴 돌린 횟수
+	//나사가 이동한다
+	void MoveScrew();
+	//회전을 감지할 각도의 반올림
+	int32 rotIntAngle = 0;
 
-	class AEscapePlayer* player;
+	//시작위치로부터 나사가 뒤로 오지 못하게
+	void NoMoveBwd();
 
-	//회전 값
-	double processedRot = 5;
-	FRotator initializedRot;
+	//나사가 다 나왔다면 바닥에 떨어진다
+	void CameOutScrew();
 
-	//screw값 초기화
-	void initScrewDriver();
-	bool isAttaching; //회전중인지 체크
-	//FRotator initNailRot;
-	double initRot;
-	class AScrew* attachedScrew;
-
+	//deltaRot에서 나온 계수
+	//int32 coeff = 0;
 };

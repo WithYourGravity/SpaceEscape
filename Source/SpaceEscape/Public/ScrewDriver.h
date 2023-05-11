@@ -23,38 +23,30 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Screw")
-		class UBoxComponent* boxComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Screw")
-		class UBoxComponent* handleBoxComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Screw")
-		class UStaticMeshComponent* meshComp;
-
-	//드라이버를 손에 붙인다
-	void AttachedByHand();
-	class AEscapePlayer* player;
-	class AScrew* attachedScrew;
+	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
+	class UBoxComponent* boxComp;
+	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
+	class UStaticMeshComponent* meshComp;
+	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
+	class UGrabComponent* grabComp;
+	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
+	class UArrowComponent* arrowComp;
 
 	//드라이버에 나사가 닿으면
 	UFUNCTION()
-		void AttachNailtoScrew(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	//드라이버에 나사가 닿은 후
-	void AttachNailProcess();
-	void ComingoutNails();
+	void AttachtoScrew(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	//드라이버에서 나사가 떨어지면
+	UFUNCTION()
+	void DettachFromScrew(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	//값 초기화
-	void initScrew();
-	bool isAttaching; //회전중인지 체크
-	float initRot;
+	//닿았는가
+	bool isAttaching;	
 
-	//회전된 값?
-	float newRot;
+	//드라이버의 실시간 회전값
+	float driverRot;
+	//드라이버의 이전 회전값
+	float prevDriverRot;
 	//변화되는 값?
 	float deltaRot;
-
-	//회전을 더해주어라
-	void AddRotation();
 
 };
