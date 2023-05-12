@@ -27,6 +27,8 @@ public:
 	class UStaticMeshComponent* meshComp;
 	UPROPERTY(EditDefaultsOnly)
 	class USceneCaptureComponent2D* cameraCaptureComp;
+	UPROPERTY(EditDefaultsOnly)
+	class UGrabComponent* grabComp;
 
 	void ControlManager(FString input);
 	void MoveForward();
@@ -35,12 +37,14 @@ public:
 	void TurnLeft();
 	void StopMove();
 	void StopTurn();
+	void CheckIsUp();
 
 	FTimerHandle moveHandle;
 	FTimerHandle turnHandle;
-
+	FTimerHandle upCheckhandle;
 
 private:
-	float moveSpeed = 400;
-	float turnSpeed = 200;
+	float moveSpeed = 80;
+	float turnSpeed = 60;
+	bool bcanMove;
 };
