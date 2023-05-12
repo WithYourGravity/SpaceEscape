@@ -16,6 +16,18 @@ enum class EEnemyState : uint8
 	DIE,
 };
 
+UENUM(BlueprintType)
+enum class EEnemyHitPart : uint8
+{
+	CHEST,
+	HEAD,
+	LEFTARM,
+	LEFTLEG,
+	RIGHTARM,
+	RIGHTLEG,
+	NONE,
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPACEESCAPE_API UEnemyFSM : public UActorComponent
 {
@@ -72,18 +84,20 @@ public:
 	int32 maxHP = 10;
 
 	// 피격 대기 시간
-	UPROPERTY(EditAnywhere, Category = "FSM")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
 	float damageDelayTime = 2.0f;
-
+	
 	UPROPERTY(EditAnywhere, Category = "FSM")
 	float randomPositionRadius = 500.0f;
 
+	bool bIsDying = false;
+
 	// 피격 알림 이벤트 함수
-	void OnDamageProcess(int32 damageValue);
+	void OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart);
 
 	// 랜덤 위치 가져오기
 	bool GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
-
+	
 private:
 	// 대기 상태
 	void TickIdle();

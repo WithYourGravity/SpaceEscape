@@ -41,6 +41,9 @@ public:
 	UPROPERTY()
 	class AGun* gun;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun")
+	int32 maxBulletCount = 20;
+
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
@@ -55,7 +58,6 @@ public:
 private:
 	bool bIsOverlapGun = false;
 
-	int32 maxBulletCount = 5;
 	int32 currentBulletCount;
 
 	float grabValue = 0.0f;

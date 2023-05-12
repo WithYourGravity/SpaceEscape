@@ -67,17 +67,45 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 	auto enemy = Cast<AResearcherEnemy>(OtherActor);
 	if (enemy)
 	{
-
 		if (SweepResult.PhysMaterial.Get())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *SweepResult.PhysMaterial.Get()->GetName());
-		}
+			FString hitPartName = SweepResult.PhysMaterial.Get()->GetName();
 
-		auto enemyFSM = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(TEXT("enemyFSM")));
-		if (enemyFSM)
-		{
-			enemyFSM->OnDamageProcess(bulletPower);
-			Destroy();
+			auto enemyFSM = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(TEXT("enemyFSM")));
+			if (enemyFSM)
+			{
+				if (enemyFSM->bIsDying)
+				{
+					return;
+				}
+
+				if (hitPartName.Contains("Chest"))
+				{
+					enemyFSM->OnDamageProcess(bulletPower, EEnemyHitPart::CHEST);
+				}
+				else if (hitPartName.Contains("Head"))
+				{
+					enemyFSM->OnDamageProcess(bulletPower, EEnemyHitPart::HEAD);
+				}
+				else if (hitPartName.Contains("LeftArm"))
+				{
+					enemyFSM->OnDamageProcess(bulletPower, EEnemyHitPart::LEFTARM);
+				}
+				else if (hitPartName.Contains("LeftLeg"))
+				{
+					enemyFSM->OnDamageProcess(bulletPower, EEnemyHitPart::LEFTLEG);
+				}
+				else if (hitPartName.Contains("RightArm"))
+				{
+					enemyFSM->OnDamageProcess(bulletPower, EEnemyHitPart::RIGHTARM);
+				}
+				else if (hitPartName.Contains("RightLeg"))
+				{
+					enemyFSM->OnDamageProcess(bulletPower, EEnemyHitPart::RIGHTLEG);
+				}
+
+				Destroy();
+			}
 		}
 	}
 }

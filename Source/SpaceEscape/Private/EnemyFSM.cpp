@@ -64,7 +64,7 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	}
 }
 
-void UEnemyFSM::OnDamageProcess(int32 damageValue)
+void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 {
 	HP -= damageValue;
 
@@ -74,7 +74,11 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue)
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		// 죽음 애니메이션 재생
-		anim->PlayDamageAnim(TEXT("Die"));
+		int32 index = FMath::RandRange(0, 1);
+		FString sectionName = FString::Printf(TEXT("Die%d"), index);
+		anim->PlayDamageAnim(*sectionName);
+
+		bIsDying = true;
 	}
 	else
 	{
@@ -83,8 +87,32 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue)
 		currentTime = 0;
 
 		// 피격 애니메이션 재생
-		int32 index = FMath::RandRange(0, 1);
-		FString sectionName = FString::Printf(TEXT("Damage%d"), index);
+		FString sectionName = FString(TEXT("Damage"));
+		if (damagePart == EEnemyHitPart::CHEST)
+		{
+			int32 index = FMath::RandRange(0, 1);
+			sectionName += FString::Printf(TEXT("Chest%d"), index);
+		}
+		else if (damagePart == EEnemyHitPart::HEAD)
+		{
+			sectionName += FString(TEXT("Head"));
+		}
+		else if (damagePart == EEnemyHitPart::LEFTARM)
+		{
+			sectionName += FString(TEXT("LeftArm"));
+		}
+		else if (damagePart == EEnemyHitPart::LEFTLEG)
+		{
+			sectionName += FString(TEXT("LeftLeg"));
+		}
+		else if (damagePart == EEnemyHitPart::RIGHTARM)
+		{
+			sectionName += FString(TEXT("RightArm"));
+		}
+		else if (damagePart == EEnemyHitPart::RIGHTLEG)
+		{
+			sectionName += FString(TEXT("RightLeg"));
+		}
 		anim->PlayDamageAnim(*sectionName);
 	}
 
@@ -149,7 +177,7 @@ void UEnemyFSM::TickMove()
 		// 랜덤 위치로 이동
 		auto result = ai->MoveToLocation(randomPos);
 		// 목적지에 도착하면
-		if (result == EPathFollowingRequestResult::AlreadyAtGoal)
+		if (result == EPathFollowingRequestResult::AlreadyAtGoal || result == EPathFollowingRequestResult::Failed)
 		{
 			// 새로운 랜덤 위치 가져오기
 			GetRandomPositionInNavMesh(me->GetActorLocation(), randomPositionRadius, randomPos);
@@ -217,10 +245,10 @@ void UEnemyFSM::TickDie()
 	currentTime += GetWorld()->DeltaTimeSeconds;
 
 	// P = P0 + vt
-	FVector p0 = me->GetActorLocation();
-	FVector vt = FVector(0, 0, -1) * 200 * GetWorld()->DeltaTimeSeconds;
+	//FVector p0 = me->GetActorLocation();
+	//FVector vt = FVector(0, 0, -1) * 200 * GetWorld()->DeltaTimeSeconds;
 
-	me->SetActorLocation(p0 + vt);
+	//me->SetActorLocation(p0 + vt);
 
 	if (currentTime > 1)
 	{

@@ -27,18 +27,7 @@ public:
 	bool bIsZeroGravity = false;
 
 	UPROPERTY()
-	class ARoomManager* roomManager;
-
-	UPROPERTY()
-	class ADoorButton* doorButton;
-
-	UPROPERTY()
 	class AWorldSettings* worldSettings;
 
 	void ChangeGravity(bool bCurGravity);
-
-	void ChangeStageTwoGravity();
-
-	//UFUNCTION()
-	//void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

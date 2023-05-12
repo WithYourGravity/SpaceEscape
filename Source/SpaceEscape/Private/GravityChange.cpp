@@ -2,9 +2,6 @@
 
 
 #include "GravityChange.h"
-#include "DoorButton.h"
-#include "RoomManager.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AGravityChange::AGravityChange()
@@ -21,22 +18,13 @@ void AGravityChange::BeginPlay()
 
 	worldSettings = GetWorldSettings();
 	worldSettings->bGlobalGravitySet = true;
-
-	roomManager = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
-
-	doorButton = Cast<ADoorButton>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoorButton::StaticClass()));
-
-	if (doorButton)
-	{
-		doorButton->openDoorDele.AddUFunction(this, FName("ChangeStageTwoGravity"));
-	}
+	worldSettings->GlobalGravityZ = -980.0f;
 }
 
 // Called every frame
 void AGravityChange::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 }
 
 void AGravityChange::ChangeGravity(bool bCurGravity)
@@ -52,38 +40,3 @@ void AGravityChange::ChangeGravity(bool bCurGravity)
 		worldSettings->GlobalGravityZ = -980.0f;
 	}
 }
-
-void AGravityChange::ChangeStageTwoGravity()
-{
-	if (roomManager == nullptr || roomManager->GetCurrentPlayingStage() != 2 || doorButton->bOpened)
-	{
-		return;
-	}
-
-	ChangeGravity(bIsZeroGravity);
-}
-
-//void AGravityChange::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-//                               UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-//{
-//	auto player = Cast<AEscapePlayer>(OtherActor);
-//
-//	if (player != nullptr)
-//	{
-//		player->bIsZeroGravity = !(player->bIsZeroGravity);
-//
-//		player->SetActorLocation(player->GetActorLocation() + FVector(0, 100, 1000), true, nullptr, ETeleportType::None);
-//
-//		AWorldSettings* worldSettings = GetWorldSettings();
-//		if (player->bIsZeroGravity)
-//		{
-//			worldSettings->bGlobalGravitySet = true;
-//			worldSettings->GlobalGravityZ = -10.0f;
-//		}
-//		else
-//		{
-//			worldSettings->bGlobalGravitySet = true;
-//			worldSettings->GlobalGravityZ = -980.0f;
-//		}
-//	}
-//}
