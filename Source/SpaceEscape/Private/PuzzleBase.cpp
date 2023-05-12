@@ -35,3 +35,8 @@ void APuzzleBase::ReportClear()
 	}
 }
 
+bool APuzzleBase::GetbWasReport()
+{
+	return bReportClearOnce;
+}
+

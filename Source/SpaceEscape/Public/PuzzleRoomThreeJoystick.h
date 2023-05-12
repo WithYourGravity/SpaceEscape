@@ -43,12 +43,21 @@ public:
 	class USphereComponent* leftPosComp;
 	UPROPERTY(EditDefaultsOnly)
 	class USphereComponent* rightPosComp;
+	UPROPERTY(EditDefaultsOnly)
+	class USphereComponent* resetButtonComp;
+
 
 	UFUNCTION()
 	void ChangeIsGrabed();
 	UFUNCTION()
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void StickOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void StickEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UFUNCTION()
+	void ResetButtonOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	void ControlByPlayerHand();
+	void GiveHapticFeedback();
+	void MoveFunction(char componentName);
 
 private:
 
@@ -59,5 +68,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	class UHapticFeedbackEffect_Base* hapticFeedback;
 
+	FTimerHandle stickHandle;
+	char otherCompNameForTimer;
 	bool bIsGrabed;
 };
