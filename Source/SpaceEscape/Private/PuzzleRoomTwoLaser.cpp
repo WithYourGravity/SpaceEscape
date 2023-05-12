@@ -44,6 +44,9 @@ APuzzleRoomTwoLaser::APuzzleRoomTwoLaser()
 	{
 		laserTopMeshComp->SetStaticMesh(tempLaserTop.Object);
 	}
+
+	test = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("test"));
+	test->SetupAttachment(RootComponent);
 }
 
 void APuzzleRoomTwoLaser::BeginPlay()
@@ -63,6 +66,11 @@ void APuzzleRoomTwoLaser::Tick(float DeltaSeconds)
 		LetsTraceLaser();
 		ChangeLaserColor();
 	}
+
+	// Å×½ºÆ®
+	curTime += DeltaSeconds * 0.1f;
+	test->SetRelativeScale3D(FVector(FMath::Clamp(FMath::Lerp(1.f, 0, curTime), 0, 1)));
+	UE_LOG(LogTemp, Warning, TEXT("%f"), curTime);
 }
 
 void APuzzleRoomTwoLaser::LetsTraceLaser()

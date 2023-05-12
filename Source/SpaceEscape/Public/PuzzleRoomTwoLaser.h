@@ -27,6 +27,8 @@ public:
 	class UStaticMeshComponent* laserBaseMeshComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UNiagaraComponent* laserNiagaraComp;
+	UPROPERTY(EditDefaultsOnly)
+	class UParticleSystemComponent* test;
 
 	void LetsTraceLaser();
 	void LaserPlayerTouched();
@@ -39,4 +41,6 @@ private:
 
 	bool bTouchLaserOnce;
 	bool bChangeColorOnce;
+
+	float curTime = -0.2f;
 };

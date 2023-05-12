@@ -59,11 +59,6 @@ void AWallPad::Tick(float DeltaTime)
 void AWallPad::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (rm && rm->GetCurrentPlayingStage() != 2)
-	{
-		return;
-	}
-	
 	auto pl = Cast<AEscapePlayer>(OtherActor);
 	if (gravityWidget && pl && !bActiveOnce)
 	{
