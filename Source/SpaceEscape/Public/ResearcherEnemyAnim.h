@@ -16,6 +16,10 @@ class SPACEESCAPE_API UResearcherEnemyAnim : public UAnimInstance
 	GENERATED_BODY()
 
 public:
+	virtual void NativeBeginPlay() override;
+
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FSM")
 	EEnemyState animState;
 
@@ -37,4 +41,12 @@ public:
 	// 죽음 상태 애니메이션 종료 여부
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FSM")
 	bool bDieDone = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float forwardVelocity;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float rightVelocity;
+
+	UPROPERTY(BlueprintReadOnly)
+	class AResearcherEnemy* owner;
 };
