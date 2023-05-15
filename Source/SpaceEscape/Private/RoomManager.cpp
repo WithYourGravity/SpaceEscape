@@ -58,3 +58,8 @@ void ARoomManager::MoveOnNextStage()
 	UE_LOG(LogTemp, Warning, TEXT("Excuted"));
 }
 
+int ARoomManager::GetCurrentPlayingStage()
+{
+	return playingStage;
+}
+

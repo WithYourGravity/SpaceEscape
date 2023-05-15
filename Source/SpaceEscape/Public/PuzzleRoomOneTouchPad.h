@@ -47,7 +47,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class UBoxComponent* touchKeyCompDel;
 	UPROPERTY()
-	class UPuzzleRoomOneTouchPadPanelWidget* panelWidgetClass;
+	class UPuzzleRoomOneTouchPadPanelWidget* rmOnePanelWidget;
+	UPROPERTY()
+	class UPuzzleRoomTwoTouchPadPanelWidget* rmTwoPanelWidget;
 
 	UFUNCTION()
 	void TouchPadOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -57,10 +59,12 @@ public:
 	void TouchPadInput(FString number);
 
 private:
-	FString answer = "0714";
-	bool bCanTouch = true;
-	float touchDelay = 0.8;
+
 	UPROPERTY(EditDefaultsOnly)
 	class UHapticFeedbackEffect_Base* hapticFeedback;
+
+	FString answer;
+	bool bCanTouch = true;
+	float touchDelay = 0.6;
 	
 };

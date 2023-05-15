@@ -28,6 +28,15 @@ void APuzzleBase::Tick(float DeltaTime)
 // 퍼즐 클리어 시 델리게이트 통해 전파하는 함수
 void APuzzleBase::ReportClear()
 {
-	puzzleClearDele.Broadcast();
+	if (!bReportClearOnce)
+	{
+		puzzleClearDele.Broadcast();
+		bReportClearOnce = true;
+	}
+}
+
+bool APuzzleBase::GetbWasReport()
+{
+	return bReportClearOnce;
 }
 

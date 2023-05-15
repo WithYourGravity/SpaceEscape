@@ -3,7 +3,12 @@
 
 #include "WallPad.h"
 
+#include "EscapePlayer.h"
+#include "PuzzleRoomTwoWallPadWidget.h"
+#include "RoomManager.h"
+#include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AWallPad::AWallPad()
@@ -26,13 +31,22 @@ AWallPad::AWallPad()
 	wallScreenComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Wall Screen Widget"));
 	wallScreenComp->SetupAttachment(RootComponent);
 	wallScreenComp->SetCollisionProfileName(TEXT("NoCollision"));
+
+	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
+	boxComp->SetupAttachment(RootComponent);
+	boxComp->SetBoxExtent(FVector(16.f, 32.f, 16.f));
+	boxComp->SetRelativeLocation(FVector(15.f, 0, 0));
+	boxComp->SetCollisionProfileName(FName("PuzzleButtonPreset"));
 }
 
 // Called when the game starts or when spawned
 void AWallPad::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AWallPad::OnOverlap);
+	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
+	gravityWidget = Cast<UPuzzleRoomTwoWallPadWidget>(wallScreenComp->GetWidget());
 }
 
 // Called every frame
@@ -40,5 +54,16 @@ void AWallPad::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AWallPad::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	auto pl = Cast<AEscapePlayer>(OtherActor);
+	if (gravityWidget && pl && !bActiveOnce)
+	{
+		gravityWidget->GravityActivate();
+		bActiveOnce = true;
+	}
 }
 

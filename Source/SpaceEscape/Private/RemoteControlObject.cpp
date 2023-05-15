@@ -3,7 +3,7 @@
 
 #include "RemoteControlObject.h"
 
-#include "Components/BoxComponent.h"
+#include "GrabComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
 
@@ -33,6 +33,10 @@ ARemoteControlObject::ARemoteControlObject()
     {
 		cameraCaptureComp->TextureTarget = tempTarget.Object;
     }
+
+	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
+	grabComp->SetupAttachment(RootComponent);
+	grabComp->grabType = EGrabType::FREE;
 }
 
 // Called when the game starts or when spawned
@@ -40,6 +44,7 @@ void ARemoteControlObject::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetWorldTimerManager().SetTimer(upCheckhandle, this, &ARemoteControlObject::CheckIsUp, 1.f, true);
 }
 
 // Called every frame
@@ -51,21 +56,26 @@ void ARemoteControlObject::Tick(float DeltaTime)
 
 void ARemoteControlObject::ControlManager(FString input)
 {
+	if (!bcanMove)
+	{
+		return;
+	}
+
 	if (input == "G")
 	{
-		GetWorldTimerManager().SetTimer(moveHandle, this, &ARemoteControlObject::MoveForward, 0.1, true);
+		GetWorldTimerManager().SetTimer(moveHandle, this, &ARemoteControlObject::MoveForward, GetWorld()->DeltaTimeSeconds, true);
 	}
 	else if (input == "B")
 	{
-		GetWorldTimerManager().SetTimer(moveHandle, this, &ARemoteControlObject::MoveBackward, 0.1, true);
+		GetWorldTimerManager().SetTimer(moveHandle, this, &ARemoteControlObject::MoveBackward, GetWorld()->DeltaTimeSeconds, true);
 	}
 	else if (input == "L")
 	{
-		GetWorldTimerManager().SetTimer(turnHandle, this, &ARemoteControlObject::TurnLeft, 0.1, true);
+		GetWorldTimerManager().SetTimer(turnHandle, this, &ARemoteControlObject::TurnLeft, GetWorld()->DeltaTimeSeconds, true);
 	}
 	else if (input == "R")
 	{
-		GetWorldTimerManager().SetTimer(turnHandle, this, &ARemoteControlObject::TurnRight, 0.1, true);
+		GetWorldTimerManager().SetTimer(turnHandle, this, &ARemoteControlObject::TurnRight, GetWorld()->DeltaTimeSeconds, true);
 	}
 }
 
@@ -101,6 +111,21 @@ void ARemoteControlObject::StopMove()
 void ARemoteControlObject::StopTurn()
 {
 	GetWorldTimerManager().ClearTimer(turnHandle);
+}
+
+void ARemoteControlObject::CheckIsUp()
+{
+	float degree = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(FVector::UpVector, GetActorUpVector())));
+
+	if (degree < 45.f)
+	{
+		bcanMove = true;
+	}
+	else
+	{
+		bcanMove = false;
+	}
+	//UE_LOG(LogTemp, Warning, TEXT("degree is %f"), degree);
 }
 
 
