@@ -14,10 +14,18 @@ AScrew::AScrew()
 
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Screw Collision"));
 	SetRootComponent(boxComp);
-	boxComp->SetBoxExtent(FVector(2, 1, 3));
-	boxComp->SetRelativeRotation(FRotator(0, 0, 0));
+	boxComp->SetBoxExtent(FVector(1, 1.6, 1));
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ScrewMesh"));
 	meshComp->SetupAttachment(RootComponent);
+		
+	ConstructorHelpers::FObjectFinder<UStaticMesh> smesh(TEXT("/Script/Engine.StaticMesh'/Game/Yeni/Assets/screw/Screw_low.Screw_low'"));
+	if(smesh.Succeeded())
+	{
+		meshComp->SetStaticMesh(smesh.Object);
+		meshComp->SetRelativeScale3D(FVector(0.1));
+		meshComp->SetRelativeLocationAndRotation(FVector(-7, 0, 0), FRotator(0, 90, -90));
+		meshComp->SetWorldRotation(FRotator(0, 0, 0));
+	}
 	arrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComp"));
 	arrowComp->SetupAttachment(RootComponent);
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComp"));

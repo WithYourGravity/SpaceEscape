@@ -15,17 +15,18 @@ AScrewDriver::AScrewDriver()
 
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Screw Collision"));
 	SetRootComponent(boxComp);
-	boxComp->SetBoxExtent(FVector(5, 5, 50));
+	boxComp->SetBoxExtent(FVector(0.8, 0.7, 0.8));
 	boxComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ScrewMesh"));
-	meshComp->SetupAttachment(RootComponent);
-	meshComp->SetRelativeLocation(FVector(0, -8, 0));
-	meshComp->SetRelativeRotation(FRotator(90, 0, 90));
-	meshComp->SetRelativeScale3D(FVector(5));
+	meshComp->SetupAttachment(RootComponent);	
 	ConstructorHelpers::FObjectFinder<UStaticMesh> dMesh(TEXT("/Script/Engine.StaticMesh'/Game/Deko_MatrixDemo/Apartment/Meshes/SM_ScrewDriver_A01_N1.SM_ScrewDriver_A01_N1'"));
 	if(dMesh.Succeeded())
 	{
 		meshComp->SetStaticMesh(dMesh.Object);
+		meshComp->SetRelativeLocation(FVector(-9, 0, 0));
+		meshComp->SetRelativeRotation(FRotator(0, 90, 180));
+		meshComp->SetRelativeScale3D(FVector(1));
+		meshComp->SetWorldRotation(FRotator(0, 90, 0));
 	}
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComp"));
 	grabComp->SetupAttachment(RootComponent);
