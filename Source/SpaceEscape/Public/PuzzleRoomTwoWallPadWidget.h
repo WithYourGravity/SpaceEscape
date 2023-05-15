@@ -15,6 +15,7 @@ class SPACEESCAPE_API UPuzzleRoomTwoWallPadWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	virtual void NativeConstruct() override;
 
 	UPROPERTY(EditDefaultsOnly)
 	class UTextBlock* textBlock_Activate;
@@ -22,4 +23,8 @@ public:
 	class UImage* image_Activate;
 
 	void GravityActivate();
+
+private:
+	UPROPERTY()
+	class AGravityChange* gc;
 };

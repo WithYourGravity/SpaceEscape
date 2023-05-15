@@ -4,6 +4,7 @@
 #include "PuzzleRoomOneTouchPad.h"
 
 #include "EscapePlayer.h"
+#include "GravityChange.h"
 #include "PuzzleRoomOneTouchPadPanelWidget.h"
 #include "PuzzleRoomTwoTouchPadPanelWidget.h"
 #include "Components/BoxComponent.h"
@@ -11,6 +12,7 @@
 #include "Components/WidgetComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Haptics/HapticFeedbackEffect_Curve.h"
+#include "Kismet/GameplayStatics.h"
 
 
 APuzzleRoomOneTouchPad::APuzzleRoomOneTouchPad()
@@ -133,7 +135,10 @@ void APuzzleRoomOneTouchPad::BeginPlay()
 		rmTwoPanelWidget = Cast<UPuzzleRoomTwoTouchPadPanelWidget>(screenWidgetComp->GetWidget());
 		rmTwoPanelWidget->deleteCurrentScreen();
 		answer = "4514";
-	}	
+	}
+
+	// 중력 매니저 캐스팅
+	gc = Cast<AGravityChange>(UGameplayStatics::GetActorOfClass(this, AGravityChange::StaticClass()));
 }
 
 // 터치패드의 입력에 따라 기능을 실행하는 함수
@@ -236,6 +241,7 @@ void APuzzleRoomOneTouchPad::CheckPassword()
 		if (rmTwoPanelWidget->GetCurrentScreen() == answer)
 		{
 			ReportClear();
+			gc->ChangeGravity(false);
 			UE_LOG(LogTemp, Warning, TEXT("Succeeded"));
 		}
 		else
