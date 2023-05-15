@@ -22,9 +22,12 @@ AEscapePlayer::AEscapePlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	GetCapsuleComponent()->SetCapsuleHalfHeight(73.0f);
+
 	vrCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("VRCamera"));
 	vrCamera->SetupAttachment(RootComponent);
 	vrCamera->bUsePawnControlRotation = false;
+	vrCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 35.0f));
 
 	// MotionController
 	leftHand = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftHand"));
@@ -127,6 +130,8 @@ void AEscapePlayer::BeginPlay()
 	{
 		ResetTeleport();
 	}
+
+	currentLocation = GetActorLocation();
 }
 
 // Called every frame
@@ -155,9 +160,10 @@ void AEscapePlayer::Tick(float DeltaTime)
 		}
 	}
 
-
 	if (bIsClimbing)
 	{
+		currentLocation = FMath::VInterpTo(currentLocation, GetActorLocation(), DeltaTime, 1.0f);
+
 		if (bIsGrabbedLeft && heldComponentLeft && heldComponentLeft->grabType == EGrabType::CLIMB)
 		{
 			FVector moveLocation = heldComponentLeft->grabLocation - leftHand->GetComponentLocation();
@@ -294,7 +300,7 @@ bool AEscapePlayer::CheckHitTeleport(FVector lastPos, FVector& curPos)
 	else
 	{
 		teleportCircle->SetVisibility(false);
-	} 
+	}
 	return bHit;
 }
 
@@ -440,7 +446,6 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 
 	bool bHit = GetWorld()->OverlapMultiByObjectType(hitObjects, center, FQuat::Identity, objectParams, FCollisionShape::MakeSphere(grabRange), params);
 
-
 	// 충돌하지 않았다면 아무처리도 하지 않는다.
 	if (!bHit)
 	{
@@ -484,7 +489,7 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 	return nearestGrabComponent;
 }
 
-void AEscapePlayer::Fire(const FInputActionValue& values)
+void AEscapePlayer::Fire()
 {
 	if (grabbedGun)
 	{
@@ -501,7 +506,7 @@ void AEscapePlayer::FireCompleted()
 	}
 }
 
-void AEscapePlayer::DropMagazine(const FInputActionValue& values)
+void AEscapePlayer::DropMagazine()
 {
 	if (grabbedGun)
 	{

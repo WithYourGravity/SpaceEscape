@@ -16,6 +16,27 @@ enum class EEnemyState : uint8
 	DIE,
 };
 
+UENUM(BlueprintType)
+enum class EEnemyHitPart : uint8
+{
+	CHEST,
+	HEAD,
+	LEFTARM,
+	LEFTLEG,
+	RIGHTARM,
+	RIGHTLEG,
+	NONE,
+};
+
+UENUM(BlueprintType)
+enum class EEnemyMoveSubState : uint8
+{
+	NORMAL,
+	INJUREDWALKLEFT,
+	INJUREDWALKRIGHT,
+	CRAWL,
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPACEESCAPE_API UEnemyFSM : public UActorComponent
 {
@@ -36,6 +57,9 @@ public:
 	// 상태 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FSM")
 	EEnemyState state = EEnemyState::IDLE;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FSM")
+	EEnemyMoveSubState moveState = EEnemyMoveSubState::NORMAL;
 
 	UPROPERTY(VisibleAnywhere, Category = "FSM")
 	class AEscapePlayer* target;
@@ -69,21 +93,23 @@ public:
 
 	// 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FSM")
-	int32 maxHP = 10;
+	int32 maxHP = 20;
 
 	// 피격 대기 시간
-	UPROPERTY(EditAnywhere, Category = "FSM")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
 	float damageDelayTime = 2.0f;
-
+	
 	UPROPERTY(EditAnywhere, Category = "FSM")
 	float randomPositionRadius = 500.0f;
 
+	bool bIsDying = false;
+
 	// 피격 알림 이벤트 함수
-	void OnDamageProcess(int32 damageValue);
+	void OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart);
 
 	// 랜덤 위치 가져오기
 	bool GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
-
+	
 private:
 	// 대기 상태
 	void TickIdle();
@@ -97,4 +123,6 @@ private:
 	void TickDie();
 
 	int32 HP;
+
+	bool bIsStartCrawl = false;
 };

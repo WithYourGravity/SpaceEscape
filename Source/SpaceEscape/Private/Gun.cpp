@@ -60,8 +60,6 @@ AGun::AGun()
 		gunTriggerMeshComp->SetRelativeLocation(FVector(-18.0f, 0.0f, -13.0f));
 	}
 
-	
-
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(gunMeshComp);
 	grabComp->SetRelativeLocation(FVector(-2.73f, 0.0f, -3.78f));

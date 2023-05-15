@@ -23,12 +23,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly)
-	class UBoxComponent* boxComp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gravity")
+	bool bIsZeroGravity = false;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Gravity")
-	class UStaticMeshComponent* meshComp;
+	UPROPERTY()
+	class AWorldSettings* worldSettings;
 
-	UFUNCTION()
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void ChangeGravity(bool bCurGravity);
 };

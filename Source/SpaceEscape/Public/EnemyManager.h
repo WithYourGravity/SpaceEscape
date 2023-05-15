@@ -39,6 +39,8 @@ public:
 
 	FTimerHandle spawnTimer;
 
+	int32 enemyCount = 0;
+
 	// 적 생성 함수
 	void CreateEnemy();
 
