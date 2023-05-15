@@ -7,7 +7,6 @@
 #include "EngineUtils.h"
 //#include "Components/BoxComponent.h"
 
-// Sets default values
 ADoors::ADoors()
 {
  	// Set this actor to call Tick() every frame.  You can t	urn this off to improve performance if you don't need it.
@@ -19,13 +18,12 @@ ADoors::ADoors()
 	doorMesh->SetRelativeLocation(FVector(0, 0, 0));
 	doorMesh->SetRelativeScale3D(FVector(1, 4.625f, 2.4f));
 	initLoc = GetActorLocation();
-	//triggerboxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("triggerboxComp"));
-	//triggerboxComp->SetupAttachment(RootComponent);
-	//triggerboxComp->SetRelativeLocation(FVector(0, 0, 0));
-	//triggerboxComp->SetRelativeScale3D(FVector(5, 10, 1));
+	/*triggerboxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("triggerboxComp"));
+	triggerboxComp->SetupAttachment(RootComponent);
+	triggerboxComp->SetRelativeLocation(FVector(0, 0, 0));
+	triggerboxComp->SetRelativeScale3D(FVector(5, 10, 1));*/
 }
 
-// Called when the game starts or when spawned
 void ADoors::BeginPlay()
 {
 	Super::BeginPlay();
@@ -43,13 +41,14 @@ void ADoors::BeginPlay()
 			FOnTimelineFloat TimeLineProgress;
 			TimeLineProgress.BindUFunction(this, FName("TimeLineProgress"));
 			curveTimeline.AddInterpFloat(curveFloat, TimeLineProgress);
-			//triggerboxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoors::OnTriggeredOverlap);
-			//triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
+			/*
+			triggerboxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoors::OnTriggeredOverlap);
+			triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
+			*/
 		}
 	}	
 }
 
-// Called every frame
 void ADoors::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
