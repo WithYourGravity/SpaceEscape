@@ -18,7 +18,7 @@ void AGravityChange::BeginPlay()
 
 	worldSettings = GetWorldSettings();
 	worldSettings->bGlobalGravitySet = true;
-	worldSettings->GlobalGravityZ = -10.0f;
+	worldSettings->GlobalGravityZ = -980.0f;
 }
 
 // Called every frame
@@ -29,7 +29,7 @@ void AGravityChange::Tick(float DeltaTime)
 
 void AGravityChange::ChangeGravity(bool bCurGravity)
 {
-	bIsZeroGravity = !bCurGravity;
+	bIsZeroGravity = bCurGravity;
 
 	if (bIsZeroGravity)
 	{
