@@ -28,6 +28,8 @@ public:
 	FClearDele puzzleClearDele;
 
 	void ReportClear();
+	bool GetbWasReport();
+
 private:
 	bool bReportClearOnce;
 };

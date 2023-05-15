@@ -18,6 +18,15 @@ public:
 	float fValue;
 };
 
+UENUM()
+enum class EMoveDir : uint8
+{
+	Forward,
+	Back,
+	Left,
+	Right
+};
+
 UCLASS()
 class SPACEESCAPE_API APuzzleRoomThreePathFinding : public APuzzleBase
 {
@@ -37,6 +46,8 @@ public:
 	void MovingFunctionAtTick(float deltaTime);
 	void ResetBeginAndEndPoint();
 	void ResetThisPuzzle();
+	void ResetRegularlyUpCountForResetPuzzle();
+	
 
 private:
 
@@ -50,14 +61,13 @@ private:
 	int countForRecordStartLoc;
 	int beginPointIndex = -1;
 	int endPointIndex = -1;
+	int regularlyUpCount;
 	bool bIsMoving;
 	float zPos;
 	float lerpTime;
-
-
-	int regularlyUpCount;
+	float blockMoveSpeed = 2;
+	
 	FTimerHandle hd;
-
 
 	// 알고리즘 부분
 
@@ -76,4 +86,13 @@ private:
 	int currentNodeIndex;
 	int parentIndex;
 	int answerPathIndex;
+
+public:
+
+	// 조이스틱과 연동 부분
+	TArray<int> PlayedPathArray;
+	bool CheckPlayable(EMoveDir direction);
+	void MovePlayingNode(EMoveDir direction);
+	int playingNodeIndex;
+
 };

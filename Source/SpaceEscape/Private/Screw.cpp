@@ -2,102 +2,113 @@
 
 
 #include "Screw.h"
+#include "ScrewDriver.h"
 #include "Components/BoxComponent.h"
-#include "EscapePlayer.h"
+#include "Components/ArrowComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "GrabComponent.h"
 
 AScrew::AScrew()
 { 	
 	PrimaryActorTick.bCanEverTick = true;
 
-	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("NAIL Collision"));
+	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Screw Collision"));
 	SetRootComponent(boxComp);
-	boxComp->SetBoxExtent(FVector(20, 20, 50));
-	boxComp->SetRelativeRotation(FRotator(0, 0, -90));
-	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("NailMesh"));
+	boxComp->SetBoxExtent(FVector(1, 1.6, 1));
+	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ScrewMesh"));
 	meshComp->SetupAttachment(RootComponent);
+		
+	ConstructorHelpers::FObjectFinder<UStaticMesh> smesh(TEXT("/Script/Engine.StaticMesh'/Game/Yeni/Assets/screw/Screw_low.Screw_low'"));
+	if(smesh.Succeeded())
+	{
+		meshComp->SetStaticMesh(smesh.Object);
+		meshComp->SetRelativeScale3D(FVector(0.1));
+		meshComp->SetRelativeLocationAndRotation(FVector(-7, 0, 0), FRotator(0, 90, -90));
+		meshComp->SetWorldRotation(FRotator(0, 0, 0));
+	}
+	arrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComp"));
+	arrowComp->SetupAttachment(RootComponent);
+	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComp"));
+	grabComp->SetupAttachment(RootComponent);
+	grabComp->grabType = EGrabType::FREE;
 }
 
 void AScrew::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//드라이버가 나사에 닿는다
-	//boxComp->OnComponentBeginOverlap.AddDynamic(this, &AScrew::AttachScrewToNail);
+	driver = Cast<AScrewDriver>(UGameplayStatics::GetActorOfClass(GetWorld(), AScrewDriver::StaticClass()));
 
-	//드라이버가 나사에서 떨어진다
-	//boxComp->OnComponentEndOverlap.AddDynamic(this, &AScrew::DettachScrewToNail);
-
-	initScrewDriver();
+	startLoc = GetActorLocation();
 }
 
 void AScrew::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-}
-
-/*
-void AScrew::AttachScrewToNail(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	//드라이버가 나사와 부딪히면
-	attachedScrew = Cast<AScrew>(OtherActor);
-	if (attachedScrew != nullptr)
+	//나사가 드라이버에 붙어있을 때만 회전값이 더해진다
+	if(driver->isAttaching == true)
 	{
-		isAttaching = true;
-		boxComp->SetSimulatePhysics(false);
-		//attachedScrew->boxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//AttachToComponent(attachedScrew->boxComp, FAttachmentTransformRules::KeepWorldTransform);
-		//AttachNailProcess();
+		bRotating();
+		if(isRotating == true)
+		{	
+			if (FMath::Abs(driver->deltaRot) > 15) //미세한 회전 방지를 위한 역치 값 
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Tick IsRotating::isEnoughRotated = %d"), isEnoughRotated)
+				bEnoughCameOut();
+				if(isEnoughRotated == false)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Tick::isEnoughRotatedisEnoughRotated = %d"), isEnoughRotated)
+					rotIntAngle = FMath::RoundHalfFromZero(driver->deltaRot);
+					MoveScrew();
+					//coeff =  FMath::Abs(driver->deltaRot) / 7;					
+				}
+				else
+				{
+					CameOutScrew();
+				}
+			}
+		}		
+	}
+	else
+	{
+		rotIntAngle = 0;
+		//coeff = 0;
 	}
 }
 
-void AScrew::AttachNailProcess()
-{
-	if(isAttaching == true)
+void AScrew::bRotating()
+{	
+	if (driver->deltaRot > -150 && driver->deltaRot < 150)
 	{
-
+		driver->deltaRot > -15 && driver->deltaRot < 15 ? isRotating = false : isRotating = true;
 	}
 }
 
-void AScrew::DettachScrewToNail(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void AScrew::bEnoughCameOut()
 {
-	//못에서 드라이버를 빼면
-	//attachedScrew->boxComp->SetEnableGravity(true);
-	//attachedScrew->meshComp->SetEnableGravity(true);
-	//attachedScrew = nullptr;
-
+	//나사가 다 나온 거리인지 확인 : 20 이동하면 다 나온 것
+	auto screwDist = FVector::Dist(GetActorLocation(), startLoc);
+	screwDist >= 20 ? isEnoughRotated = true : isEnoughRotated = false;
 }
 
-void AScrew::CameOutNail()
+void AScrew::MoveScrew()
 {
-	//일단 빼둔 내용
+	//회전
+	SetActorRotation(GetActorRotation() + FRotator(0, 0, -1 * rotIntAngle * 0.03));
+	//이동 : deltaRot 증가한만큼 나사가 forwardvector로 이동한다
+	SetActorLocation(GetActorLocation() + GetActorForwardVector() * rotIntAngle * 0.003);
+}
 
-	//나사가 회전하는 방향에 맞춰서 드라이버를 회전
-	attachedScrew->SetActorLocationAndRotation(GetActorLocation(), GetActorRotation());
+void AScrew::NoMoveBwd()
+{
+}
 
-	//못을 회전시키는 값에 비례하여 못이 앞으로 나올것이다
-	//못을 회전시키는 값 = 드라이버 회전한 값
-	//못이 앞으로 나오는 값
-
-	//다 나오면 바닥으로 떨어지게
-	SetActorLocation(GetActorLocation() + FVector(comeOutNailDist, 0, 0));
-	rotCount++;
-	if (rotCount == 5)
+void AScrew::CameOutScrew()
+{
+	//다 나왔다면 바닥에 떨어질 것
+	if(isEnoughRotated == true)
 	{
-		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		boxComp->SetEnableGravity(true);
-		meshComp->SetEnableGravity(true);
+		UE_LOG(LogTemp, Warning, TEXT("CameOutScrew::isEnoughRotated = %d"), isEnoughRotated)
+		boxComp->SetSimulatePhysics(true);
 	}
 }
-*/
-void AScrew::initScrewDriver()
-{
-	isAttaching = false;
-	attachedScrew = nullptr;
-	//initNailRot = VectorZero();
-	initRot = 0;
-}
-
-
-
-
