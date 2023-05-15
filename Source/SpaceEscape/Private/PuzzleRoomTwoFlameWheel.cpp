@@ -1,16 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PuzzleRoomTwoLaserWheel.h"
+#include "PuzzleRoomTwoFlameWheel.h"
 
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
-#include "PuzzleRoomTwoLaser.h"
-#include "PuzzleRoomTwoLaserLever.h"
+#include "PuzzleRoomTwoFlame.h"
 #include "Kismet/GameplayStatics.h"
 
-APuzzleRoomTwoLaserWheel::APuzzleRoomTwoLaserWheel()
+// Sets default values
+APuzzleRoomTwoFlameWheel::APuzzleRoomTwoFlameWheel()
 {
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
 	sceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("sceneComp"));
 	SetRootComponent(sceneComp);
 
@@ -27,26 +30,17 @@ APuzzleRoomTwoLaserWheel::APuzzleRoomTwoLaserWheel()
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(meshComp);
 	grabComp->grabType = EGrabType::LEVER;
-
-	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base>tempHaptic(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
-	if (tempHaptic.Succeeded())
-	{
-		hapticFeedback = tempHaptic.Object;
-	}
 }
 
-void APuzzleRoomTwoLaserWheel::BeginPlay()
+// Called when the game starts or when spawned
+void APuzzleRoomTwoFlameWheel::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
 	// 맵에 있는 모든 laser를 캐싱해온다
-	UGameplayStatics::GetAllActorsOfClass(this, APuzzleRoomTwoLaser::StaticClass(), laserArray);
-	currentLaser = Cast<APuzzleRoomTwoLaser>(laserArray[arrayIndex]);
-	// 맵에 있는 lever를 캐싱해온다
-	laserLever = Cast<APuzzleRoomTwoLaserLever>(UGameplayStatics::GetActorOfClass(this, APuzzleRoomTwoLaserLever::StaticClass()));
-	// 레버가 당겨지면 laser index가 증가한다
-	laserLever->laserLaverDele.BindUFunction(this, FName("ChangeLaserIndex"));
+	UGameplayStatics::GetAllActorsOfClass(this, APuzzleRoomTwoFlame::StaticClass(), flameArray);
+	selectedFlame = Cast<APuzzleRoomTwoFlame>(flameArray[arrayIndex]);
+
 	// 플레이어 grab delegate 바인딩
 	grabComp->onGrabbedDelegate.AddUFunction(this, FName("ChangeIsGrabed"));
 	grabComp->onDroppedDelegate.AddUFunction(this, FName("ChangeIsGrabed"));
@@ -55,29 +49,23 @@ void APuzzleRoomTwoLaserWheel::BeginPlay()
 	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 }
 
-void APuzzleRoomTwoLaserWheel::Tick(float DeltaSeconds)
+// Called every frame
+void APuzzleRoomTwoFlameWheel::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaSeconds);
-
+	Super::Tick(DeltaTime);
 	if (bIsGrabed)
 	{
 		ControlByPlayerHand();
 	}
 }
 
-void APuzzleRoomTwoLaserWheel::ChangeLaserIndex()
-{
-	arrayIndex++;
-	currentLaser = Cast<APuzzleRoomTwoLaser>(laserArray[arrayIndex % laserArray.Num()]);
-}
-
-void APuzzleRoomTwoLaserWheel::ChangeIsGrabed()
+void APuzzleRoomTwoFlameWheel::ChangeIsGrabed()
 {
 	bIsGrabed = !bIsGrabed;
 	bRecordOnce = false;
 }
 
-void APuzzleRoomTwoLaserWheel::ControlByPlayerHand()
+void APuzzleRoomTwoFlameWheel::ControlByPlayerHand()
 {
 	bool bIsLeftHand;
 	FVector handLocation;
@@ -98,27 +86,33 @@ void APuzzleRoomTwoLaserWheel::ControlByPlayerHand()
 		startVector = (handLocation - GetActorLocation()).GetSafeNormal();
 		bRecordOnce = true;
 
+		// 플레이어쪽 벡터를 구해서 내적한 뒤 예각 둔각인지
+		playerDirection = player->GetActorLocation() - GetActorLocation();
+
 	}
 
 	FVector afterVector = (handLocation - GetActorLocation()).GetSafeNormal();
 	float degree = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(startVector, afterVector)));
+
 	// 두 벡터를 외적해서 수직인 벡터를 구해 좌우 방향을 정해준다
 	FVector crossVec = FVector::CrossProduct(startVector, afterVector);
-	if (crossVec.Y > 0)
+
+	float degreeForDir = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(crossVec, playerDirection)));
+
+	if (degreeForDir > 90)
 	{
 		degree *= -1;
 	}
+
 	// 휠 돌리기
 	AddActorLocalRotation(FRotator(0, degree, 0));
-	// 레이저 각도 돌리기
-	float currentLaserRoll = currentLaser->laserTopMeshComp->GetRelativeRotation().Roll;
-	if (currentLaserRoll <= 90 && currentLaserRoll >= -90)
-	{
-		currentLaser->laserTopMeshComp->AddLocalRotation(FRotator(0, 0, degree * laserRotateSpeed));
-	}
+	
+	// 휠 돌린 만큼 불꽃 줄어들게(함수 호출하기)
+	selectedFlame->CloseValve(degree);
 
 	startVector = (handLocation - GetActorLocation()).GetSafeNormal();
 
 	//UE_LOG(LogTemp, Warning, TEXT("degree is %f"), degree);
 	//UE_LOG(LogTemp, Warning, TEXT("currentLaserRoll is %f"), currentLaserRoll);
 }
+

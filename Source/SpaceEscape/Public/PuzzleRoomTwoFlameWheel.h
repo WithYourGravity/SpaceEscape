@@ -3,22 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PuzzleBase.h"
-#include "PuzzleRoomTwoLaserWheel.generated.h"
+#include "GameFramework/Actor.h"
+#include "PuzzleRoomTwoFlameWheel.generated.h"
 
-/**
- * 
- */
 UCLASS()
-class SPACEESCAPE_API APuzzleRoomTwoLaserWheel : public APuzzleBase
+class SPACEESCAPE_API APuzzleRoomTwoFlameWheel : public AActor
 {
 	GENERATED_BODY()
+	
+public:	
+	// Sets default values for this actor's properties
+	APuzzleRoomTwoFlameWheel();
 
-public:
-
-	APuzzleRoomTwoLaserWheel();
+protected:
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditDefaultsOnly)
 	class USceneComponent* sceneComp;
@@ -28,27 +31,24 @@ public:
 	class UGrabComponent* grabComp;
 
 	UFUNCTION()
-	void ChangeLaserIndex();
-	UFUNCTION()
 	void ChangeIsGrabed();
 	void ControlByPlayerHand();
+
+	UPROPERTY(EditAnywhere)
+	int arrayIndex = 0;
 
 private:
 
 	UPROPERTY()
 	class AEscapePlayer* player;
 	UPROPERTY()
-	TArray<class AActor*> laserArray;
+	TArray<class AActor*> flameArray;
 	UPROPERTY()
-	class APuzzleRoomTwoLaserLever* laserLever;
-	UPROPERTY()
-	class APuzzleRoomTwoLaser* currentLaser;
-	UPROPERTY(EditDefaultsOnly)
-	class UHapticFeedbackEffect_Base* hapticFeedback;
+	class APuzzleRoomTwoFlame* selectedFlame;
 
-	int arrayIndex;
 	bool bIsGrabed;
 	bool bRecordOnce;
 	float laserRotateSpeed = 0.4f;
 	FVector startVector;
+	FVector playerDirection;
 };
