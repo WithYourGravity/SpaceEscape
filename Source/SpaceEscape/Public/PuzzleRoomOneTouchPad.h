@@ -62,6 +62,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	class UHapticFeedbackEffect_Base* hapticFeedback;
+	UPROPERTY()
+	class AGravityChange* gc;
 
 	FString answer;
 	bool bCanTouch = true;
