@@ -43,6 +43,13 @@ void AEnemyManager::CreateEnemy()
 	// 적 생성 및 배치
 	GetWorld()->SpawnActor<AResearcherEnemy>(enemyFactory, spawnPoints[index]->GetActorLocation(), FRotator(0));
 
+	enemyCount++;
+
+	if (enemyCount >= 10)
+	{
+		return;
+	}
+
 	// 다시 랜덤시간에 CreateEnemy 함수 호출되도록 타이머 설정
 	float createTime = FMath::RandRange(minTime, maxTime);
 	GetWorld()->GetTimerManager().SetTimer(spawnTimer, this, &AEnemyManager::CreateEnemy, createTime);

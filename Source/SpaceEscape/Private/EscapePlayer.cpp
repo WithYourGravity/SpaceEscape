@@ -130,6 +130,8 @@ void AEscapePlayer::BeginPlay()
 	{
 		ResetTeleport();
 	}
+
+	currentLocation = GetActorLocation();
 }
 
 // Called every frame
@@ -158,9 +160,10 @@ void AEscapePlayer::Tick(float DeltaTime)
 		}
 	}
 
-
 	if (bIsClimbing)
 	{
+		currentLocation = FMath::VInterpTo(currentLocation, GetActorLocation(), DeltaTime, 1.0f);
+
 		if (bIsGrabbedLeft && heldComponentLeft && heldComponentLeft->grabType == EGrabType::CLIMB)
 		{
 			FVector moveLocation = heldComponentLeft->grabLocation - leftHand->GetComponentLocation();
@@ -442,7 +445,6 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 	objectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel6);
 
 	bool bHit = GetWorld()->OverlapMultiByObjectType(hitObjects, center, FQuat::Identity, objectParams, FCollisionShape::MakeSphere(grabRange), params);
-
 
 	// 충돌하지 않았다면 아무처리도 하지 않는다.
 	if (!bHit)

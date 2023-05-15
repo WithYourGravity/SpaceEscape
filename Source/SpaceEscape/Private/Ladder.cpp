@@ -4,6 +4,7 @@
 #include "Ladder.h"
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -67,5 +68,8 @@ void ALadder::OnDropped()
 	{
 		player->bIsClimbing = false;	
 	}
+
+	FVector vel = (player->GetActorLocation() - player->currentLocation) * 5.0f;
+	player->GetCharacterMovement()->Velocity = FVector(FMath::Clamp(vel.X, -100.0f, 100.0f), FMath::Clamp(vel.Y, -100.0f, 100.0f), FMath::Clamp(vel.Z, -100.0f, 100.0f));
 }
 

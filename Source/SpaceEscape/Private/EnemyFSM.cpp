@@ -8,6 +8,7 @@
 #include "ResearcherEnemy.h"
 #include "ResearcherEnemyAnim.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -74,8 +75,17 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		// 죽음 애니메이션 재생
-		int32 index = FMath::RandRange(0, 1);
-		FString sectionName = FString::Printf(TEXT("Die%d"), index);
+		FString sectionName = FString(TEXT("Die"));
+		if (moveState == EEnemyMoveSubState::CRAWL)
+		{
+			sectionName += FString(TEXT("Crawl"));
+		}
+		else
+		{
+			int32 index = FMath::RandRange(0, 1);
+			sectionName += FString::Printf(TEXT("%d"), index);
+		}
+		
 		anim->PlayDamageAnim(*sectionName);
 
 		bIsDying = true;
@@ -88,7 +98,11 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 
 		// 피격 애니메이션 재생
 		FString sectionName = FString(TEXT("Damage"));
-		if (damagePart == EEnemyHitPart::CHEST)
+		if (moveState == EEnemyMoveSubState::CRAWL)
+		{
+			sectionName += FString(TEXT("Crawl"));
+		}
+		else if (damagePart == EEnemyHitPart::CHEST)
 		{
 			int32 index = FMath::RandRange(0, 1);
 			sectionName += FString::Printf(TEXT("Chest%d"), index);
@@ -104,6 +118,15 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 		else if (damagePart == EEnemyHitPart::LEFTLEG)
 		{
 			sectionName += FString(TEXT("LeftLeg"));
+			if (moveState == EEnemyMoveSubState::INJUREDWALKLEFT)
+			{
+				moveState = EEnemyMoveSubState::CRAWL;
+				bIsStartCrawl = true;
+			}
+			else
+			{
+				moveState = EEnemyMoveSubState::INJUREDWALKRIGHT;
+			}
 		}
 		else if (damagePart == EEnemyHitPart::RIGHTARM)
 		{
@@ -112,11 +135,35 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 		else if (damagePart == EEnemyHitPart::RIGHTLEG)
 		{
 			sectionName += FString(TEXT("RightLeg"));
+			if (moveState == EEnemyMoveSubState::INJUREDWALKRIGHT)
+			{
+				moveState = EEnemyMoveSubState::CRAWL;
+				bIsStartCrawl = true;
+			}
+			else
+			{
+				moveState = EEnemyMoveSubState::INJUREDWALKLEFT;
+			}
 		}
 		anim->PlayDamageAnim(*sectionName);
+		if (bIsStartCrawl)
+		{
+			bIsStartCrawl = false;
+			anim->PlayDamageAnim(FName(TEXT("Crawl")));
+		}
 	}
 
 	anim->animState = state;
+	anim->animMoveState = moveState;
+	if (moveState == EEnemyMoveSubState::INJUREDWALKLEFT || moveState == EEnemyMoveSubState::INJUREDWALKRIGHT
+	)
+	{
+		me->GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	}
+	else if (moveState == EEnemyMoveSubState::CRAWL)
+	{
+		me->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
+	}
 
 	ai->StopMovement();
 }
@@ -142,6 +189,7 @@ void UEnemyFSM::TickIdle()
 
 			// 애니메이션 상태 동기화
 			anim->animState = state;
+			anim->animMoveState = moveState;
 
 			// 최초 랜덤한 위치 정해주기
 			GetRandomPositionInNavMesh(me->GetActorLocation(), randomPositionRadius, randomPos);
@@ -229,7 +277,7 @@ void UEnemyFSM::TickDamage()
 	currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime > damageDelayTime)
 	{
-		state = EEnemyState::IDLE;
+		state = EEnemyState::MOVE;
 		currentTime = 0.0f;
 		anim->animState = state;
 	}

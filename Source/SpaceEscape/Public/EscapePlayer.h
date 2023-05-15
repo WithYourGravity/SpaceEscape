@@ -198,4 +198,6 @@ public:
 // Climbing
 public:
 	bool bIsClimbing = false;
+
+	FVector currentLocation;
 };

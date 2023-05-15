@@ -28,6 +28,15 @@ enum class EEnemyHitPart : uint8
 	NONE,
 };
 
+UENUM(BlueprintType)
+enum class EEnemyMoveSubState : uint8
+{
+	NORMAL,
+	INJUREDWALKLEFT,
+	INJUREDWALKRIGHT,
+	CRAWL,
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPACEESCAPE_API UEnemyFSM : public UActorComponent
 {
@@ -48,6 +57,9 @@ public:
 	// 상태 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FSM")
 	EEnemyState state = EEnemyState::IDLE;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FSM")
+	EEnemyMoveSubState moveState = EEnemyMoveSubState::NORMAL;
 
 	UPROPERTY(VisibleAnywhere, Category = "FSM")
 	class AEscapePlayer* target;
@@ -81,7 +93,7 @@ public:
 
 	// 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FSM")
-	int32 maxHP = 10;
+	int32 maxHP = 20;
 
 	// 피격 대기 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
@@ -111,4 +123,6 @@ private:
 	void TickDie();
 
 	int32 HP;
+
+	bool bIsStartCrawl = false;
 };

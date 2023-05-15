@@ -19,6 +19,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FSM")
 	EEnemyState animState;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FSM")
+	EEnemyMoveSubState animMoveState;
+
 	// 공격 상태 재생할지 여부
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FSM")
 	bool bAttackPlay = false;

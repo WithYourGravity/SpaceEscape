@@ -18,7 +18,7 @@ void AGravityChange::BeginPlay()
 
 	worldSettings = GetWorldSettings();
 	worldSettings->bGlobalGravitySet = true;
-	worldSettings->GlobalGravityZ = -980.0f;
+	worldSettings->GlobalGravityZ = -10.0f;
 }
 
 // Called every frame
