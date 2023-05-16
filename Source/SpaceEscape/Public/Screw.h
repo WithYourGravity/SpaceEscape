@@ -30,11 +30,21 @@ public:
 	class UStaticMeshComponent* meshComp;
 	UPROPERTY(EditDefaultsOnly, Category = "Screw")
 	class UArrowComponent* arrowComp;
-	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
-	class UGrabComponent* grabComp;
+	//UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
+	//class UGrabComponent* grabComp;
 
 	UPROPERTY()
 	class AScrewDriver* driver;
+
+	//드라이버에 나사가 닿으면
+	UFUNCTION()
+	void AttachtoDriver(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	//드라이버에서 나사가 떨어지면
+	UFUNCTION()
+	void DettachFromDriver(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	//닿았는가
+	bool isAttaching;
 
 	//회전하는가
 	bool isRotating;
@@ -46,17 +56,19 @@ public:
 	bool isEnoughRotated;
 	void bEnoughCameOut();
 
+	//드라이버의 이전 회전값
+	float prevDriverRot;
+	//변화되는 값
+	float deltaRot;
+
 	//나사가 이동한다
 	void MoveScrew();
 	//회전을 감지할 각도의 반올림
 	int32 rotIntAngle = 0;
 
-	//시작위치로부터 나사가 뒤로 오지 못하게
-	void NoMoveBwd();
-
+	//나사가 다 나온 거리
+	double screwDist;
+	
 	//나사가 다 나왔다면 바닥에 떨어진다
 	void CameOutScrew();
-
-	//deltaRot에서 나온 계수
-	//int32 coeff = 0;
 };

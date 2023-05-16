@@ -66,6 +66,5 @@ public:
 	
 	//문 최초 위치
 	FVector initLoc;
-
 };
 
