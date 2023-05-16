@@ -99,43 +99,41 @@ void APuzzleRoomThreePathFinding::MovingFunctionAtTick(float deltaTime)
 			countForRecordStartLoc++;
 		}
 		selectedMeshComp->SetRelativeLocation(FMath::Lerp(startLocArray[i], startLocArray[i] + FVector(0, 0, zPos), lerpTime));
+		//selectedMeshComp->SetScalarParameterValueOnMaterials(FName("Visibility"), FMath::Lerp(bVisibility, !bVisibility, lerpTime));
 	}
 }
 
 // 시작점과 끝점을 다시 고르는 함수
 void APuzzleRoomThreePathFinding::ResetBeginAndEndPoint()
 {
-	// 블록 색상 초기화
-	/*
-	if (beginPointIndex != -1)
-	{
-		groundBoxArray[beginPointIndex]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Yellow);
-		groundBoxArray[endPointIndex]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Yellow);
-	}
-	*/
+	// 전체 색 초기화
 	for (UStaticMeshComponent* blocks : groundBoxArray)
 	{
-		blocks->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Yellow);
+		blocks->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myGreen);
 	}
+	groundBoxArray[playingNodeIndex]->SetScalarParameterValueOnMaterials(FName("BlinkOn"), 0);
 
 	// 시작행과 끝행에서 랜덤하게 픽
 	beginPointIndex = FMath::RandRange(0, width - 1);
 	endPointIndex = (width * length - 1) - FMath::RandRange(0, width - 1);
 
 	// 픽된 블록 색상 변경
-	groundBoxArray[beginPointIndex]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Red);
-	groundBoxArray[endPointIndex]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Blue);
+	groundBoxArray[beginPointIndex]->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myWhite);
+	groundBoxArray[endPointIndex]->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myRed);
 
 	// 조이스틱 연동 부분
 	PlayedPathArray.Empty();
 	playingNodeIndex = beginPointIndex;
 	PlayedPathArray.Add(playingNodeIndex);
+	groundBoxArray[playingNodeIndex]->SetScalarParameterValueOnMaterials(FName("BlinkOn"), 1);
 }
 
 // 퍼즐이 답이 있을 때까지 계속 리셋하는 함수
 void APuzzleRoomThreePathFinding::ResetThisPuzzle()
 {
-	GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
+	// 경로가 있을 때까지 리셋되는걸 보여주기
+	/*
+	GetWorldTimerManager().SetTimer(resetHandle, FTimerDelegate::CreateLambda([&]()
 	{
 		if (regularlyUpCount % 2 == 0)
 		{
@@ -147,9 +145,28 @@ void APuzzleRoomThreePathFinding::ResetThisPuzzle()
 
 		if (LetsFindPath() == true)
 		{
-			GetWorldTimerManager().ClearTimer(hd);
+			GetWorldTimerManager().ClearTimer(resetHandle);
 		}
-	}), 1, true);
+	}), 1.f, true);
+	*/
+
+	// 경로가 생성되기 전까지 유저에게 보여주지 않음
+	do
+	{
+		ResetBeginAndEndPoint();
+		PickBoxRandomly(NumberOfPopUpBox);
+	}
+	while (!LetsFindPath());
+
+	// 블럭 움직임이 끝나면 움직이게끔 타이머로 1초마다 확인
+	GetWorldTimerManager().SetTimer(resetHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			if (!bIsMoving)
+			{
+				MovingTrigger();
+				GetWorldTimerManager().ClearTimer(resetHandle);
+			}
+		}), 1, true);
 }
 
 void APuzzleRoomThreePathFinding::ResetRegularlyUpCountForResetPuzzle()
@@ -161,13 +178,17 @@ void APuzzleRoomThreePathFinding::ResetRegularlyUpCountForResetPuzzle()
 void APuzzleRoomThreePathFinding::MovingTrigger()
 {
 	// 이동방향 설정
-	if (groundBoxArray[selectedBoxIndexArray[0]]->GetRelativeLocation().Z < 10)
+	if (!bUpAndDown)
 	{
-		zPos = 100;
+		zPos = -500;
+		bUpAndDown = true;
+		bVisibility = true;
 	}
 	else
 	{
-		zPos = -100;
+		zPos = 500;
+		bUpAndDown = false;
+		bVisibility = false;
 	}
 
 	countForRecordStartLoc = 0;
@@ -350,7 +371,9 @@ void APuzzleRoomThreePathFinding::PathLight()
 {
 	// 이전에 플레이한 정답루트 초기화
 	AnswerPathArray.Empty();
-
+	// 도착점 먼저 추가
+	AnswerPathArray.Add(pickedNodeList[pickedNodeList.Num() - 1].nodeIndex);
+	// 도착점의 부모노드 구함
 	parentIndex = GetYourParentIndex(pickedNodeList[pickedNodeList.Num() - 1].nodeIndex);
 	
 	while (parentIndex != beginPointIndex)
@@ -360,13 +383,16 @@ void APuzzleRoomThreePathFinding::PathLight()
 		parentIndex = GetYourParentIndex(parentIndex);
 	}
 
+	// begin부터 정답불 들어오게
+	AnswerPathArray.Add(beginPointIndex);
+
 	Algo::Reverse(AnswerPathArray);
 
 	UE_LOG(LogTemp, Warning, TEXT("played array num : %d"), PlayedPathArray.Num());
 	UE_LOG(LogTemp, Warning, TEXT("answer array num : %d"), AnswerPathArray.Num());
 	// 만약 알고리즘이 구한 최단거리와 플레이어가 플레이한 거리가 같다면(정답이라면)
 	// 최단경로가 여러개일 수 있으므로 플레이어 경로를 보여주기로 한다
-	if (PlayedPathArray.Num() - 2 == AnswerPathArray.Num())
+	if (PlayedPathArray.Num() == AnswerPathArray.Num())
 	{
 		AnswerPathArray = PlayedPathArray;
 		ReportClear();
@@ -381,7 +407,7 @@ void APuzzleRoomThreePathFinding::PathLight()
 	// 기록된 배열을 토대로 시각화
 	GetWorldTimerManager().SetTimer(answerPathHandle, [&]()
 		{
-			groundBoxArray[AnswerPathArray[answerPathIndex]]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Green);
+			groundBoxArray[AnswerPathArray[answerPathIndex]]->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myRed);
 
 			// 도착점에 도착했다면 타이머 클리어하고 다음을 위해 인덱스 초기화
 			if (answerPathIndex == AnswerPathArray.Num() - 1)
@@ -389,8 +415,11 @@ void APuzzleRoomThreePathFinding::PathLight()
 				GetWorldTimerManager().ClearTimer(answerPathHandle);
 				answerPathIndex = 0;
 			}
+			else
+			{
+				answerPathIndex++;
+			}
 
-			answerPathIndex++;
 		}, 0.2f, true);
 
 }
@@ -405,6 +434,9 @@ bool APuzzleRoomThreePathFinding::CheckPlayable(EMoveDir direction)
 			orderedNodeIndex = playingNodeIndex + width;
 			if (!selectedBoxIndexArray.Contains(orderedNodeIndex) && (orderedNodeIndex) < width * length && !PlayedPathArray.Contains(orderedNodeIndex))
 			{
+				// 플레잉 노드 깜빡이 꺼주기
+				groundBoxArray[playingNodeIndex]->SetScalarParameterValueOnMaterials(FName("BlinkOn"), 0);
+				// 플레잉 노드 인덱스 변경
 				playingNodeIndex = orderedNodeIndex;
 				return true;
 			}
@@ -413,6 +445,7 @@ bool APuzzleRoomThreePathFinding::CheckPlayable(EMoveDir direction)
 			orderedNodeIndex = playingNodeIndex - width;
 			if (!selectedBoxIndexArray.Contains(orderedNodeIndex) && orderedNodeIndex >= 0 && !PlayedPathArray.Contains(orderedNodeIndex))
 			{
+				groundBoxArray[playingNodeIndex]->SetScalarParameterValueOnMaterials(FName("BlinkOn"), 0);
 				playingNodeIndex = orderedNodeIndex;
 				return true;
 			}
@@ -421,6 +454,7 @@ bool APuzzleRoomThreePathFinding::CheckPlayable(EMoveDir direction)
 			orderedNodeIndex = playingNodeIndex - 1;
 			if (!selectedBoxIndexArray.Contains(orderedNodeIndex) && playingNodeIndex % width != 0 && !PlayedPathArray.Contains(orderedNodeIndex))
 			{
+				groundBoxArray[playingNodeIndex]->SetScalarParameterValueOnMaterials(FName("BlinkOn"), 0);
 				playingNodeIndex = orderedNodeIndex;
 				return true;
 			}
@@ -429,6 +463,8 @@ bool APuzzleRoomThreePathFinding::CheckPlayable(EMoveDir direction)
 			orderedNodeIndex = playingNodeIndex + 1;
 			if (!selectedBoxIndexArray.Contains(orderedNodeIndex) && (orderedNodeIndex) % width != 0 && !PlayedPathArray.Contains(orderedNodeIndex))
 			{
+
+				groundBoxArray[playingNodeIndex]->SetScalarParameterValueOnMaterials(FName("BlinkOn"), 0);
 				playingNodeIndex = orderedNodeIndex;
 				return true;
 			}
@@ -446,11 +482,17 @@ void APuzzleRoomThreePathFinding::MovePlayingNode(EMoveDir direction)
 	// playing 노드를 play array에 추가
 	PlayedPathArray.Add(playingNodeIndex);
 	// playing 노드 색 바꿔주기
-	groundBoxArray[playingNodeIndex]->SetVectorParameterValueOnMaterials(FName("BoxParam"), (FVector)FColor::Red);
+	groundBoxArray[playingNodeIndex]->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myWhite);
+
 	if (playingNodeIndex == endPointIndex)
 	{
 		// 엔딩 처리
 		PathLight();
+	}
+	else
+	{
+		// playing 노드 깜빡이 켜주기
+		groundBoxArray[playingNodeIndex]->SetScalarParameterValueOnMaterials(FName("BlinkOn"), 1);
 	}
 }
 

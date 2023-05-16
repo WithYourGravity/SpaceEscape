@@ -55,19 +55,26 @@ private:
 	TArray<int> selectedBoxIndexArray;
 	TArray<FVector> startLocArray;
 
-	int width = 10;
-	int length = 20;
+	int width = 20;
+	int length = 12;
 	int NumberOfPopUpBox = width * length * 0.3;
 	int countForRecordStartLoc;
 	int beginPointIndex = -1;
 	int endPointIndex = -1;
 	int regularlyUpCount;
 	bool bIsMoving;
+	bool bUpAndDown;
+	bool bVisibility;
 	float zPos;
 	float lerpTime;
 	float blockMoveSpeed = 2;
 	
-	FTimerHandle hd;
+	FTimerHandle resetHandle;
+	FLinearColor myRed = FLinearColor(0.25, 0.06, 0.07, 1);
+	FLinearColor myGreen = FLinearColor(0.1, 0.24, 0.1, 1);
+	FLinearColor myBlue = FLinearColor(0.07, 0.095, 0.24, 1);
+	FLinearColor myYellow = FLinearColor(0.5, 0.5, 0, 1);
+	FLinearColor myWhite = FLinearColor(1, 1, 1, 1);
 
 	// 알고리즘 부분
 
