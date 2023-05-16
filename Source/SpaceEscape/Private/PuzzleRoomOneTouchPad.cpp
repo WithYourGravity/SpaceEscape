@@ -8,6 +8,7 @@
 #include "PuzzleRoomOneTouchPadPanelWidget.h"
 #include "PuzzleRoomTwoTouchPadPanelWidget.h"
 #include "Components/BoxComponent.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/WidgetComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -35,7 +36,7 @@ APuzzleRoomOneTouchPad::APuzzleRoomOneTouchPad()
 		screenWidgetComp->SetWidgetClass(tempWidget.Class);
 	}
 	screenWidgetComp->SetRelativeLocationAndRotation(FVector(0, 10.f, 30.f), FRotator(0, 90, 0));
-	screenWidgetComp->SetRelativeScale3D(FVector(0.1f, 0.08f, 0.1f));
+	screenWidgetComp->SetRelativeScale3D(FVector(1.f, 0.08f, 0.095f));
 	screenWidgetComp->SetDrawSize(FVector2D(1920, 1080));
 	screenWidgetComp->SetCollisionProfileName(TEXT("NoCollision"));
 
@@ -189,7 +190,8 @@ void APuzzleRoomOneTouchPad::TouchPadOverlap(UPrimitiveComponent* OverlappedComp
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// 터치 입력 후 일정 시간동안 입력 안되게 처리
-	if (!bCanTouch)
+	// && 퍼즐이 클리어되면 입력 안되게 처리
+	if (!bCanTouch || GetbWasReport())
 	{
 		return;
 	}
@@ -228,12 +230,17 @@ void APuzzleRoomOneTouchPad::CheckPassword()
 		{
 			// 성공 처리
 			ReportClear();
-			UE_LOG(LogTemp, Warning, TEXT("Succeeded"));
+			rmOnePanelWidget->TextBlock_word->SetText(FText::FromString("SUCCESS"));
 		}
 		else
 		{
 			// 실패 처리
-			UE_LOG(LogTemp, Warning, TEXT("Failed"));
+			rmOnePanelWidget->TextBlock_word->SetText(FText::FromString("FAILED"));
+			FTimerHandle hd;
+			GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
+				{
+					rmOnePanelWidget->TextBlock_word->SetText(FText::FromString("ENTER PIN"));
+				}), 1.f, false);
 		}
 	}
 	else
@@ -242,11 +249,16 @@ void APuzzleRoomOneTouchPad::CheckPassword()
 		{
 			ReportClear();
 			gc->ChangeGravity(false);
-			UE_LOG(LogTemp, Warning, TEXT("Succeeded"));
+			rmTwoPanelWidget->TextBlock_word->SetText(FText::FromString("SUCCESS"));
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed"));
+			rmTwoPanelWidget->TextBlock_word->SetText(FText::FromString("FAILED"));
+			FTimerHandle hd;
+			GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
+				{
+					rmTwoPanelWidget->TextBlock_word->SetText(FText::FromString("ENTER PIN"));
+				}), 1.f, false);
 		}
 	}
 }

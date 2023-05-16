@@ -68,5 +68,4 @@ private:
 	FString answer;
 	bool bCanTouch = true;
 	float touchDelay = 0.6;
-	
 };

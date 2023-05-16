@@ -17,6 +17,10 @@ class SPACEESCAPE_API UPuzzleRoomOneTouchPadPanelWidget : public UUserWidget
 public:
 	UPROPERTY(EditDefaultsOnly)
 	class UTextBlock* TextBlock_Number;
+	UPROPERTY(EditDefaultsOnly)
+	class UTextBlock* TextBlock_word;
+	UPROPERTY(EditDefaultsOnly)
+	class UImage* Image_back;
 
 	FString GetCurrentScreen();
 	void deleteCurrentScreen();
