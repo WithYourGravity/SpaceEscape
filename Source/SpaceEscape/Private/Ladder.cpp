@@ -4,6 +4,7 @@
 #include "Ladder.h"
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -60,16 +61,18 @@ void ALadder::Tick(float DeltaTime)
 void ALadder::OnGrabbed()
 {
 	player->bIsClimbing = true;
+	//player->GetCapsuleComponent()->SetCapsuleRadius(10.0f);
 }
 
 void ALadder::OnDropped()
 {
 	if (!(player->bIsGrabbedLeft) && !(player->bIsGrabbedRight))
 	{
-		player->bIsClimbing = false;	
-	}
+		player->bIsClimbing = false;
+		//player->GetCapsuleComponent()->SetCapsuleRadius(30.0f);
 
-	FVector vel = (player->GetActorLocation() - player->currentLocation) * 5.0f;
-	player->GetCharacterMovement()->Velocity = FVector(FMath::Clamp(vel.X, -100.0f, 100.0f), FMath::Clamp(vel.Y, -100.0f, 100.0f), FMath::Clamp(vel.Z, -100.0f, 100.0f));
+		FVector vel = (player->GetActorLocation() - player->currentLocation) * 5.0f;
+		player->GetCharacterMovement()->Velocity = FVector(FMath::Clamp(vel.X, -100.0f, 100.0f), FMath::Clamp(vel.Y, -100.0f, 100.0f), FMath::Clamp(vel.Z, -100.0f, 100.0f));
+	}
 }
 

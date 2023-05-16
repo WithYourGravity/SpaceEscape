@@ -45,7 +45,7 @@ void AEnemyManager::CreateEnemy()
 
 	enemyCount++;
 
-	if (enemyCount >= 3)
+	if (enemyCount >= 1)
 	{
 		return;
 	}

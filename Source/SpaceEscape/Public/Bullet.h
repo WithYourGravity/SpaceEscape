@@ -23,9 +23,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly)
-	class USphereComponent* sphereComp;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
 	class UStaticMeshComponent* meshComp;
 

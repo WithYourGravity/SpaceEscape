@@ -4,7 +4,6 @@
 #include "Bullet.h"
 #include "EnemyFSM.h"
 #include "ResearcherEnemy.h"
-#include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
@@ -14,14 +13,10 @@ ABullet::ABullet()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("sphereComp"));
-	SetRootComponent(sphereComp);
-	sphereComp->SetSphereRadius(3.0f);
-	sphereComp->SetCollisionProfileName(FName("BulletPreset"));
-
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("meshComp"));
-	meshComp->SetupAttachment(RootComponent);
-	meshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetRootComponent(meshComp);
+	//meshComp->SetupAttachment(RootComponent);
+	meshComp->SetCollisionProfileName(FName("BulletPreset"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/Bullet.Bullet'"));
 	if (tempMesh.Succeeded())
 	{
@@ -30,11 +25,11 @@ ABullet::ABullet()
 	}
 
 	movementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("movementComp"));
-	movementComp->SetUpdatedComponent(sphereComp);
+	movementComp->SetUpdatedComponent(meshComp);
 	movementComp->InitialSpeed = 2000;
 	movementComp->MaxSpeed = 2000;
 	movementComp->bShouldBounce = true;
-	movementComp->Bounciness = 0.5f;
+	movementComp->Bounciness = 0.1f;
 }
 
 // Called when the game starts or when spawned
@@ -42,8 +37,8 @@ void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
 
-	sphereComp->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnOverlap);
-	sphereComp->SetGenerateOverlapEvents(true);
+	meshComp->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnOverlap);
+	meshComp->SetGenerateOverlapEvents(true);
 
 	movementComp->OnProjectileStop.AddDynamic(this, &ABullet::OnStop);
 }
