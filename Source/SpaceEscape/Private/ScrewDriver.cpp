@@ -48,12 +48,7 @@ void AScrewDriver::BeginPlay()
 void AScrewDriver::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
-	//UE_LOG(LogTemp, Warning, TEXT("Tick Attach : isAttaching  = %d"), isAttaching)
-	//if (screw->isAttaching == true)
-	//{
-	//	deltaRot = GetActorRotation().Roll - prevDriverRot;
-		//UE_LOG(LogTemp, Warning, TEXT("delatRot = %f"), deltaRot)
-	//}	
+
 }
 
 

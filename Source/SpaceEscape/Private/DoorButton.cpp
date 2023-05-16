@@ -19,6 +19,7 @@ ADoorButton::ADoorButton()
 	SetRootComponent(boxComp);
 	buttonMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("buttonMesh"));
 	buttonMesh->SetupAttachment(RootComponent);
+	buttonMesh->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
 }
 
 // Called when the game starts or when spawned
@@ -37,7 +38,7 @@ void ADoorButton::BeginPlay()
 void ADoorButton::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
 void ADoorButton::CheckClearStage()
@@ -49,16 +50,19 @@ void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//Open한다면 플레이어와 닿았는가
-	UE_LOG(LogTemp, Warning, TEXT("ADoorButton::OnHandOverlap"))
 	AEscapePlayer* player = Cast<AEscapePlayer>(OtherActor);
+	//UE_LOG(LogTemp, Warning, TEXT("ADoorButton::OnHandOverlap : %s"), *OtherActor->GetName())
 	if(bCanButtonClicked == true)
 	{
-		if (player != nullptr)
+		if (player && OtherComp->GetName().Contains("right"))
 		{
-			if(player->rightHandMesh && player->leftHandMesh)
-			{				
-				ReportOpen();
-			}
+			ReportOpen();
+			player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+		}
+		else
+		{
+			ReportOpen();
+			player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
 		}
 	}	
 }

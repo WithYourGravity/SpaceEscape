@@ -60,15 +60,16 @@ public:
 	float prevDriverRot;
 	//변화되는 값
 	float deltaRot;
-
-	//나사가 이동한다
-	void MoveScrew();
 	//회전을 감지할 각도의 반올림
 	int32 rotIntAngle = 0;
 
+	//나사가 이동한다
+	void MoveScrew();
 	//나사가 다 나온 거리
-	double screwDist;
-	
+	double screwDist;	
 	//나사가 다 나왔다면 바닥에 떨어진다
 	void CameOutScrew();
+private:
+	UPROPERTY(EditDefaultsOnly)
+	class UHapticFeedbackEffect_Base* hapticFeedback;
 };

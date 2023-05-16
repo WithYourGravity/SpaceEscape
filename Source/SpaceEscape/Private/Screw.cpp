@@ -2,6 +2,8 @@
 
 
 #include "Screw.h"
+
+#include "EscapePlayer.h"
 #include "ScrewDriver.h"
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
@@ -57,21 +59,14 @@ void AScrew::Tick(float DeltaTime)
 		{	
 			if (FMath::Abs(deltaRot) > 15) //미세한 회전 방지를 위한 역치 값 
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("Tick IsRotating::isEnoughRotated = %d"), isEnoughRotated)
 				bEnoughCameOut();
 				if(isEnoughRotated == false)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Tick::isEnoughRotatedisEnoughRotated = %d"), isEnoughRotated)
-					//rotIntAngle = FMath::RoundHalfFromZero(deltaRot);
-					UE_LOG(LogTemp, Warning, TEXT("Tick::MoveScrew() driver->deltaRot :: %f"), deltaRot)
-					UE_LOG(LogTemp, Warning, TEXT("Tick::MoveScrew() rotAngle :: %d"), rotIntAngle)
 					MoveScrew();
-					UE_LOG(LogTemp, Warning, TEXT("Tick::ScrewDist :: %lf"), screwDist)
 				}
 				else
 				{
 					CameOutScrew();
-					UE_LOG(LogTemp, Warning, TEXT("Tick::ScrewDist :: %lf"), screwDist)
 				}
 			}
 		}		
@@ -101,9 +96,6 @@ void AScrew::MoveScrew()
 		SetActorRotation(GetActorRotation() + FRotator(0, 0, -1 * rotIntAngle * 0.043f));
 		//이동 : rotIntAngle 증가한만큼 나사가 forwardvector로 이동한다
 		SetActorLocation(GetActorLocation() + GetActorForwardVector() * rotIntAngle * 0.003f * -1);
-		UE_LOG(LogTemp, Warning, TEXT("MoveScrew() rotIntAngle :: %d"), rotIntAngle)
-		UE_LOG(LogTemp, Warning, TEXT("MoveScrew() startLoc.X :: %f"), startLoc.X)
-		UE_LOG(LogTemp, Warning, TEXT("MoveScrew() current Location.X :: %f"), GetActorLocation().X)
 	}
 	
 }
@@ -113,7 +105,7 @@ void AScrew::CameOutScrew()
 	//다 나왔다면 바닥에 떨어질 것
 	if(isEnoughRotated == true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CameOutScrew::isEnoughRotated = %d"), isEnoughRotated)
+		//UE_LOG(LogTemp, Warning, TEXT("CameOutScrew::isEnoughRotated = %d"), isEnoughRotated)
 		boxComp->SetSimulatePhysics(true);
 	}
 }
@@ -121,7 +113,6 @@ void AScrew::CameOutScrew()
 void AScrew::AttachtoDriver(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//AScrewDriver* attachedDriver = Cast<AScrewDriver>(OtherActor);
 	if (driver != nullptr)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("OtherActor = %s"), *OtherActor->GetName())
@@ -134,7 +125,6 @@ void AScrew::AttachtoDriver(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 void AScrew::DettachFromDriver(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {	
-	//AScrewDriver* attachedDriver = Cast<AScrewDriver>(OtherActor);
 	if (driver != nullptr)
 	{ 
 		isAttaching = false;	

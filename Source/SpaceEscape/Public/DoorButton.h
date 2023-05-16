@@ -42,12 +42,15 @@ public:
 	void CheckClearStage();
 	UFUNCTION()
 	void ReportOpen();
-
 public:
 	FOpenDoorDele openDoorDele;
 	//델리게이트 받으면 버튼 활성화 되도록
 	bool bCanButtonClicked;
 	//문이 한번 열고 닫혔었는지
 	bool bOpened;
+
+private:
+	UPROPERTY(EditDefaultsOnly)
+	class UHapticFeedbackEffect_Base* hapticFeedback;
 
 };
