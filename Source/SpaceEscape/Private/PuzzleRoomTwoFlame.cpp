@@ -48,10 +48,8 @@ void APuzzleRoomTwoFlame::Tick(float DeltaTime)
 	// 해당 스테이지 진입시만 동작하게 처리
 	if (rm->GetCurrentPlayingStage() == 2 && !bIsClosed)
 	{
-		//DoTrace();
-	}
-
-	DoTrace();
+		DoTrace();
+	}	
 }
 
 void APuzzleRoomTwoFlame::DoTrace()
@@ -66,13 +64,9 @@ void APuzzleRoomTwoFlame::DoTrace()
 	auto pl = Cast<AEscapePlayer>(hitResult.GetActor());
 	if (pl)
 	{
-		WhenPlayerTouched();
-	}
-}
+		// 플레이어 죽음 처리
 
-void APuzzleRoomTwoFlame::WhenPlayerTouched()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Flame Touched!"));
+	}
 }
 
 void APuzzleRoomTwoFlame::CloseValve(float degree)

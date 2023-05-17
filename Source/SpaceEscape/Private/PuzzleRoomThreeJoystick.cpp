@@ -166,9 +166,14 @@ void APuzzleRoomThreeJoystick::ResetButtonOnOverlap(UPrimitiveComponent* Overlap
 	}
 	GiveHapticFeedback();
 	// 튀어나온 상태이므로 평평한 상태로 돌린 후 초기화
-	puzzlePathFinding->MovingTrigger();
-	puzzlePathFinding->ResetRegularlyUpCountForResetPuzzle();
-	puzzlePathFinding->ResetThisPuzzle();
+	if (!puzzlePathFinding->GetbisMoving())
+	{
+		puzzlePathFinding->MovingTrigger();
+		//puzzlePathFinding->ResetRegularlyUpCountForResetPuzzle();
+		FTimerHandle resetHandle;
+		GetWorldTimerManager().SetTimer(resetHandle, puzzlePathFinding, &APuzzleRoomThreePathFinding::ResetThisPuzzle, 2, false);
+		//puzzlePathFinding->ResetThisPuzzle();
+	}
 }
 
 void APuzzleRoomThreeJoystick::ControlByPlayerHand()

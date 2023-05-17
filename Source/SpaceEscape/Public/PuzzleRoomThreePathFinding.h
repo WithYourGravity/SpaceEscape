@@ -47,6 +47,7 @@ public:
 	void ResetBeginAndEndPoint();
 	void ResetThisPuzzle();
 	void ResetRegularlyUpCountForResetPuzzle();
+	bool GetbisMoving();
 	
 
 private:
@@ -56,7 +57,7 @@ private:
 	TArray<FVector> startLocArray;
 
 	int width = 20;
-	int length = 12;
+	int length = 14;
 	int NumberOfPopUpBox = width * length * 0.3;
 	int countForRecordStartLoc;
 	int beginPointIndex = -1;
@@ -101,5 +102,19 @@ public:
 	bool CheckPlayable(EMoveDir direction);
 	void MovePlayingNode(EMoveDir direction);
 	int playingNodeIndex;
+
+	// 퍼즐완료 효과 부분
+	void EndingEffect();
+	void EndingMovingAtTick(float deltatime);
+	void EndingMakePathAtTick(float deltatime);
+	float forEndingLerp;
+	int countForRecordRandLoc;
+	bool bEndingMoveTrigger;
+	bool bMakePathTrigger;
+	bool bDeleteOnce;
+	TArray<FVector> newRandLoc;
+	TArray<FVector> endingOriginLoc;
+	UPROPERTY()
+	class APuzzleRoomThreePathLocation* pathLoc;
 
 };

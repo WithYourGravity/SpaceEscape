@@ -3,6 +3,9 @@
 
 #include "PuzzleRoomThreePathFinding.h"
 
+#include "PuzzleRoomThreePathLocation.h"
+#include "Kismet/GameplayStatics.h"
+
 APuzzleRoomThreePathFinding::APuzzleRoomThreePathFinding()
 {
 	sceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("sceneComp"));
@@ -19,6 +22,7 @@ APuzzleRoomThreePathFinding::APuzzleRoomThreePathFinding()
 		groundBoxArray[i]->SetupAttachment(sceneComp);
 		groundBoxArray[i]->SetStaticMesh(tempMesh.Object);
 		groundBoxArray[i]->SetRelativeLocation(boxLoc);
+		groundBoxArray[i]->SetCollisionProfileName(FName("NoCollision"));
 	}
 }
 
@@ -27,6 +31,8 @@ void APuzzleRoomThreePathFinding::BeginPlay()
 	Super::BeginPlay();
 
 	ResetThisPuzzle();
+
+	pathLoc = Cast<APuzzleRoomThreePathLocation>(UGameplayStatics::GetActorOfClass(this, APuzzleRoomThreePathLocation::StaticClass()));
 
 	// find node test
 	//UE_LOG(LogTemp, Warning, TEXT("is reached : %s"), LetsFindPath() ? TEXT("Yes") : TEXT("No"));
@@ -56,6 +62,16 @@ void APuzzleRoomThreePathFinding::Tick(float DeltaSeconds)
 	if (bIsMoving)
 	{
 		MovingFunctionAtTick(DeltaSeconds);
+	}
+
+	if (bEndingMoveTrigger)
+	{
+		EndingMovingAtTick(DeltaSeconds);
+	}
+
+	if (bMakePathTrigger)
+	{
+		EndingMakePathAtTick(DeltaSeconds);
 	}
 }
 
@@ -99,7 +115,6 @@ void APuzzleRoomThreePathFinding::MovingFunctionAtTick(float deltaTime)
 			countForRecordStartLoc++;
 		}
 		selectedMeshComp->SetRelativeLocation(FMath::Lerp(startLocArray[i], startLocArray[i] + FVector(0, 0, zPos), lerpTime));
-		//selectedMeshComp->SetScalarParameterValueOnMaterials(FName("Visibility"), FMath::Lerp(bVisibility, !bVisibility, lerpTime));
 	}
 }
 
@@ -111,6 +126,8 @@ void APuzzleRoomThreePathFinding::ResetBeginAndEndPoint()
 	{
 		blocks->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myGreen);
 	}
+
+	// 시작점 깜빡임 처리
 	groundBoxArray[playingNodeIndex]->SetScalarParameterValueOnMaterials(FName("BlinkOn"), 0);
 
 	// 시작행과 끝행에서 랜덤하게 픽
@@ -158,20 +175,17 @@ void APuzzleRoomThreePathFinding::ResetThisPuzzle()
 	}
 	while (!LetsFindPath());
 
-	// 블럭 움직임이 끝나면 움직이게끔 타이머로 1초마다 확인
-	GetWorldTimerManager().SetTimer(resetHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			if (!bIsMoving)
-			{
-				MovingTrigger();
-				GetWorldTimerManager().ClearTimer(resetHandle);
-			}
-		}), 1, true);
+	MovingTrigger();
 }
 
 void APuzzleRoomThreePathFinding::ResetRegularlyUpCountForResetPuzzle()
 {
 	regularlyUpCount = 0;
+}
+
+bool APuzzleRoomThreePathFinding::GetbisMoving()
+{
+	return bIsMoving;
 }
 
 // 박스를 이동시키는 함수를 발동시키는 함수
@@ -388,8 +402,8 @@ void APuzzleRoomThreePathFinding::PathLight()
 
 	Algo::Reverse(AnswerPathArray);
 
-	UE_LOG(LogTemp, Warning, TEXT("played array num : %d"), PlayedPathArray.Num());
-	UE_LOG(LogTemp, Warning, TEXT("answer array num : %d"), AnswerPathArray.Num());
+	//UE_LOG(LogTemp, Warning, TEXT("played array num : %d"), PlayedPathArray.Num());
+	//UE_LOG(LogTemp, Warning, TEXT("answer array num : %d"), AnswerPathArray.Num());
 	// 만약 알고리즘이 구한 최단거리와 플레이어가 플레이한 거리가 같다면(정답이라면)
 	// 최단경로가 여러개일 수 있으므로 플레이어 경로를 보여주기로 한다
 	if (PlayedPathArray.Num() == AnswerPathArray.Num())
@@ -414,6 +428,14 @@ void APuzzleRoomThreePathFinding::PathLight()
 			{
 				GetWorldTimerManager().ClearTimer(answerPathHandle);
 				answerPathIndex = 0;
+
+				// 도착점까지 다 보여줬고 정답이었다면
+				if(GetbWasReport())
+				{
+					// 퍼즐완료 효과
+					FTimerHandle endingEffectHandle;
+					GetWorldTimerManager().SetTimer(endingEffectHandle, this, &APuzzleRoomThreePathFinding::EndingEffect, 2.f, false);
+				}
 			}
 			else
 			{
@@ -493,6 +515,127 @@ void APuzzleRoomThreePathFinding::MovePlayingNode(EMoveDir direction)
 	{
 		// playing 노드 깜빡이 켜주기
 		groundBoxArray[playingNodeIndex]->SetScalarParameterValueOnMaterials(FName("BlinkOn"), 1);
+	}
+}
+
+void APuzzleRoomThreePathFinding::EndingEffect()
+{
+	MovingTrigger();
+
+	// 전체 색 초기화
+	for (UStaticMeshComponent* blocks : groundBoxArray)
+	{
+		blocks->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myWhite);
+	}
+
+	// 블럭 움직임이 끝나면 움직이게끔 타이머로 1초마다 확인
+	GetWorldTimerManager().SetTimer(resetHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			if (!bIsMoving)
+			{
+				lerpTime = 0;
+				bEndingMoveTrigger = true;
+				//UE_LOG(LogTemp, Warning, TEXT("timer call once?"));
+
+				GetWorldTimerManager().ClearTimer(resetHandle);
+			}
+		}), 1, true);
+}
+
+void APuzzleRoomThreePathFinding::EndingMovingAtTick(float deltatime)
+{
+	lerpTime += deltatime * 0.6f;
+
+	if (forEndingLerp > 0.98f)
+	{
+		// 랜덤위치 이동완료시 관련변수 초기화 하고 길만들기 트리거 실행
+		forEndingLerp = 0;
+		lerpTime = 0;
+		countForRecordRandLoc = 0;
+		newRandLoc.Empty();
+		endingOriginLoc.Empty();
+		bEndingMoveTrigger = false;
+		bMakePathTrigger = true;
+		//UE_LOG(LogTemp, Warning, TEXT("EndingMovingAtTick Complete!"));
+		return;
+	}
+	else
+	{
+		forEndingLerp = 1 - FMath::Pow(1 - lerpTime, 5);
+	}
+
+	// 필요 없는 블럭 삭제하기
+	if (!bDeleteOnce)
+	{
+		for (int i = (pathLoc->length * pathLoc->width) + 1; i < groundBoxArray.Num(); i++)
+		{
+			groundBoxArray[i]->SetScalarParameterValueOnMaterials(FName("Visibility"), 0);
+			groundBoxArray.RemoveAt(i);
+		}
+		bDeleteOnce = true;
+	}
+
+	// 박스 움직이는 부분
+	for (int i = 0; i < groundBoxArray.Num(); i++)
+	{
+		// 랜덤이동값 한번만 저장하게
+		if (countForRecordRandLoc < groundBoxArray.Num())
+		{
+			newRandLoc.Add(groundBoxArray[i]->GetRelativeLocation() + (FMath::VRand() * 400));
+			endingOriginLoc.Add(groundBoxArray[i]->GetRelativeLocation());
+			countForRecordRandLoc++;
+		}
+
+		// 틱마다 이동부분
+		groundBoxArray[i]->SetRelativeLocation(FMath::Lerp(endingOriginLoc[i], newRandLoc[i], forEndingLerp));
+	}
+}
+
+void APuzzleRoomThreePathFinding::EndingMakePathAtTick(float deltatime)
+{
+	lerpTime += deltatime * 0.2f;
+
+	if (forEndingLerp > 0.98f)
+	{
+		// 길 만들기 이동완료시
+		forEndingLerp = 1;
+		bMakePathTrigger = false;
+		//UE_LOG(LogTemp, Warning, TEXT("MakePath Complete!"));
+
+		// 길 완성시 설정해주기
+		for (UStaticMeshComponent* blocks : groundBoxArray)
+		{
+			blocks->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)FLinearColor::Black);
+			blocks->SetScalarParameterValueOnMaterials(FName("Visibility"), 1);
+			blocks->SetScalarParameterValueOnMaterials(FName("WallOpacity"), 1);
+			blocks->SetCollisionProfileName(FName("BlockAllDynamic"));
+		}
+	}
+	else
+	{
+		//forEndingLerp = FMath::Sin(lerpTime);
+		forEndingLerp = FMath::Pow(lerpTime, 4);
+	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("lerptime : %f"), lerpTime);
+	//UE_LOG(LogTemp, Warning, TEXT("forMakingPathLerp : %f"), forEndingLerp);
+
+	for (int i = 0; i < groundBoxArray.Num(); i++)
+	{
+		// 비워진 랜덤이동값 배열에 길 위치 넣어주기
+		if (countForRecordRandLoc < groundBoxArray.Num())
+		{
+			FVector pathBlockLoc = pathLoc->GetActorLocation();
+			pathBlockLoc.Y += 100 * GetActorRelativeScale3D().X * (i % pathLoc->width);
+			pathBlockLoc.X += 100 * GetActorRelativeScale3D().X * (i / pathLoc->width);
+			
+			newRandLoc.Add(pathBlockLoc);
+			endingOriginLoc.Add(groundBoxArray[i]->GetComponentLocation());
+			countForRecordRandLoc++;
+		}
+
+		// 틱마다 이동부분
+		groundBoxArray[i]->SetWorldLocation(FMath::Lerp(endingOriginLoc[i], newRandLoc[i], forEndingLerp));
 	}
 }
 

@@ -35,7 +35,6 @@ public:
 	class USphereComponent* sphereCompForTrace;
 
 	void DoTrace();
-	void WhenPlayerTouched();
 	void CloseValve(float degree);
 
 private:
