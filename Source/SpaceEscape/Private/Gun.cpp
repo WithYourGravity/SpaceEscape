@@ -24,20 +24,15 @@ AGun::AGun()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
-	RootComponent = boxComp;
-	boxComp->SetSimulatePhysics(true);
-	boxComp->SetBoxExtent(FVector(2.5f, 15.0f, 10.0f));
-	boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
-
 	gunMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunMeshComp"));
-	gunMeshComp->SetupAttachment(RootComponent);
+	//gunMeshComp->SetupAttachment(RootComponent);
+	SetRootComponent(gunMeshComp);
+	gunMeshComp->SetSimulatePhysics(true);
+	gunMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/Gun.Gun'"));
 	if (tempMesh.Succeeded())
 	{
 		gunMeshComp->SetStaticMesh(tempMesh.Object);
-		gunMeshComp->SetRelativeLocation(FVector(0.0f, 9.0f, -1.0f));
-		gunMeshComp->SetRelativeRotation(FRotator(0, -90, 0));
 		gunMeshComp->SetRelativeScale3D(FVector(0.36f));
 	}
 	
@@ -82,7 +77,7 @@ AGun::AGun()
 	magazineBoxComp->SetRelativeLocation(FVector(-5.0f, 0.0f, -16.0f));
 	magazineBoxComp->SetBoxExtent(FVector(10, 6, 7));
 
-	muzzleFlashComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("muzzleFlashComp"));
+	//muzzleFlashComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("muzzleFlashComp"));
 
 	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base> tempHapticEffect(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
 	if (tempHapticEffect.Succeeded())
@@ -196,6 +191,14 @@ void AGun::OnDropped()
 			crosshair->crosshairComp->SetVisibility(false);
 		}
 	}
+
+	if (player && player->bIsOverlapGunStorage)
+	{
+		gunMeshComp->SetSimulatePhysics(false);
+		gunMeshComp->AttachToComponent(player->gunStorageComp, FAttachmentTransformRules::KeepWorldTransform);
+		gunMeshComp->SetWorldLocation(player->gunStorageComp->GetComponentLocation());
+		gunMeshComp->SetRelativeRotation(FRotator(-30, 225, 0));
+	}
 }
 
 void AGun::Fire(float fireAlpha)
@@ -217,9 +220,6 @@ void AGun::Fire(float fireAlpha)
 	
 		if (magazine && magazine->GetCurrentBulletCount() != 0 && bDoReloading)
 		{
-			// spawn effect
-
-			
 			// spawn bullet
 			FVector loc = muzzleLocation->GetComponentLocation();
 			FRotator rot = muzzleLocation->GetComponentRotation();

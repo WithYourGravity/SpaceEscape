@@ -32,9 +32,6 @@ public:
 	class UInputMappingContext* IMC_WeaponRight;
 
 
-	UPROPERTY(EditDefaultsOnly)
-	class UBoxComponent* boxComp;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
 	class UStaticMeshComponent* gunMeshComp;
 	
@@ -68,8 +65,8 @@ public:
 	UPROPERTY()
 	class AEscapePlayer* player;
 
-	UPROPERTY(VisibleAnywhere, Category = "Fire")
-	class UNiagaraComponent* muzzleFlashComp;
+	//UPROPERTY(VisibleAnywhere, Category = "Fire")
+	//class UNiagaraComponent* muzzleFlashComp;
 
 	bool bIsOnGrabbed = false;
 	bool bOnReloading = false;

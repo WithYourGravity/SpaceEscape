@@ -15,6 +15,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraDataInterfaceArrayFunctionLibrary.h"
 #include "PlayerInfoWidget.h"
+#include "SpaceEscapeGameModeBase.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -105,6 +106,19 @@ AEscapePlayer::AEscapePlayer()
 	teleportCurveComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("teleportCurveComp"));
 	teleportCurveComp->SetupAttachment(RootComponent);
 	teleportCurveComp->SetVisibility(false);
+
+	gunStorageComp = CreateDefaultSubobject<USceneComponent>(TEXT("gunStorageComp"));
+	gunStorageComp->SetupAttachment(vrCamera);
+	gunStorageComp->SetRelativeLocation(FVector(0.0f, -30.0f, 6.0f));
+
+	gunOverlapComp = CreateDefaultSubobject<USphereComponent>(TEXT("gunOverlapComp"));
+	gunOverlapComp->SetupAttachment(gunStorageComp);
+	gunOverlapComp->SetSphereRadius(10.0f);
+
+	gunOverlapMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunOverlapMeshComp"));
+	gunOverlapMeshComp->SetupAttachment(gunStorageComp);
+	gunOverlapMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	gunOverlapMeshComp->SetVisibility(true);
 }
 
 // Called when the game starts or when spawned
@@ -152,6 +166,9 @@ void AEscapePlayer::BeginPlay()
 	HP = maxHP;
 
 	infoUI = Cast<UPlayerInfoWidget>(infoWidgetComp->GetUserWidgetObject());
+
+	gunOverlapComp->OnComponentBeginOverlap.AddDynamic(this, &AEscapePlayer::OnGunStorageOverlap);
+	gunOverlapComp->OnComponentEndOverlap.AddDynamic(this, &AEscapePlayer::EndGunStorageOverlap);
 }
 
 // Called every frame
@@ -548,6 +565,9 @@ void AEscapePlayer::DropMagazine()
 
 void AEscapePlayer::Die()
 {
+	ASpaceEscapeGameModeBase* gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
+	gm->StopPlayTime();
+
 	FInputModeUIOnly inputMode;
 	inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	GetWorld()->GetFirstPlayerController()->SetInputMode(inputMode);
@@ -572,3 +592,18 @@ void AEscapePlayer::Die()
 		}), 0.02f, true);
 }
 
+void AEscapePlayer::OnGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	AGun* overlappedGun = Cast<AGun>(OtherActor);
+	if (grabbedGun && overlappedGun)
+	{
+		bIsOverlapGunStorage = true;
+	}
+}
+
+void AEscapePlayer::EndGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	bIsOverlapGunStorage = false;
+}

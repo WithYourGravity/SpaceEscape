@@ -2,4 +2,36 @@
 
 
 #include "SpaceEscapeGameModeBase.h"
+#include "EscapePlayer.h"
+#include "PlayerInfoWidget.h"
+#include "Kismet/GameplayStatics.h"
 
+void ASpaceEscapeGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetWorld()->GetTimerManager().SetTimer(countTimer, this, &ASpaceEscapeGameModeBase::CountPlayTime, 1.0f, true, 0);
+
+	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+}
+
+void ASpaceEscapeGameModeBase::CountPlayTime()
+{
+	second++;
+
+	if (second == 60)
+	{
+		minute++;
+		second = 0;
+	}
+
+	if (player && player->infoUI)
+	{
+		player->infoUI->PrintCurrentPlayTime();
+	}
+}
+
+void ASpaceEscapeGameModeBase::StopPlayTime()
+{
+	GetWorld()->GetTimerManager().ClearTimer(countTimer);
+}

@@ -228,4 +228,21 @@ public:
 	FORCEINLINE void SubtractHP(int32 damage) { HP -= damage; }
 
 	void Die();
+
+// Storage
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Storage")
+	class USceneComponent* gunStorageComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Storage")
+	class USphereComponent* gunOverlapComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Storage")
+	class UStaticMeshComponent* gunOverlapMeshComp;
+
+	bool bIsOverlapGunStorage = false;
+
+	UFUNCTION()
+	void OnGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void EndGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };
