@@ -28,12 +28,12 @@ void ADoors::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (TActorIterator<ADoorButton> it(GetWorld()); it; ++it)
-	{
-		ADoorButton* db = *it;
+	//for (TActorIterator<ADoorButton> it(GetWorld()); it; ++it)
+	//{
+		//ADoorButton* db = *it;
 
 		//db->openDoorDele.BindUFunction(this, FName("ChangeDoorOverlaping"));
-		db->openDoorDele.AddUFunction(this, FName("ChangeDoorOverlaping"));
+		//db->openDoorDele.AddUFunction(this, FName("ChangeDoorOverlaping"));
 
 		initLoc = GetActorLocation();
 		if (curveFloat)
@@ -46,7 +46,8 @@ void ADoors::BeginPlay()
 			triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
 			*/
 		}
-	}	
+		//doorBtn = Cast<ADoorButton>(Get);
+	//}	
 }
 
 void ADoors::Tick(float DeltaTime)
@@ -57,7 +58,7 @@ void ADoors::Tick(float DeltaTime)
 
 void ADoors::ChangeDoorOverlaping()
 {	
-	bIsOpenOverlaping == true ? Open() : Close();	
+	//bIsOpenOverlaping == true ? Open() : Close();	
 }
 
 void ADoors::Open()
@@ -65,7 +66,7 @@ void ADoors::Open()
 	startPoint = GetActorLocation();
 	endPoint = startPoint + FVector(0, yOffset, 0);
 	curveTimeline.PlayFromStart();
-	bIsOpenOverlaping = false;	
+	//bIsOpenOverlaping = false;	
 	//UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
 }
 
@@ -75,7 +76,7 @@ void ADoors::Close()
 	startPoint = GetActorLocation();	
 	endPoint = initLoc;
 	curveTimeline.PlayFromStart();
-	bIsOpenOverlaping = true;
+	//bIsOpenOverlaping = true;
 	//UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))	
 }
 
