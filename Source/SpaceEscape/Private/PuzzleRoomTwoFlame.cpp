@@ -46,7 +46,7 @@ void APuzzleRoomTwoFlame::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// 해당 스테이지 진입시만 동작하게 처리
-	if (rm->GetCurrentPlayingStage() == 2 && !bIsClosed)
+	if (!bIsClosed)
 	{
 		DoTrace();
 	}	
@@ -65,7 +65,7 @@ void APuzzleRoomTwoFlame::DoTrace()
 	if (pl)
 	{
 		// 플레이어 죽음 처리
-
+		pl->Die();
 	}
 }
 
