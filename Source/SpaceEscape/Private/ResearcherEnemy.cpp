@@ -20,6 +20,7 @@ AResearcherEnemy::AResearcherEnemy()
 	}
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
 
 	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("enemyFSM"));
 

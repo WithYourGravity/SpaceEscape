@@ -81,11 +81,12 @@ public:
 	float idleDelayTime = 2.0f;
 
 	// 경과 시간
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "FSM")
 	float currentTime = 0.0f;
 
 	// 공격 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
-	float attackRange = 200.0f;
+	float attackRange = 100.0f;
 
 	// 공격 대기 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
@@ -109,6 +110,9 @@ public:
 
 	// 랜덤 위치 가져오기
 	bool GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
+
+	UFUNCTION(BlueprintCallable)
+	void AttackPlayer();
 	
 private:
 	// 대기 상태
@@ -122,7 +126,11 @@ private:
 	// 죽음 상태
 	void TickDie();
 
+	void SetState(EEnemyState next);
+
 	int32 HP;
+
+	int32 power = 1;
 
 	bool bIsStartCrawl = false;
 };

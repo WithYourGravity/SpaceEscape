@@ -64,6 +64,9 @@ public:
 	class UInputAction* IA_DropMagazineLeft;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_DropMagazineRight;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_AppearInfo;
+
 
 	// 이동처리 함수
 	void Move(const FInputActionValue& values);
@@ -95,6 +98,19 @@ public:
 	class USphereComponent* rightIndexFingerCollision;
 	UPROPERTY(VisibleAnywhere, Category = "Collision")
 	class USphereComponent* leftIndexFingerCollision;
+
+	// Widget
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	class UWidgetComponent* infoWidgetComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	class UPlayerInfoWidget* infoUI;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	class UWidgetComponent* dieWidgetComp;
+
+	void AppearInfoWidget();
+	void DisappearInfoWidget();
 
 // Teleport
 public:
@@ -190,14 +206,26 @@ public:
 	float fireAlpha = 0.0f;
 
 
-// Zero gravity
-//public:
-	//bool bIsZeroGravity = false;
-
-
 // Climbing
 public:
 	bool bIsClimbing = false;
 
 	FVector currentLocation;
+
+
+// HP	
+private:
+	int32 HP;
+	
+	FTimerHandle dieTimer;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP")
+	int32 maxHP = 100;
+
+	FORCEINLINE int32 GetHP() const { return HP; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SubtractHP(int32 damage) { HP -= damage; }
+
+	void Die();
 };

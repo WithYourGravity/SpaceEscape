@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "EscapePlayer.h"
 #include "NavigationSystem.h"
+#include "PlayerInfoWidget.h"
 #include "ResearcherEnemy.h"
 #include "ResearcherEnemyAnim.h"
 #include "Components/CapsuleComponent.h"
@@ -71,7 +72,8 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 
 	if (HP <= 0)
 	{
-		state = EEnemyState::DIE;
+		//state = EEnemyState::DIE;
+		SetState(EEnemyState::DIE);
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		// 죽음 애니메이션 재생
@@ -92,9 +94,10 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 	}
 	else
 	{
-		state = EEnemyState::DAMAGE;
+		//state = EEnemyState::DAMAGE;
+		SetState(EEnemyState::DAMAGE);
 
-		currentTime = 0;
+		//currentTime = 0;
 
 		// 피격 애니메이션 재생
 		FString sectionName = FString(TEXT("Damage"));
@@ -146,14 +149,14 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			}
 		}
 		anim->PlayDamageAnim(*sectionName);
-		if (bIsStartCrawl)
+		/*if (bIsStartCrawl)
 		{
 			bIsStartCrawl = false;
 			anim->PlayDamageAnim(FName(TEXT("Crawl")));
-		}
+		}*/
 	}
 
-	anim->animState = state;
+	//anim->animState = state;
 	anim->animMoveState = moveState;
 	if (moveState == EEnemyMoveSubState::INJUREDWALKLEFT || moveState == EEnemyMoveSubState::INJUREDWALKRIGHT
 	)
@@ -177,6 +180,28 @@ bool UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius,
 	return result;
 }
 
+void UEnemyFSM::AttackPlayer()
+{
+	if (target->GetHP() <= 0)
+	{
+		return;
+	}
+	
+	if (FVector::DotProduct(target->GetActorLocation() - me->GetActorLocation(), me->GetActorForwardVector()) <= FMath::Cos(10.0f))
+	{
+		return;
+	}
+
+	target->SubtractHP(power);
+	target->infoUI->PrintCurrentHP();
+	target->infoUI->PrintCurrentHPPercent();
+
+	if (target->GetHP() == 0)
+	{
+		target->Die();
+	}
+}
+
 void UEnemyFSM::TickIdle()
 {
 	currentTime += GetWorld()->DeltaTimeSeconds;
@@ -184,11 +209,12 @@ void UEnemyFSM::TickIdle()
 	{
 		if (target != nullptr)
 		{
-			state = EEnemyState::MOVE;
-			currentTime = 0.0f;
+			//state = EEnemyState::MOVE;
+			//currentTime = 0.0f;
+			SetState(EEnemyState::MOVE);
 
 			// 애니메이션 상태 동기화
-			anim->animState = state;
+			//anim->animState = state;
 			anim->animMoveState = moveState;
 
 			// 최초 랜덤한 위치 정해주기
@@ -238,10 +264,11 @@ void UEnemyFSM::TickMove()
 		// 길 찾기 기능 정지
 		ai->StopMovement();
 
-		state = EEnemyState::ATTACK;
+		//state = EEnemyState::ATTACK;
+		SetState(EEnemyState::ATTACK);
 
 		// 애니메이션 상태 동기화
-		anim->animState = state;
+		//anim->animState = state;
 		// 공격 애니메이션 재생 활성화
 		anim->bAttackPlay = true;
 		// 공격 상태 전환 시 대기 시간이 바로 끝나도록 처리
@@ -255,8 +282,6 @@ void UEnemyFSM::TickAttack()
 	currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime > attackDelayTime)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ATTACK"));
-
 		currentTime = 0.0f;
 		anim->bAttackPlay = true;
 	}
@@ -265,8 +290,9 @@ void UEnemyFSM::TickAttack()
 	float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
 	if (distance > attackRange)
 	{
-		state = EEnemyState::MOVE;
-		anim->animState = state;
+		//state = EEnemyState::MOVE;
+		//anim->animState = state;
+		SetState(EEnemyState::MOVE);
 
 		GetRandomPositionInNavMesh(me->GetActorLocation(), randomPositionRadius, randomPos);
 	}
@@ -277,9 +303,10 @@ void UEnemyFSM::TickDamage()
 	currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime > damageDelayTime)
 	{
-		state = EEnemyState::MOVE;
-		currentTime = 0.0f;
-		anim->animState = state;
+		//state = EEnemyState::MOVE;
+		//currentTime = 0.0f;
+		//anim->animState = state;
+		SetState(EEnemyState::MOVE);
 	}
 }
 
@@ -302,5 +329,12 @@ void UEnemyFSM::TickDie()
 	{
 		me->Destroy();
 	}
+}
+
+void UEnemyFSM::SetState(EEnemyState next)
+{
+	state = next;
+	anim->animState = next;
+	currentTime = 0.0f;
 }
 

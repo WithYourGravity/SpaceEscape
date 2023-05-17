@@ -13,8 +13,10 @@
 #include "Magazine.h"
 #include "Bullet.h"
 #include "MotionControllerComponent.h"
+#include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Haptics/HapticFeedbackEffect_Base.h"
 
 // Sets default values
 AGun::AGun()
@@ -79,6 +81,14 @@ AGun::AGun()
 	magazineBoxComp->SetupAttachment(gunMeshComp);
 	magazineBoxComp->SetRelativeLocation(FVector(-5.0f, 0.0f, -16.0f));
 	magazineBoxComp->SetBoxExtent(FVector(10, 6, 7));
+
+	muzzleFlashComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("muzzleFlashComp"));
+
+	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base> tempHapticEffect(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
+	if (tempHapticEffect.Succeeded())
+	{
+		grabHapticEffect = tempHapticEffect.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -140,10 +150,12 @@ void AGun::OnGrabbed()
 			if (grabComp->GetHeldByHand() == EControllerHand::Right)
 			{
 				subSystem->AddMappingContext(IMC_WeaponRight, 0);
+				subSystem->RemoveMappingContext(IMC_WeaponLeft);
 			}
 			else
 			{
 				subSystem->AddMappingContext(IMC_WeaponLeft, 0);
+				subSystem->RemoveMappingContext(IMC_WeaponRight);
 			}
 
 			if (player)
@@ -205,6 +217,10 @@ void AGun::Fire(float fireAlpha)
 	
 		if (magazine && magazine->GetCurrentBulletCount() != 0 && bDoReloading)
 		{
+			// spawn effect
+
+			
+			// spawn bullet
 			FVector loc = muzzleLocation->GetComponentLocation();
 			FRotator rot = muzzleLocation->GetComponentRotation();
 			GetWorld()->SpawnActor<ABullet>(bulletFactory, loc, rot);
@@ -218,6 +234,12 @@ void AGun::Fire(float fireAlpha)
 			else if (magazine->GetCurrentBulletCount() == 1)
 			{
 				magazine->bulletMeshComp2->SetVisibility(false);
+			}
+
+			// haptic effect
+			if (grabHapticEffect)
+			{
+				GetWorld()->GetFirstPlayerController()->PlayHapticEffect(grabHapticEffect, grabComp->GetHeldByHand());
 			}
 		}
 	}

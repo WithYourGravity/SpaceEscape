@@ -23,14 +23,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly)
-	class USphereComponent* sphereComp;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
 	class UStaticMeshComponent* meshComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
 	class UProjectileMovementComponent* movementComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	class UNiagaraComponent* bulletTrailComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	class UParticleSystem* bloodEffect;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	TSubclassOf<class AActor> hitEffect;
 
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
