@@ -38,7 +38,7 @@ void ARoomManager::AddSolvedPuzzleCount()
 {
 	solvedPuzzleCount++;
 
-	if (playingStage >= 1 && playingStage <= 3 && solvedPuzzleCount == totalPuzzlePerStage[playingStage])
+	if (solvedPuzzleCount == totalPuzzlePerStage[playingStage])
 	{
 		MoveOnNextStage();
 	}
@@ -55,7 +55,12 @@ void ARoomManager::MoveOnNextStage()
 	{
 		stageClearDele.Broadcast();
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Excuted"));
+
+	if (gameClearDele.IsBound() && playingStage == 4)
+	{
+		gameClearDele.Broadcast();
+	}
+	//UE_LOG(LogTemp, Warning, TEXT("Excuted"));
 }
 
 int ARoomManager::GetCurrentPlayingStage()

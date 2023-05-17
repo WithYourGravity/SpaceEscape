@@ -7,6 +7,7 @@
 #include "RoomManager.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FStageClearDele);
+DECLARE_MULTICAST_DELEGATE(FGameClearDele);
 
 UCLASS()
 class SPACEESCAPE_API ARoomManager : public AActor
@@ -41,4 +42,5 @@ public:
 	void MoveOnNextStage();
 	int GetCurrentPlayingStage();
 	FStageClearDele stageClearDele;
+	FGameClearDele gameClearDele;
 };
