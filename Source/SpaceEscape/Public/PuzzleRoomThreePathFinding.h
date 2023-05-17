@@ -37,6 +37,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	class USceneComponent* sceneComp;
+	UPROPERTY(EditDefaultsOnly)
+	class UStaticMeshComponent* backPlateMesh;
 
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginPlay() override;
