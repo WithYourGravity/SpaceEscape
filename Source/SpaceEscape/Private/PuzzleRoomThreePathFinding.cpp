@@ -31,7 +31,7 @@ APuzzleRoomThreePathFinding::APuzzleRoomThreePathFinding()
 	backPlateMesh->SetRelativeLocation(FVector(650.f, 950.f, -200.f));
 	backPlateMesh->SetCollisionProfileName(FName("NoCollision"));
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh>tempBackPlate(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Plane1.Plane1'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempBackPlate(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/Plane1.Plane1'"));
 	if (tempBackPlate.Succeeded())
 	{
 		backPlateMesh->SetStaticMesh(tempBackPlate.Object);
