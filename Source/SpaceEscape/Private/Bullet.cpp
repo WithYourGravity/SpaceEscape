@@ -3,8 +3,10 @@
 
 #include "Bullet.h"
 #include "EnemyFSM.h"
+#include "NiagaraComponent.h"
 #include "ResearcherEnemy.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
 // Sets default values
@@ -30,6 +32,10 @@ ABullet::ABullet()
 	movementComp->MaxSpeed = 2000;
 	movementComp->bShouldBounce = true;
 	movementComp->Bounciness = 0.1f;
+
+	bulletTrailComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("bulletTrailComp"));
+	bulletTrailComp->SetupAttachment(RootComponent);
+	bulletTrailComp->SetRelativeLocation(FVector(-4.0f, 0.0f, 0.0f));
 }
 
 // Called when the game starts or when spawned
@@ -53,6 +59,8 @@ void ABullet::Tick(float DeltaTime)
 void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	GetWorld()->SpawnActor<AActor>(hitEffect, SweepResult.Location, FRotator(0, 0, 0));
+
 	if (OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulse(movementComp->Velocity * 1.0f);
@@ -69,6 +77,8 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 			auto enemyFSM = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(TEXT("enemyFSM")));
 			if (enemyFSM)
 			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bloodEffect, SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), true);
+
 				if (enemyFSM->bIsDying)
 				{
 					return;

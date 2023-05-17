@@ -216,10 +216,12 @@ public:
 // HP	
 private:
 	int32 HP;
+	
+	FTimerHandle dieTimer;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP")
-	int32 maxHP = 30;
+	int32 maxHP = 100;
 
 	FORCEINLINE int32 GetHP() const { return HP; }
 	UFUNCTION(BlueprintCallable)

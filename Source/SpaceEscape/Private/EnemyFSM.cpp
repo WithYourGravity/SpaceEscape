@@ -149,11 +149,11 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			}
 		}
 		anim->PlayDamageAnim(*sectionName);
-		if (bIsStartCrawl)
+		/*if (bIsStartCrawl)
 		{
 			bIsStartCrawl = false;
 			anim->PlayDamageAnim(FName(TEXT("Crawl")));
-		}
+		}*/
 	}
 
 	//anim->animState = state;
@@ -183,6 +183,11 @@ bool UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius,
 void UEnemyFSM::AttackPlayer()
 {
 	if (target->GetHP() <= 0)
+	{
+		return;
+	}
+	
+	if (FVector::DotProduct(target->GetActorLocation() - me->GetActorLocation(), me->GetActorForwardVector()) <= FMath::Cos(10.0f))
 	{
 		return;
 	}

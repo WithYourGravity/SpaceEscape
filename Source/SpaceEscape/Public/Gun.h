@@ -68,6 +68,9 @@ public:
 	UPROPERTY()
 	class AEscapePlayer* player;
 
+	UPROPERTY(VisibleAnywhere, Category = "Fire")
+	class UNiagaraComponent* muzzleFlashComp;
+
 	bool bIsOnGrabbed = false;
 	bool bOnReloading = false;
 	bool bDoReloading = false;
@@ -105,6 +108,9 @@ private:
 
 	float currentTime = 0.0f;
 	float dropMagazineTime = 0.2f;
+
+	UPROPERTY()
+	class UHapticFeedbackEffect_Base* grabHapticEffect;
 
 	void DrawCrosshair();
 	void GrabSlider();

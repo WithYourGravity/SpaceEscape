@@ -17,6 +17,7 @@
 #include "PlayerInfoWidget.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEscapePlayer::AEscapePlayer()
@@ -24,13 +25,13 @@ AEscapePlayer::AEscapePlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	GetCapsuleComponent()->SetCapsuleHalfHeight(73.0f);
+	GetCapsuleComponent()->SetCapsuleHalfHeight(78.0f);
 	GetCapsuleComponent()->SetCapsuleRadius(30.0f);
 
 	vrCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("VRCamera"));
 	vrCamera->SetupAttachment(RootComponent);
 	vrCamera->bUsePawnControlRotation = false;
-	vrCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 65.0f));
+	vrCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 
 	// MotionController
 	leftHand = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftHand"));
@@ -552,5 +553,22 @@ void AEscapePlayer::Die()
 	GetWorld()->GetFirstPlayerController()->SetInputMode(inputMode);
 
 	dieWidgetComp->SetVisibility(true);
+
+	FRotator endRot = GetActorRotation().Add(0.0f, 0.0f, 90.0f);
+	
+	GetWorld()->GetTimerManager().SetTimer(dieTimer, FTimerDelegate::CreateLambda([this, endRot]()->void
+		{
+			FRotator curRot = GetActorRotation();
+			
+			curRot =  FQuat::Slerp(curRot.Quaternion(), endRot.Quaternion(), 1.0f * GetWorld()->DeltaTimeSeconds).Rotator();
+
+			SetActorRotation(curRot);
+
+			if (curRot.Equals(endRot))
+			{
+				SetActorRotation(endRot);
+				GetWorld()->GetTimerManager().ClearTimer(dieTimer);
+			}
+		}), 0.02f, true);
 }
 
