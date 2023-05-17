@@ -6,6 +6,7 @@
 #include "Screw.h"
 #include "GrabComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AScrewDriver::AScrewDriver()
@@ -18,7 +19,8 @@ AScrewDriver::AScrewDriver()
 	boxComp->SetBoxExtent(FVector(0.8, 0.7, 0.8));
 	boxComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ScrewMesh"));
-	meshComp->SetupAttachment(RootComponent);	
+	meshComp->SetupAttachment(RootComponent);
+	meshComp->SetWorldRotation(FRotator(0, 90, 0));
 	ConstructorHelpers::FObjectFinder<UStaticMesh> dMesh(TEXT("/Script/Engine.StaticMesh'/Game/Deko_MatrixDemo/Apartment/Meshes/SM_ScrewDriver_A01_N1.SM_ScrewDriver_A01_N1'"));
 	if(dMesh.Succeeded())
 	{
@@ -26,7 +28,6 @@ AScrewDriver::AScrewDriver()
 		meshComp->SetRelativeLocation(FVector(-9, 0, 0));
 		meshComp->SetRelativeRotation(FRotator(0, 90, 180));
 		meshComp->SetRelativeScale3D(FVector(1));
-		meshComp->SetWorldRotation(FRotator(0, 90, 0));
 	}
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComp"));
 	grabComp->SetupAttachment(RootComponent);
@@ -39,42 +40,15 @@ AScrewDriver::AScrewDriver()
 void AScrewDriver::BeginPlay()
 {
 	Super::BeginPlay();
-	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AScrewDriver::AttachtoScrew);	
-	boxComp->OnComponentEndOverlap.AddDynamic(this, &AScrewDriver::DettachFromScrew);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AScrew::StaticClass(), screwActors);
+	screw = Cast<AScrew>(UGameplayStatics::GetActorOfClass(GetWorld(), AScrew::StaticClass()));
 }
 
 // Called every frame
 void AScrewDriver::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
-	//UE_LOG(LogTemp, Warning, TEXT("Tick Attach : isAttaching  = %d"), isAttaching)
-	if (isAttaching == true)
-	{
-		deltaRot = GetActorRotation().Roll - prevDriverRot;
-		//UE_LOG(LogTemp, Warning, TEXT("delatRot = %f"), deltaRot)
-	}	
+
 }
 
-void AScrewDriver::AttachtoScrew(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	AScrew* attachedScrew = Cast<AScrew>(OtherActor);
-	if (attachedScrew != nullptr)
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("OtherActor = %s"), *OtherActor->GetName())
-		isAttaching = true;
-		//닿았을 때 최초 회전값
-		prevDriverRot = GetActorRotation().Roll;
-	}
-}
 
-void AScrewDriver::DettachFromScrew(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	// 나사가 다 돌아가서 빠져나왔다면, 나사 physics 켜준다
-	AScrew* attachedScrew = Cast<AScrew>(OtherActor);
-	if (attachedScrew != nullptr)
-	{ 
-		isAttaching = false;	
-	}
-}

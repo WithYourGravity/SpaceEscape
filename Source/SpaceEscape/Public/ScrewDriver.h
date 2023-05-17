@@ -32,21 +32,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
 	class UArrowComponent* arrowComp;
 
-	//드라이버에 나사가 닿으면
-	UFUNCTION()
-	void AttachtoScrew(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	//드라이버에서 나사가 떨어지면
-	UFUNCTION()
-	void DettachFromScrew(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UPROPERTY()
+	class AScrew* screw;
 
-	//닿았는가
-	bool isAttaching;	
+	UPROPERTY(EditDefaultsOnly, Category = "Screw")
+	TArray<class AActor*> screwActors;
 
-	//드라이버의 실시간 회전값
-	float driverRot;
-	//드라이버의 이전 회전값
-	float prevDriverRot;
-	//변화되는 값?
-	float deltaRot;
+
 
 };
