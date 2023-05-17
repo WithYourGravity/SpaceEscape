@@ -10,7 +10,7 @@ APuzzleRoomThreePathFinding::APuzzleRoomThreePathFinding()
 {
 	sceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("sceneComp"));
 	SetRootComponent(sceneComp);
-	sceneComp->SetRelativeScale3D(FVector(0.2f));
+	sceneComp->SetRelativeScale3D(FVector(0.4f));
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/SM_PathFindingGround.SM_PathFindingGround'"));
 
@@ -23,6 +23,18 @@ APuzzleRoomThreePathFinding::APuzzleRoomThreePathFinding()
 		groundBoxArray[i]->SetStaticMesh(tempMesh.Object);
 		groundBoxArray[i]->SetRelativeLocation(boxLoc);
 		groundBoxArray[i]->SetCollisionProfileName(FName("NoCollision"));
+	}
+
+	backPlateMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("backPlateMesh"));
+	backPlateMesh->SetupAttachment(RootComponent);
+	backPlateMesh->SetRelativeScale3D(FVector(18.f, 25.f, 1.f));
+	backPlateMesh->SetRelativeLocation(FVector(650.f, 950.f, -200.f));
+	backPlateMesh->SetCollisionProfileName(FName("NoCollision"));
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempBackPlate(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Plane1.Plane1'"));
+	if (tempBackPlate.Succeeded())
+	{
+		backPlateMesh->SetStaticMesh(tempBackPlate.Object);
 	}
 }
 
@@ -194,13 +206,13 @@ void APuzzleRoomThreePathFinding::MovingTrigger()
 	// 이동방향 설정
 	if (!bUpAndDown)
 	{
-		zPos = -500;
+		zPos = -400;
 		bUpAndDown = true;
 		bVisibility = true;
 	}
 	else
 	{
-		zPos = 500;
+		zPos = 400;
 		bUpAndDown = false;
 		bVisibility = false;
 	}
@@ -436,6 +448,18 @@ void APuzzleRoomThreePathFinding::PathLight()
 					FTimerHandle endingEffectHandle;
 					GetWorldTimerManager().SetTimer(endingEffectHandle, this, &APuzzleRoomThreePathFinding::EndingEffect, 2.f, false);
 				}
+				else
+				{
+					// 도착점까지 다 보여줬고 오답이었다면
+					// 전체 색 초기화
+					for (UStaticMeshComponent* blocks : groundBoxArray)
+					{
+						blocks->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myRed);
+					}
+					MovingTrigger();
+					FTimerHandle resetHandle;
+					GetWorldTimerManager().SetTimer(resetHandle, this, &APuzzleRoomThreePathFinding::ResetThisPuzzle, 2, false);
+				}
 			}
 			else
 			{
@@ -520,7 +544,8 @@ void APuzzleRoomThreePathFinding::MovePlayingNode(EMoveDir direction)
 
 void APuzzleRoomThreePathFinding::EndingEffect()
 {
-	MovingTrigger();
+	//MovingTrigger();
+	backPlateMesh->SetVisibility(false);
 
 	// 전체 색 초기화
 	for (UStaticMeshComponent* blocks : groundBoxArray)
@@ -593,7 +618,7 @@ void APuzzleRoomThreePathFinding::EndingMovingAtTick(float deltatime)
 
 void APuzzleRoomThreePathFinding::EndingMakePathAtTick(float deltatime)
 {
-	lerpTime += deltatime * 0.2f;
+	lerpTime += deltatime * 0.3f;
 
 	if (forEndingLerp > 0.98f)
 	{
@@ -626,8 +651,8 @@ void APuzzleRoomThreePathFinding::EndingMakePathAtTick(float deltatime)
 		if (countForRecordRandLoc < groundBoxArray.Num())
 		{
 			FVector pathBlockLoc = pathLoc->GetActorLocation();
-			pathBlockLoc.Y += 100 * GetActorRelativeScale3D().X * (i % pathLoc->width);
-			pathBlockLoc.X += 100 * GetActorRelativeScale3D().X * (i / pathLoc->width);
+			pathBlockLoc.X += 100 * GetActorRelativeScale3D().X * (i % pathLoc->width);
+			pathBlockLoc.Y += 100 * GetActorRelativeScale3D().X * (i / pathLoc->width);
 			
 			newRandLoc.Add(pathBlockLoc);
 			endingOriginLoc.Add(groundBoxArray[i]->GetComponentLocation());
