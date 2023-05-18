@@ -28,9 +28,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
 	class UProjectileMovementComponent* movementComp;
-
-	UPROPERTY(VisibleAnywhere, Category = "Effects")
-	class UNiagaraComponent* bulletTrailComp;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	class UParticleSystem* bulletTrailComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	class UParticleSystem* bloodEffect;

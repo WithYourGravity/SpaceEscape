@@ -32,10 +32,6 @@ ABullet::ABullet()
 	movementComp->MaxSpeed = 3000;
 	movementComp->bShouldBounce = true;
 	movementComp->Bounciness = 0.1f;
-
-	bulletTrailComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("bulletTrailComp"));
-	bulletTrailComp->SetupAttachment(RootComponent);
-	bulletTrailComp->SetRelativeLocation(FVector(-4.0f, 0.0f, 0.0f));
 }
 
 // Called when the game starts or when spawned
@@ -47,6 +43,8 @@ void ABullet::BeginPlay()
 	meshComp->SetGenerateOverlapEvents(true);
 
 	movementComp->OnProjectileStop.AddDynamic(this, &ABullet::OnStop);
+
+	UGameplayStatics::SpawnEmitterAttached(bulletTrailComp, meshComp, FName("bulletTrailSocket"));
 
 	SetLifeSpan(5.0f);
 }

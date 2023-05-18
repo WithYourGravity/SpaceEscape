@@ -239,6 +239,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Storage")
 	class UStaticMeshComponent* gunOverlapMeshComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Storage")
+	class UMaterial* gunOverlapMaterial;
+	UPROPERTY(EditDefaultsOnly, Category = "Storage")
+	class UMaterial* gunOverlapDefaultMaterial;
+
+
 	bool bIsOverlapGunStorage = false;
 
 	UFUNCTION()

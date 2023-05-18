@@ -119,6 +119,17 @@ AEscapePlayer::AEscapePlayer()
 	gunOverlapMeshComp->SetupAttachment(gunStorageComp);
 	gunOverlapMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	gunOverlapMeshComp->SetVisibility(true);
+
+	ConstructorHelpers::FObjectFinder<UMaterial> tempMat(TEXT("/Script/Engine.Material'/Engine/VREditor/LaserPointer/M_LaserPointer-Core.M_LaserPointer-Core'"));
+	if (tempMat.Succeeded())
+	{
+		gunOverlapMaterial = tempMat.Object;
+	}
+	ConstructorHelpers::FObjectFinder<UMaterial> tempMat2(TEXT("/Script/Engine.Material'/Engine/VREditor/LaserPointer/M_LaserPointer-Outer.M_LaserPointer-Outer'"));
+	if (tempMat2.Succeeded())
+	{
+		gunOverlapDefaultMaterial = tempMat2.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -599,6 +610,11 @@ void AEscapePlayer::OnGunStorageOverlap(UPrimitiveComponent* OverlappedComponent
 	if (grabbedGun && overlappedGun)
 	{
 		bIsOverlapGunStorage = true;
+
+		if (gunOverlapMaterial)
+		{
+			gunOverlapMeshComp->SetMaterial(0, gunOverlapMaterial);
+		}
 	}
 }
 
@@ -606,4 +622,8 @@ void AEscapePlayer::EndGunStorageOverlap(UPrimitiveComponent* OverlappedComponen
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	bIsOverlapGunStorage = false;
+	if (gunOverlapDefaultMaterial)
+	{
+		gunOverlapMeshComp->SetMaterial(0, gunOverlapDefaultMaterial);
+	}
 }
