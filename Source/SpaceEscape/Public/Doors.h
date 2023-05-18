@@ -59,12 +59,15 @@ public:
 	FVector startPoint;
 	UPROPERTY()
 	FVector endPoint;
-	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
+	UPROPERTY(EditAnywhere, Category = "Door Settings")
 	float yOffset = 200;
 	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
 	UCurveFloat* curveFloat;
 	
 	//문 최초 위치
 	FVector initLoc;
+
+	UPROPERTY(EditAnywhere, Category = "Door Settings")
+	bool isdoorDir;
 };
 

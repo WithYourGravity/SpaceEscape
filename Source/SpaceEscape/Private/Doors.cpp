@@ -63,10 +63,16 @@ void ADoors::ChangeDoorOverlaping()
 
 void ADoors::Open()
 {
-	//startPoint = GetActorLocation();
-	//endPoint = startPoint + FVector(0, yOffset, 0);
-	startPoint = doorMesh->GetComponentLocation();
-	endPoint = startPoint + FVector(yOffset, 0, 0);
+	startPoint = GetActorLocation();
+	if(isdoorDir == true)
+	{
+		endPoint = startPoint + FVector(yOffset, 0, 0);
+	}
+	else
+	{
+		endPoint = startPoint + FVector(0, yOffset, 0);
+	}
+	
 	curveTimeline.PlayFromStart();
 	bIsOpenOverlaping = false;	
 	//UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
@@ -75,8 +81,8 @@ void ADoors::Open()
 void ADoors::Close()
 {
 	if (bIsOpenOverlaping == true) return;
-	//startPoint = GetActorLocation();
-	startPoint = doorMesh->GetComponentLocation();
+	startPoint = GetActorLocation();
+	//startPoint = doorMesh->GetRelativeLocation();
 	endPoint = initLoc;
 	curveTimeline.PlayFromStart();
 	bIsOpenOverlaping = true;
