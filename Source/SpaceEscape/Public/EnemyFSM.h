@@ -94,7 +94,7 @@ public:
 
 	// 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FSM")
-	int32 maxHP = 20;
+	int32 maxHP = 9;
 
 	// 피격 대기 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
@@ -130,7 +130,7 @@ private:
 
 	int32 HP;
 
-	int32 power = 1;
+	int32 power = 10;
 
 	bool bIsStartCrawl = false;
 };

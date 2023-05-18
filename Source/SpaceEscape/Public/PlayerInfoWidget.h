@@ -23,12 +23,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info", meta = (BindWidget))
 	class UProgressBar* curHPPercent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info", meta = (BindWidget))
+	class UTextBlock* curMinute;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info", meta = (BindWidget))
+	class UTextBlock* curSecond;
+
 	UFUNCTION(BlueprintCallable)
 	void PrintCurrentHP();
 	UFUNCTION(BlueprintCallable)
 	void PrintCurrentHPPercent();
+	void PrintCurrentPlayTime();
 
 private:
 	UPROPERTY()
 	class AEscapePlayer* player;
+
+	UPROPERTY()
+	class ASpaceEscapeGameModeBase* gm;
 };

@@ -28,8 +28,8 @@ ABullet::ABullet()
 
 	movementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("movementComp"));
 	movementComp->SetUpdatedComponent(meshComp);
-	movementComp->InitialSpeed = 2000;
-	movementComp->MaxSpeed = 2000;
+	movementComp->InitialSpeed = 3000;
+	movementComp->MaxSpeed = 3000;
 	movementComp->bShouldBounce = true;
 	movementComp->Bounciness = 0.1f;
 
@@ -47,6 +47,8 @@ void ABullet::BeginPlay()
 	meshComp->SetGenerateOverlapEvents(true);
 
 	movementComp->OnProjectileStop.AddDynamic(this, &ABullet::OnStop);
+
+	SetLifeSpan(5.0f);
 }
 
 // Called every frame
@@ -90,7 +92,7 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 				}
 				else if (hitPartName.Contains("Head"))
 				{
-					enemyFSM->OnDamageProcess(bulletPower, EEnemyHitPart::HEAD);
+					enemyFSM->OnDamageProcess(enemyFSM->maxHP, EEnemyHitPart::HEAD);
 				}
 				else if (hitPartName.Contains("LeftArm"))
 				{

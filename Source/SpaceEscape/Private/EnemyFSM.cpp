@@ -107,8 +107,8 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 		}
 		else if (damagePart == EEnemyHitPart::CHEST)
 		{
-			int32 index = FMath::RandRange(0, 1);
-			sectionName += FString::Printf(TEXT("Chest%d"), index);
+			//int32 index = FMath::RandRange(0, 1);
+			sectionName += FString::Printf(TEXT("Chest%d"), 1);
 		}
 		else if (damagePart == EEnemyHitPart::HEAD)
 		{
@@ -187,7 +187,7 @@ void UEnemyFSM::AttackPlayer()
 		return;
 	}
 	
-	if (FVector::DotProduct(target->GetActorLocation() - me->GetActorLocation(), me->GetActorForwardVector()) <= FMath::Cos(10.0f))
+	if (FVector::DotProduct(target->GetActorLocation() - me->GetActorLocation(), me->GetActorForwardVector()) <= FMath::Cos(5.0f))
 	{
 		return;
 	}

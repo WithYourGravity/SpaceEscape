@@ -15,5 +15,16 @@ class SPACEESCAPE_API ASpaceEscapeGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	virtual void BeginPlay() override;
 
+	int32 minute = 0;
+	int32 second = 0;
+
+	FTimerHandle countTimer;
+
+	UPROPERTY()
+	class AEscapePlayer* player;
+
+	void CountPlayTime();
+	void StopPlayTime();
 };
