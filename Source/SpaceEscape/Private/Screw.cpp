@@ -2,13 +2,13 @@
 
 
 #include "Screw.h"
-
 #include "EscapePlayer.h"
 #include "ScrewDriver.h"
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
 //#include "GrabComponent.h"
+#include "MovableVent.h"
 
 AScrew::AScrew()
 { 	
@@ -85,7 +85,7 @@ void AScrew::bEnoughCameOut()
 {
 	//나사가 다 나온 거리인지 확인 : 5 이동하면 다 나온 것
 	screwDist = FVector::Dist(GetActorLocation(), startLoc);
-	screwDist >= 5 ? isEnoughRotated = true : isEnoughRotated = false;
+	screwDist >= 4.7f ? isEnoughRotated = true : isEnoughRotated = false;
 }
 
 void AScrew::MoveScrew()
@@ -107,6 +107,8 @@ void AScrew::CameOutScrew()
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("CameOutScrew::isEnoughRotated = %d"), isEnoughRotated)
 		boxComp->SetSimulatePhysics(true);
+		AMovableVent* vent = Cast<AMovableVent>(UGameplayStatics::GetActorOfClass(GetWorld(), AMovableVent::StaticClass()));
+		vent->FallingVent();
 	}
 }
 

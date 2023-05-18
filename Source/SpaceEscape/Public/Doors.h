@@ -40,9 +40,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
 		class UStaticMeshComponent* doorMesh;
 
-	UPROPERTY()
-	class ADoorButton* doorBtn;
-
 	UFUNCTION()
 	void Open();
 	UFUNCTION()

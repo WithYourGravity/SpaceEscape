@@ -32,6 +32,7 @@ void ADoorButton::BeginPlay()
 	ARoomManager* rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
 	rm->stageClearDele.AddUFunction(this, FName("CheckClearStage"));
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoorButton::OnHandOverlap);
+	//UE_LOG(LogTemp, Warning, TEXT("DoorButton::Is Opening State ? : %d"), bOpened)
 }
 
 // Called every frame
@@ -74,13 +75,13 @@ void ADoorButton::ReportOpen()
 	if(bOpened == false)//ÇÑ¹ø ¿­·È´Ù.
 	{
 		bOpened = true;
-		UE_LOG(LogTemp, Warning, TEXT("ReportOpen() : Opened Onced"))
+		//UE_LOG(LogTemp, Warning, TEXT("ReportOpen() : Opened Onced"))
 	}
 	else
 	{
 		bOpened = false;
 		bCanButtonClicked = false;
-		UE_LOG(LogTemp, Warning, TEXT("ReportOpen() : Not to be Opened"))
+		//UE_LOG(LogTemp, Warning, TEXT("ReportOpen() : Not to be Opened"))
 	}
 }
 

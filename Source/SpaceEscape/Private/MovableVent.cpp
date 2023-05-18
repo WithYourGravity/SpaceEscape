@@ -4,6 +4,8 @@
 #include "MovableVent.h"
 #include "Components/BoxComponent.h"
 #include "GrabComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Screw.h"
 
 // Sets default values
 AMovableVent::AMovableVent()
@@ -28,7 +30,8 @@ AMovableVent::AMovableVent()
 void AMovableVent::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	screw = Cast<AScrew>(UGameplayStatics::GetActorOfClass(GetWorld(), AScrew::StaticClass()));
 }
 
 // Called every frame
@@ -36,5 +39,22 @@ void AMovableVent::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AMovableVent::FallingVent()
+{
+	if (cameOutScrewCount < 4 )
+	{
+		UE_LOG(LogTemp, Warning, TEXT("isEnoughRotated"))
+		cameOutScrewCount++;
+		UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count : %d"), cameOutScrewCount)
+		boxComp->SetSimulatePhysics(false);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count222 : %d"), cameOutScrewCount)
+		boxComp->SetSimulatePhysics(true);
+	}
+	//cameOutScrewCount = 0;
 }
 

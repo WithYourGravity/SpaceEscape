@@ -30,4 +30,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
 	class UGrabComponent* grabComp;
 
+	UPROPERTY()
+	class AScrew* screw;
+
+	void FallingVent();
+
+private:
+	int32 cameOutScrewCount = 0;
+
+
 };

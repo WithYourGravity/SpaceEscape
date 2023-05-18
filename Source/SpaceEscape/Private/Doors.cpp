@@ -17,7 +17,8 @@ ADoors::ADoors()
 	doorMesh->SetupAttachment(RootComponent);
 	doorMesh->SetRelativeLocation(FVector(0, 0, 0));
 	doorMesh->SetRelativeScale3D(FVector(1, 4.625f, 2.4f));
-	initLoc = GetActorLocation();
+	//initLoc = GetActorLocation();
+	initLoc = doorMesh->GetComponentLocation();
 	/*triggerboxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("triggerboxComp"));
 	triggerboxComp->SetupAttachment(RootComponent);
 	triggerboxComp->SetRelativeLocation(FVector(0, 0, 0));
@@ -28,12 +29,12 @@ void ADoors::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//for (TActorIterator<ADoorButton> it(GetWorld()); it; ++it)
-	//{
-		//ADoorButton* db = *it;
+	for (TActorIterator<ADoorButton> it(GetWorld()); it; ++it)
+	{
+		ADoorButton* db = *it;
 
 		//db->openDoorDele.BindUFunction(this, FName("ChangeDoorOverlaping"));
-		//db->openDoorDele.AddUFunction(this, FName("ChangeDoorOverlaping"));
+		db->openDoorDele.AddUFunction(this, FName("ChangeDoorOverlaping"));
 
 		initLoc = GetActorLocation();
 		if (curveFloat)
@@ -46,8 +47,7 @@ void ADoors::BeginPlay()
 			triggerboxComp->OnComponentEndOverlap.AddDynamic(this, &ADoors::OnTriggeredEndOverlap);
 			*/
 		}
-		//doorBtn = Cast<ADoorButton>(Get);
-	//}	
+	}	
 }
 
 void ADoors::Tick(float DeltaTime)
@@ -58,25 +58,28 @@ void ADoors::Tick(float DeltaTime)
 
 void ADoors::ChangeDoorOverlaping()
 {	
-	//bIsOpenOverlaping == true ? Open() : Close();	
+	bIsOpenOverlaping == true ? Open() : Close();	
 }
 
 void ADoors::Open()
 {
-	startPoint = GetActorLocation();
-	endPoint = startPoint + FVector(0, yOffset, 0);
+	//startPoint = GetActorLocation();
+	//endPoint = startPoint + FVector(0, yOffset, 0);
+	startPoint = doorMesh->GetComponentLocation();
+	endPoint = startPoint + FVector(yOffset, 0, 0);
 	curveTimeline.PlayFromStart();
-	//bIsOpenOverlaping = false;	
+	bIsOpenOverlaping = false;	
 	//UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
 }
 
 void ADoors::Close()
 {
 	if (bIsOpenOverlaping == true) return;
-	startPoint = GetActorLocation();	
+	//startPoint = GetActorLocation();
+	startPoint = doorMesh->GetComponentLocation();
 	endPoint = initLoc;
 	curveTimeline.PlayFromStart();
-	//bIsOpenOverlaping = true;
+	bIsOpenOverlaping = true;
 	//UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))	
 }
 
