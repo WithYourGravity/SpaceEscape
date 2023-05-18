@@ -220,9 +220,13 @@ void AGun::Fire(float fireAlpha)
 	
 		if (magazine && magazine->GetCurrentBulletCount() != 0 && bDoReloading)
 		{
-			// spawn bullet
 			FVector loc = muzzleLocation->GetComponentLocation();
 			FRotator rot = muzzleLocation->GetComponentRotation();
+
+			// spawn effect
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashComp, loc, rot, true);
+
+			// spawn bullet
 			GetWorld()->SpawnActor<ABullet>(bulletFactory, loc, rot);
 			magazine->FireBullet();
 

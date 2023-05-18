@@ -65,8 +65,8 @@ public:
 	UPROPERTY()
 	class AEscapePlayer* player;
 
-	//UPROPERTY(VisibleAnywhere, Category = "Fire")
-	//class UNiagaraComponent* muzzleFlashComp;
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	class UParticleSystem* muzzleFlashComp;
 
 	bool bIsOnGrabbed = false;
 	bool bOnReloading = false;
