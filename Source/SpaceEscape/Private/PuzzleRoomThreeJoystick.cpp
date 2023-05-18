@@ -35,7 +35,6 @@ APuzzleRoomThreeJoystick::APuzzleRoomThreeJoystick()
 	stickMeshComp->SetRelativeLocation(FVector(0, 0, 15.f));
 	stickMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 	stickMeshComp->SetSimulatePhysics(true);
-	stickMeshComp->SetMassOverrideInKg(FName(NAME_None), 10, true);
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempStickMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/SM_Joystick.SM_Joystick'"));
 	if (tempStickMesh.Succeeded())
 	{
@@ -106,6 +105,9 @@ APuzzleRoomThreeJoystick::APuzzleRoomThreeJoystick()
 void APuzzleRoomThreeJoystick::BeginPlay()
 {
 	Super::BeginPlay();
+
+	stickMeshComp->SetMassOverrideInKg(FName(NAME_None), 10, true);
+
 	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	puzzlePathFinding = Cast<APuzzleRoomThreePathFinding>(UGameplayStatics::GetActorOfClass(this, APuzzleRoomThreePathFinding::StaticClass()));
 	constraintComp->SetConstrainedComponents(baseMeshComp, FName("None"), stickMeshComp, FName("None"));
