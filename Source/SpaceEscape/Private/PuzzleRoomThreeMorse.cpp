@@ -91,7 +91,7 @@ void APuzzleRoomThreeMorse::CheckRightOrWrong()
 	if (screenString == "ARTH")
 	{
 		screenWidget->TextBlock_E->SetVisibility(ESlateVisibility::Hidden);
-		setScreenText("End");
+		setScreenText("END");
 		ReportClear();
 	}
 	else
