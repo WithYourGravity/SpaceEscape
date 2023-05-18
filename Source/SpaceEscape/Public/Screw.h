@@ -69,7 +69,12 @@ public:
 	double screwDist;	
 	//나사가 다 나왔다면 바닥에 떨어진다
 	void CameOutScrew();
+
+	//나사가 모두 떨어졌다면 vent 중력을 생성한다
+	void FallingVent();
 private:
 	UPROPERTY(EditDefaultsOnly)
 	class UHapticFeedbackEffect_Base* hapticFeedback;
+
+	int32 cameOutScrewCount = 0;
 };

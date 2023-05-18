@@ -33,10 +33,8 @@ public:
 	UPROPERTY()
 	class AScrew* screw;
 
-	void FallingVent();
+	//void FallingVent();
 
-private:
-	int32 cameOutScrewCount = 0;
 
 
 };

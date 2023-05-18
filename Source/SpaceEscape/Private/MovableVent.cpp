@@ -41,20 +41,19 @@ void AMovableVent::Tick(float DeltaTime)
 
 }
 
-void AMovableVent::FallingVent()
-{
-	if (cameOutScrewCount < 4 )
-	{
-		UE_LOG(LogTemp, Warning, TEXT("isEnoughRotated"))
-		cameOutScrewCount++;
-		UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count : %d"), cameOutScrewCount)
-		boxComp->SetSimulatePhysics(false);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count222 : %d"), cameOutScrewCount)
-		boxComp->SetSimulatePhysics(true);
-	}
-	//cameOutScrewCount = 0;
-}
+//void AMovableVent::FallingVent()
+//{
+//	if (cameOutScrewCount < 4 )
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("isEnoughRotated"))
+//		cameOutScrewCount++;
+//		UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count : %d"), cameOutScrewCount)
+//		boxComp->SetSimulatePhysics(false);
+//	}
+//	else
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count222 : %d"), cameOutScrewCount)
+//		boxComp->SetSimulatePhysics(true);
+//	}
+//}
 

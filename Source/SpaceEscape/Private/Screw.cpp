@@ -102,18 +102,29 @@ void AScrew::MoveScrew()
 
 void AScrew::CameOutScrew()
 {
+	cameOutScrewCount = 0;
 	//다 나왔다면 바닥에 떨어질 것
 	if(isEnoughRotated == true)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("CameOutScrew::isEnoughRotated = %d"), isEnoughRotated)
 		boxComp->SetSimulatePhysics(true);
+		cameOutScrewCount++;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count : %d"), cameOutScrewCount)
+}
+
+void AScrew::FallingVent()
+{
+	if(cameOutScrewCount > 4)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Come Out Screw Point Count : %d"), cameOutScrewCount)
 		AMovableVent* vent = Cast<AMovableVent>(UGameplayStatics::GetActorOfClass(GetWorld(), AMovableVent::StaticClass()));
-		vent->FallingVent();
+		vent->boxComp->SetSimulatePhysics(true);
 	}
 }
 
 void AScrew::AttachtoDriver(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (driver != nullptr)
 	{
