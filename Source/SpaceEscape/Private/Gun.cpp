@@ -78,8 +78,6 @@ AGun::AGun()
 	magazineBoxComp->SetRelativeLocation(FVector(-5.0f, 0.0f, -16.0f));
 	magazineBoxComp->SetBoxExtent(FVector(10, 6, 7));
 
-	//muzzleFlashComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("muzzleFlashComp"));
-
 	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base> tempHapticEffect(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
 	if (tempHapticEffect.Succeeded())
 	{
@@ -322,7 +320,12 @@ void AGun::DrawCrosshair()
 		crosshair->crosshairComp->SetVisibility(false);
 	}
 
-	crosshair->SetActorScale3D(FVector(FMath::Max<float>(1, distance * crosshairScale)));
+	//crosshair->SetActorScale3D(FVector(FMath::Max<float>(1.0f, distance * 0.002f)));
+	//crosshair->SetActorScale3D(FVector( distance * 0.002f));
+	float distAlpha = distance * 0.02f / (10000.0f - 0.01f);
+	distAlpha = FMath::Clamp(distAlpha, 0.01f, 1.0f);
+	crosshair->SetActorScale3D(FVector(FMath::Lerp<float>(0.01f, 1.0f, distAlpha)));
+	//crosshair->SetActorScale3D(FVector(100.0f));
 
 	// Crosshair 가 카메라를 바라보도록 처리
 	if (player)

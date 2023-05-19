@@ -90,7 +90,7 @@ private:
 	class ACrosshair* crosshair;
 
 	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
-	float crosshairScale = 0.3f;
+	float crosshairScale = 0.2f;
 	
 	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
 	float fireDistance = 10000.0f;

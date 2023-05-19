@@ -6,32 +6,22 @@
 #include "GrabComponent.h"
 #include "Gun.h"
 #include "MotionControllerComponent.h"
-#include "Components/BoxComponent.h"
 
 // Sets default values
 AMagazine::AMagazine()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
-	RootComponent = boxComp;
-	boxComp->SetSimulatePhysics(true);
-	boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
-	boxComp->SetBoxExtent(FVector(9, 4, 2));
-
+	
 	magazineMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("magazineMeshComp"));
-	//SetRootComponent(magazineMeshComp);
-	//magazineMeshComp->SetSimulatePhysics(true);
-	//magazineMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
-	magazineMeshComp->SetupAttachment(RootComponent);
+	SetRootComponent(magazineMeshComp);
+	magazineMeshComp->SetSimulatePhysics(true);
+	magazineMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/Pistol_Cube_008.Pistol_Cube_008'"));
 	if (tempMesh.Succeeded())
 	{
 		magazineMeshComp->SetStaticMesh(tempMesh.Object);
-		magazineMeshComp->SetRelativeRotation(FRotator(0, -90, -90));
 		magazineMeshComp->SetRelativeScale3D(FVector(0.36f));
-		magazineMeshComp->SetCollisionProfileName(FName("NoCollision"));
 	}
 
 	bulletMeshComp1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("bulletMeshComp1"));
@@ -40,8 +30,6 @@ AMagazine::AMagazine()
 	if (tempBulletMesh1.Succeeded())
 	{
 		bulletMeshComp1->SetStaticMesh(tempBulletMesh1.Object);
-		bulletMeshComp1->SetRelativeRotation(FRotator(0, -90, -90));
-		bulletMeshComp1->SetRelativeScale3D(FVector(0.36f));
 		bulletMeshComp1->SetCollisionProfileName(FName("NoCollision"));
 	}
 
@@ -51,26 +39,21 @@ AMagazine::AMagazine()
 	if (tempBulletMesh2.Succeeded())
 	{
 		bulletMeshComp2->SetStaticMesh(tempBulletMesh2.Object);
-		bulletMeshComp2->SetRelativeRotation(FRotator(0, -90, -90));
-		bulletMeshComp2->SetRelativeScale3D(FVector(0.36f));
 		bulletMeshComp2->SetCollisionProfileName(FName("NoCollision"));
 	}
 
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
-	grabComp->SetupAttachment(RootComponent);
+	grabComp->SetupAttachment(magazineMeshComp);
 	grabComp->grabType = EGrabType::SNAP;
-	grabComp->SetRelativeLocation(FVector(5, 2, 0));
-	grabComp->SetRelativeRotation(FRotator(0, 180, 270));
-	//grabComp->SetRelativeRotation(FRotator(0, -90, 0));
+	grabComp->SetRelativeLocation(FVector(-5, 0, -14));
+	grabComp->SetRelativeRotation(FRotator(90, 0, 0));
 }
 
 // Called when the game starts or when spawned
 void AMagazine::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//boxComp->OnComponentBeginOverlap.AddDynamic(this, &AMagazine::OnBeginOverlap);
-	//boxComp->SetGenerateOverlapEvents(true);
+	
 	magazineMeshComp->OnComponentBeginOverlap.AddDynamic(this, &AMagazine::OnBeginOverlap);
 	magazineMeshComp->SetGenerateOverlapEvents(true);
 
@@ -85,7 +68,7 @@ void AMagazine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bIsOverlapGun && gun && gun->player && grabComp->bIsHeld)
+	if (bIsOverlapGun && gun && gun->player && gun->magazine && grabComp->bIsHeld)
 	{
 		auto playerHand = grabComp->GetHeldByHand() == EControllerHand::Right ? gun->player->rightHand : gun->player->leftHand;
 		FVector handLocation = playerHand->GetComponentLocation();
@@ -97,8 +80,12 @@ void AMagazine::Tick(float DeltaTime)
 		{
 			grabComp->TryGrab(playerHand);
 			bIsOverlapGun = false;
-			gun->magazine = nullptr;
-			gun = nullptr;
+			magazineMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
+			if (gun)
+			{
+				gun->magazine = nullptr;
+				gun = nullptr;
+			}
 		}
 		else
 		{
@@ -112,12 +99,15 @@ void AMagazine::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	if (grabComp->bIsHeld)
 	{
+		FString name = OtherComp->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *name);
 		gun = Cast<AGun>(OtherActor);
 		if (gun != nullptr && gun->bIsOnGrabbed)
 		{
 			gun->magazine = this;
 			AttachToComponent(gun->gunMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MagazineOverlapSocket"));
 			magazineMeshComp->SetSimulatePhysics(false);
+			magazineMeshComp->SetCollisionProfileName(FName("NoCollision"));
 			bIsOverlapGun = true;
 		}
 	}

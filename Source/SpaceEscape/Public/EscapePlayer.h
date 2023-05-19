@@ -254,6 +254,7 @@ public:
 	UFUNCTION()
 	void EndGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+// Board
 	UFUNCTION()
 	void CallBoardingShip();
 };
