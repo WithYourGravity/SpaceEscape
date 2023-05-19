@@ -87,7 +87,11 @@ void AButtonBase::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 
 	// 손과 오버랩되면 진동 울리게 처리
 	auto player = Cast<AEscapePlayer>(OtherActor);
-	if (player)
+	if (OtherComp->GetName().Contains("left"))
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+	}
+	else
 	{
 		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
 	}
