@@ -72,7 +72,6 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 
 	if (HP <= 0)
 	{
-		//state = EEnemyState::DIE;
 		SetState(EEnemyState::DIE);
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -94,10 +93,7 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 	}
 	else
 	{
-		//state = EEnemyState::DAMAGE;
 		SetState(EEnemyState::DAMAGE);
-
-		//currentTime = 0;
 
 		// 피격 애니메이션 재생
 		FString sectionName = FString(TEXT("Damage"));
@@ -149,19 +145,13 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			}
 		}
 		anim->PlayDamageAnim(*sectionName);
-		/*if (bIsStartCrawl)
-		{
-			bIsStartCrawl = false;
-			anim->PlayDamageAnim(FName(TEXT("Crawl")));
-		}*/
 	}
-
-	//anim->animState = state;
+	
 	anim->animMoveState = moveState;
 	if (moveState == EEnemyMoveSubState::INJUREDWALKLEFT || moveState == EEnemyMoveSubState::INJUREDWALKRIGHT
 	)
 	{
-		me->GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		me->GetCharacterMovement()->MaxWalkSpeed = 150.0f;
 	}
 	else if (moveState == EEnemyMoveSubState::CRAWL)
 	{
@@ -209,12 +199,9 @@ void UEnemyFSM::TickIdle()
 	{
 		if (target != nullptr)
 		{
-			//state = EEnemyState::MOVE;
-			//currentTime = 0.0f;
 			SetState(EEnemyState::MOVE);
 
 			// 애니메이션 상태 동기화
-			//anim->animState = state;
 			anim->animMoveState = moveState;
 
 			// 최초 랜덤한 위치 정해주기
@@ -263,12 +250,9 @@ void UEnemyFSM::TickMove()
 	{
 		// 길 찾기 기능 정지
 		ai->StopMovement();
-
-		//state = EEnemyState::ATTACK;
+		
 		SetState(EEnemyState::ATTACK);
-
-		// 애니메이션 상태 동기화
-		//anim->animState = state;
+		
 		// 공격 애니메이션 재생 활성화
 		anim->bAttackPlay = true;
 		// 공격 상태 전환 시 대기 시간이 바로 끝나도록 처리
@@ -290,8 +274,6 @@ void UEnemyFSM::TickAttack()
 	float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
 	if (distance > attackRange)
 	{
-		//state = EEnemyState::MOVE;
-		//anim->animState = state;
 		SetState(EEnemyState::MOVE);
 
 		GetRandomPositionInNavMesh(me->GetActorLocation(), randomPositionRadius, randomPos);
@@ -303,9 +285,6 @@ void UEnemyFSM::TickDamage()
 	currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime > damageDelayTime)
 	{
-		//state = EEnemyState::MOVE;
-		//currentTime = 0.0f;
-		//anim->animState = state;
 		SetState(EEnemyState::MOVE);
 	}
 }

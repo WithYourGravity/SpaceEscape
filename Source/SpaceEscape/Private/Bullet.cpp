@@ -3,7 +3,6 @@
 
 #include "Bullet.h"
 #include "EnemyFSM.h"
-#include "NiagaraComponent.h"
 #include "ResearcherEnemy.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -32,6 +31,7 @@ ABullet::ABullet()
 	movementComp->MaxSpeed = 3000;
 	movementComp->bShouldBounce = true;
 	movementComp->Bounciness = 0.1f;
+	movementComp->ProjectileGravityScale = 0.0f;
 }
 
 // Called when the game starts or when spawned

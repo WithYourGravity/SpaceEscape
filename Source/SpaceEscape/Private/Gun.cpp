@@ -17,6 +17,7 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Haptics/HapticFeedbackEffect_Base.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 AGun::AGun()
@@ -270,9 +271,11 @@ void AGun::DropMagazine()
 				magazine->SetActorLocation(endPos);
 
 				magazine->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-				magazine->boxComp->SetSimulatePhysics(true);
+				//magazine->boxComp->SetSimulatePhysics(true);
+				magazine->magazineMeshComp->SetSimulatePhysics(true);
 				magazine->grabComp->grabType = EGrabType::SNAP;
-				magazine->boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
+				//magazine->boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
+				magazine->magazineMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 				magazine->gun = nullptr;
 				magazine = nullptr;
 
@@ -296,8 +299,13 @@ void AGun::DrawCrosshair()
 	FCollisionQueryParams params;
 	// 자기자신 무시
 	params.AddIgnoredActor(this);
+	params.AddIgnoredComponent(player->rightAim);
+	params.AddIgnoredComponent(player->leftAim);
+	params.AddIgnoredComponent(Cast<UPrimitiveComponent>(player->dieWidgetComp));
+	params.AddIgnoredComponent(Cast<UPrimitiveComponent>(player->infoWidgetComp));
 
-	bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+	//bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+	bool bHit = GetWorld()->SweepSingleByChannel(hitInfo, startPos, endPos, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(5.0f), params);
 
 	float distance = 0;
 	// 충돌이 발생하면
@@ -305,7 +313,7 @@ void AGun::DrawCrosshair()
 	{
 		// 충돌한 지점에 Crosshair 표시
 		crosshair->crosshairComp->SetVisibility(true);
-		crosshair->SetActorLocation(hitInfo.Location);
+		crosshair->SetActorLocation(hitInfo.ImpactPoint);
 		distance = hitInfo.Distance;
 	}
 	// 그렇지 않으면

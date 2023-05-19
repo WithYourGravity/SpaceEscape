@@ -4,6 +4,7 @@
 #include "ResearcherEnemy.h"
 #include "EnemyFSM.h"
 #include "NavigationInvokerComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -11,6 +12,8 @@ AResearcherEnemy::AResearcherEnemy()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	GetCapsuleComponent()->SetRelativeScale3D(FVector(0.9f));
 
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/YSY/Assets/Enemy/Zombie/Agony.Agony'"));
 	if (tempMesh.Succeeded())
@@ -20,7 +23,7 @@ AResearcherEnemy::AResearcherEnemy()
 	}
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 
 	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("enemyFSM"));
 

@@ -21,6 +21,9 @@ AMagazine::AMagazine()
 	boxComp->SetBoxExtent(FVector(9, 4, 2));
 
 	magazineMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("magazineMeshComp"));
+	//SetRootComponent(magazineMeshComp);
+	//magazineMeshComp->SetSimulatePhysics(true);
+	//magazineMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 	magazineMeshComp->SetupAttachment(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Pistol/Pistol_Cube_008.Pistol_Cube_008'"));
 	if (tempMesh.Succeeded())
@@ -58,6 +61,7 @@ AMagazine::AMagazine()
 	grabComp->grabType = EGrabType::SNAP;
 	grabComp->SetRelativeLocation(FVector(5, 2, 0));
 	grabComp->SetRelativeRotation(FRotator(0, 180, 270));
+	//grabComp->SetRelativeRotation(FRotator(0, -90, 0));
 }
 
 // Called when the game starts or when spawned
@@ -65,8 +69,10 @@ void AMagazine::BeginPlay()
 {
 	Super::BeginPlay();
 
-	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AMagazine::OnBeginOverlap);
-	boxComp->SetGenerateOverlapEvents(true);
+	//boxComp->OnComponentBeginOverlap.AddDynamic(this, &AMagazine::OnBeginOverlap);
+	//boxComp->SetGenerateOverlapEvents(true);
+	magazineMeshComp->OnComponentBeginOverlap.AddDynamic(this, &AMagazine::OnBeginOverlap);
+	magazineMeshComp->SetGenerateOverlapEvents(true);
 
 	grabComp->onGrabbedDelegate.AddUFunction(this, FName("OnGrabbed"));
 	grabComp->onDroppedDelegate.AddUFunction(this, FName("OnDropped"));
@@ -111,7 +117,7 @@ void AMagazine::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 		{
 			gun->magazine = this;
 			AttachToComponent(gun->gunMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MagazineOverlapSocket"));
-			boxComp->SetSimulatePhysics(false);
+			magazineMeshComp->SetSimulatePhysics(false);
 			bIsOverlapGun = true;
 		}
 	}
@@ -125,7 +131,7 @@ void AMagazine::OnDropped()
 {
 	if (gun)
 	{
-		boxComp->SetSimulatePhysics(false);
+		magazineMeshComp->SetSimulatePhysics(false);
 		grabComp->grabType = EGrabType::NONE;
 		
 		if (grabValue >= 1.0f)
@@ -134,7 +140,7 @@ void AMagazine::OnDropped()
 			gun->bOnReloading = false;
 			gun->bDoReloading = false;
 			AttachToComponent(gun->gunMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MagazineSocket"));
-			boxComp->SetCollisionProfileName(FName("NoCollision"));
+			magazineMeshComp->SetCollisionProfileName(FName("NoCollision"));
 		}
 		else
 		{
