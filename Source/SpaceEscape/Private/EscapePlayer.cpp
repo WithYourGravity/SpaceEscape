@@ -16,6 +16,7 @@
 #include "NiagaraDataInterfaceArrayFunctionLibrary.h"
 #include "PlayerInfoWidget.h"
 #include "SpaceEscapeGameModeBase.h"
+#include "SpaceShip.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -136,7 +137,7 @@ AEscapePlayer::AEscapePlayer()
 void AEscapePlayer::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	// Enhanced Input 사용처리
 	auto PC = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PC)
@@ -256,8 +257,8 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_DropMagazineRight, ETriggerEvent::Started, this, &AEscapePlayer::DropMagazine);
 		InputSystem->BindAction(IA_AppearInfo, ETriggerEvent::Started, this, &AEscapePlayer::AppearInfoWidget);
 		InputSystem->BindAction(IA_AppearInfo, ETriggerEvent::Completed, this, &AEscapePlayer::DisappearInfoWidget);
+		InputSystem->BindAction(IA_BoardShip, ETriggerEvent::Started, this, &AEscapePlayer::CallBoardingShip);
 	}
-	
 }
 
 void AEscapePlayer::Move(const FInputActionValue& values)
@@ -626,4 +627,12 @@ void AEscapePlayer::EndGunStorageOverlap(UPrimitiveComponent* OverlappedComponen
 	{
 		gunOverlapMeshComp->SetMaterial(0, gunOverlapDefaultMaterial);
 	}
+}
+
+void AEscapePlayer::CallBoardingShip()
+{
+	auto ship = Cast<ASpaceShip>(UGameplayStatics::GetActorOfClass(this, ASpaceShip::StaticClass()));
+	ship->BoardingShip();
+
+	UE_LOG(LogTemp, Warning, TEXT("Calling"));
 }

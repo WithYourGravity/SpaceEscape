@@ -66,6 +66,8 @@ public:
 	class UInputAction* IA_DropMagazineRight;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_AppearInfo;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_BoardShip;
 
 
 	// 이동처리 함수
@@ -251,4 +253,7 @@ public:
 	void OnGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void EndGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	void CallBoardingShip();
 };

@@ -78,6 +78,8 @@ void ASpaceShip::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 
 void ASpaceShip::BoardingShip()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Boarding"));
+
 	// 비행기 탑승범위가 아니라면 리턴
 	if (!bReadyToBoarding)
 	{
