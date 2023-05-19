@@ -268,7 +268,6 @@ void AGun::DropMagazine()
 			{
 				currentTime = 0.0f;
 				magazine->SetActorLocation(endPos);
-				GetWorld()->GetTimerManager().ClearTimer(magazineTimer);
 
 				magazine->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 				magazine->boxComp->SetSimulatePhysics(true);
@@ -276,9 +275,12 @@ void AGun::DropMagazine()
 				magazine->boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 				magazine->gun = nullptr;
 				magazine = nullptr;
+
+				GetWorld()->GetTimerManager().ClearTimer(magazineTimer);
 			}
 		}), 0.02f, true);
 	}
+
 }
 
 // 거리에 따라서 Crosshair 크기가 같게 보이게 한다.
