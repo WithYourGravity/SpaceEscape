@@ -74,6 +74,7 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 	{
 		SetState(EEnemyState::DIE);
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		me->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		// 죽음 애니메이션 재생
 		FString sectionName = FString(TEXT("Die"));

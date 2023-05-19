@@ -7,6 +7,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -77,7 +78,7 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 			auto enemyFSM = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(TEXT("enemyFSM")));
 			if (enemyFSM)
 			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bloodEffect, SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), true);
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), bloodEffect, SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation());
 
 				if (enemyFSM->bIsDying)
 				{

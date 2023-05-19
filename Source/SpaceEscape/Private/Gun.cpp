@@ -322,9 +322,9 @@ void AGun::DrawCrosshair()
 
 	//crosshair->SetActorScale3D(FVector(FMath::Max<float>(1.0f, distance * 0.002f)));
 	//crosshair->SetActorScale3D(FVector( distance * 0.002f));
-	float distAlpha = distance * 0.02f / (10000.0f - 0.01f);
+	float distAlpha = distance / (10000.0f - 0.01f);
 	distAlpha = FMath::Clamp(distAlpha, 0.01f, 1.0f);
-	crosshair->SetActorScale3D(FVector(FMath::Lerp<float>(0.01f, 1.0f, distAlpha)));
+	crosshair->SetActorScale3D(FVector(FMath::Lerp<float>(1.0f, 10000.0f, distAlpha)));
 	//crosshair->SetActorScale3D(FVector(100.0f));
 
 	// Crosshair 가 카메라를 바라보도록 처리
