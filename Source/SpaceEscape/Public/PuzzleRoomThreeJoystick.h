@@ -61,7 +61,6 @@ public:
 	void GiveHapticFeedback();
 	void MoveFunction(char componentName);
 
-
 private:
 
 	UPROPERTY()

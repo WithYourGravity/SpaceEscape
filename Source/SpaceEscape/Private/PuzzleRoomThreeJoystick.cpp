@@ -19,7 +19,7 @@ APuzzleRoomThreeJoystick::APuzzleRoomThreeJoystick()
 
 	sceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("sceneComp"));
 	SetRootComponent(sceneComp);
-	sceneComp->SetRelativeScale3D(FVector(0.5f));
+	sceneComp->SetRelativeScale3D(FVector(0.43f));
 
 	baseMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("baseMeshComp"));
 	baseMeshComp->SetupAttachment(RootComponent);
