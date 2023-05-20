@@ -10,7 +10,6 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "PhysicsEngine/PhysicsConstraintComponent.h"
 
 // Sets default values
 ASpaceShip::ASpaceShip()
@@ -37,13 +36,53 @@ ASpaceShip::ASpaceShip()
 	forLocComp->SetupAttachment(RootComponent);
 	forLocComp->SetCollisionProfileName(FName("NoCollision"));
 	forLocComp->SetRelativeLocation(FVector(280.f, 0, 200.f));
-	forLocComp->SetSphereRadius(72.f);
+	forLocComp->SetSphereRadius(16.f);
 
 	forJoyLocComp = CreateDefaultSubobject<USphereComponent>(TEXT("forJoyLocComp"));
 	forJoyLocComp->SetupAttachment(RootComponent);
-	forJoyLocComp->SetCollisionProfileName(FName("NoCollision"));
+	forJoyLocComp->SetCollisionProfileName(FName("OverlapAllDynamic"));
 	forJoyLocComp->SetRelativeLocation(FVector(323.f, 0, 208.f));
-	forJoyLocComp->SetSphereRadius(16.f);
+	forJoyLocComp->SetSphereRadius(8.f);
+
+	morseCodeTableComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("morseCodeTableComp"));
+	morseCodeTableComp->SetupAttachment(RootComponent);
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMorseCode(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/PlaneMorse.PlaneMorse'"));
+    if (tempMorseCode.Succeeded())
+    {
+		morseCodeTableComp->SetStaticMesh(tempMorseCode.Object);
+    }
+	morseCodeTableComp->SetRelativeLocationAndRotation(FVector(313.97f, 47.36f, 226.31f), FRotator(13.39f, 172.f, 89.f));
+	morseCodeTableComp->SetRelativeScale3D(FVector(0.12f, 0.094f, 0.05f));
+	morseCodeTableComp->SetCollisionProfileName(FName("NoCollision"));
+
+	morseScreenActorComp = CreateDefaultSubobject<UChildActorComponent>(TEXT("morseScreenActorComp"));
+	morseScreenActorComp->SetupAttachment(RootComponent);
+	morseScreenActorComp->SetRelativeLocationAndRotation(FVector(353.54f, 21.28f, 216.f), FRotator(43.65f, 180.f, 0));
+	morseScreenActorComp->SetRelativeScale3D(FVector(0.16f));
+	ConstructorHelpers::FClassFinder<AActor>tempMorseBP(TEXT("/Script/Engine.Blueprint'/Game/LTG/Blueprints/BP_PuzzleRoomThreeMorse.BP_PuzzleRoomThreeMorse_C'"));
+    if (tempMorseBP.Succeeded())
+    {
+		morseScreenActorComp->SetChildActorClass(tempMorseBP.Class);
+    }
+
+	morseLeverActorComp = CreateDefaultSubobject<UChildActorComponent>(TEXT("morseLeverActorComp"));
+	morseLeverActorComp->SetupAttachment(RootComponent);
+	morseLeverActorComp->SetRelativeLocationAndRotation(FVector(341.2f, -0.02f, 213.11f), FRotator(0, 90.f, -45.f));
+	ConstructorHelpers::FClassFinder<AActor>tempLeverBP(TEXT("/Script/Engine.Blueprint'/Game/LTG/Blueprints/BP_PuzzleRoomThreeMorseLever.BP_PuzzleRoomThreeMorseLever_C'"));
+	if (tempLeverBP.Succeeded())
+	{
+		morseLeverActorComp->SetChildActorClass(tempLeverBP.Class);
+	}
+
+	morseButtonActorComp = CreateDefaultSubobject<UChildActorComponent>(TEXT("morseButtonActorComp"));
+	morseButtonActorComp->SetupAttachment(RootComponent);
+	morseButtonActorComp->SetRelativeScale3D(FVector(1.1f));
+	morseButtonActorComp->SetRelativeLocationAndRotation(FVector(340.86f, -25.47f, 211.42f), FRotator(0, 90.f, 40.f));
+	ConstructorHelpers::FClassFinder<AActor>tempButtonBP(TEXT("/Script/Engine.Blueprint'/Game/LTG/Blueprints/BP_PuzzleRoomThreeMorseButton.BP_PuzzleRoomThreeMorseButton_C'"));
+	if (tempButtonBP.Succeeded())
+	{
+		morseButtonActorComp->SetChildActorClass(tempButtonBP.Class);
+	}
 }
 
 // Called when the game starts or when spawned

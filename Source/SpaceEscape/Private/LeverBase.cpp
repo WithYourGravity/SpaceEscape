@@ -15,7 +15,7 @@ ALeverBase::ALeverBase()
 
 	leverBodyComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("leverBodyMeshComp"));
 	SetRootComponent(leverBodyComp);
-	leverBodyComp->SetRelativeScale3D(FVector(0.5f));
+	leverBodyComp->SetRelativeScale3D(FVector(0.3f));
 	leverBodyComp->SetRelativeRotation(FRotator(0, 0, -90.f));
 	leverBodyComp->SetCollisionProfileName(TEXT("NoCollision"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempLeverBodyMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/switchers/source/switchers_lever.switchers_lever'"));
@@ -116,7 +116,7 @@ void ALeverBase::ControlByPlayerHand()
 	rot.Roll = FMath::Clamp(degree * 1.75f, 0, 90.f);
 	leverComp->SetRelativeRotation(rot);
 
-	if (degree > 45 && !bTriggerOnce)
+	if (degree > 40 && !bTriggerOnce)
 	{
 		LeverTriggered();
 		bTriggerOnce = true;

@@ -15,7 +15,7 @@ AButtonBase::AButtonBase()
 
 	buttonBodyComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("buttonBodyComp"));
 	SetRootComponent(buttonBodyComp);
-	buttonBodyComp->SetRelativeScale3D(FVector(0.5));
+	buttonBodyComp->SetRelativeScale3D(FVector(0.2));
 	buttonBodyComp->SetCollisionProfileName(TEXT("NoCollision"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempButtonBodyMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/switchers/source/switchers_bigbutton.switchers_bigbutton'"));
 	if (tempButtonBodyMesh.Succeeded())
