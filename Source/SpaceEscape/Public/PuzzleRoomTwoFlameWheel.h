@@ -31,7 +31,9 @@ public:
 	class UGrabComponent* grabComp;
 
 	UFUNCTION()
-	void ChangeIsGrabed();
+	void WhenPlayerGrab();
+	UFUNCTION()
+	void WhenPlayerUnGrab();
 	void ControlByPlayerHand();
 
 	UPROPERTY(EditAnywhere)

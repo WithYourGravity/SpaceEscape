@@ -42,8 +42,8 @@ void APuzzleRoomTwoFlameWheel::BeginPlay()
 	selectedFlame = Cast<APuzzleRoomTwoFlame>(flameArray[arrayIndex]);
 
 	// 플레이어 grab delegate 바인딩
-	grabComp->onGrabbedDelegate.AddUFunction(this, FName("ChangeIsGrabed"));
-	grabComp->onDroppedDelegate.AddUFunction(this, FName("ChangeIsGrabed"));
+	grabComp->onGrabbedDelegate.AddUFunction(this, FName("WhenPlayerGrab"));
+	grabComp->onDroppedDelegate.AddUFunction(this, FName("WhenPlayerUnGrab"));
 
 	// 플레이어 캐싱
 	player = Cast<AEscapePlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
@@ -59,9 +59,14 @@ void APuzzleRoomTwoFlameWheel::Tick(float DeltaTime)
 	}
 }
 
-void APuzzleRoomTwoFlameWheel::ChangeIsGrabed()
+void APuzzleRoomTwoFlameWheel::WhenPlayerGrab()
 {
-	bIsGrabed = !bIsGrabed;
+	bIsGrabed = true;
+}
+
+void APuzzleRoomTwoFlameWheel::WhenPlayerUnGrab()
+{
+	bIsGrabed = false;
 	bRecordOnce = false;
 }
 
