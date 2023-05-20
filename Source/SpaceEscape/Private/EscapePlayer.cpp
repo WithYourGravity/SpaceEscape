@@ -584,6 +584,8 @@ void AEscapePlayer::Die()
 	inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	GetWorld()->GetFirstPlayerController()->SetInputMode(inputMode);
 
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	dieWidgetComp->SetVisibility(true);
 
 	FRotator endRot = GetActorRotation().Add(0.0f, 0.0f, 90.0f);

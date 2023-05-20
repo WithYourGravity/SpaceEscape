@@ -58,7 +58,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Fire")
 	TSubclassOf<class ABullet> bulletFactory;
-
+	
 	UPROPERTY()
 	class AMagazine* magazine;
 
@@ -83,6 +83,7 @@ public:
 
 private:
 	// Crosshair
+
 	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class ACrosshair> crosshairFactory;
 

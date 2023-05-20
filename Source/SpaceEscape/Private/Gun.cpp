@@ -269,10 +269,8 @@ void AGun::DropMagazine()
 				magazine->SetActorLocation(endPos);
 
 				magazine->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-				//magazine->boxComp->SetSimulatePhysics(true);
 				magazine->magazineMeshComp->SetSimulatePhysics(true);
 				magazine->grabComp->grabType = EGrabType::SNAP;
-				//magazine->boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 				magazine->magazineMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 				magazine->gun = nullptr;
 				magazine = nullptr;
@@ -317,15 +315,19 @@ void AGun::DrawCrosshair()
 	// 그렇지 않으면
 	else
 	{
+
 		crosshair->crosshairComp->SetVisibility(false);
 	}
 
-	//crosshair->SetActorScale3D(FVector(FMath::Max<float>(1.0f, distance * 0.002f)));
+	crosshair->SetActorScale3D(FVector(FMath::Max<float>(1.0f, distance * 0.002f)));
 	//crosshair->SetActorScale3D(FVector( distance * 0.002f));
-	float distAlpha = distance / (10000.0f - 0.01f);
-	distAlpha = FMath::Clamp(distAlpha, 0.01f, 1.0f);
-	crosshair->SetActorScale3D(FVector(FMath::Lerp<float>(1.0f, 10000.0f, distAlpha)));
+
+	//float distAlpha = distance / (10000.0f - 0.01f);
+	//distAlpha = FMath::Clamp(distAlpha, 0.01f, 1.0f);
+	//crosshair->SetActorScale3D(FVector(FMath::Lerp<float>(1.0f, 10000.0f, distAlpha)));
 	//crosshair->SetActorScale3D(FVector(100.0f));
+
+	//crosshair->SetActorScale3D(FVector(FMath::Max<float>(0.1f, 1 - (distance - FMath::Fmod(distance, 1000.0f)) / 10000.0f)));
 
 	// Crosshair 가 카메라를 바라보도록 처리
 	if (player)

@@ -14,6 +14,8 @@ enum class EEnemyState : uint8
 	ATTACK,
 	DAMAGE,
 	DIE,
+	KNOCK,
+	JAMMED,
 };
 
 UENUM(BlueprintType)
@@ -131,6 +133,4 @@ private:
 	int32 HP;
 
 	int32 power = 10;
-
-	bool bIsStartCrawl = false;
 };

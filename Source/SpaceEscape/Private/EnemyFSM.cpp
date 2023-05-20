@@ -121,7 +121,6 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			if (moveState == EEnemyMoveSubState::INJUREDWALKLEFT)
 			{
 				moveState = EEnemyMoveSubState::CRAWL;
-				bIsStartCrawl = true;
 			}
 			else
 			{
@@ -138,7 +137,6 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			if (moveState == EEnemyMoveSubState::INJUREDWALKRIGHT)
 			{
 				moveState = EEnemyMoveSubState::CRAWL;
-				bIsStartCrawl = true;
 			}
 			else
 			{
@@ -157,6 +155,9 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 	else if (moveState == EEnemyMoveSubState::CRAWL)
 	{
 		me->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
+		me->GetCapsuleComponent()->SetCapsuleHalfHeight(34.0f);
+		me->GetMesh()->SetRelativeLocation(FVector(0, 0, -34));
+		me->SetActorLocation(me->GetActorLocation() + FVector(0, 0, -54));
 	}
 
 	ai->StopMovement();
@@ -177,8 +178,19 @@ void UEnemyFSM::AttackPlayer()
 	{
 		return;
 	}
-	
-	if (FVector::DotProduct(target->GetActorLocation() - me->GetActorLocation(), me->GetActorForwardVector()) <= FMath::Cos(5.0f))
+
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(me);
+	FVector startPos = me->GetActorLocation() + me->GetActorForwardVector() * 60.0f;
+	FVector endPos = startPos + me->GetActorForwardVector() * 30.0f;
+
+	FHitResult HitInfo;
+	bool bHit = GetWorld()->SweepSingleByObjectType(HitInfo, startPos, endPos, FQuat::Identity, ECC_Pawn, FCollisionShape::MakeCapsule(30.0f, 78.0f), params);
+
+	//DrawDebugCapsule(GetWorld(), startPos, 78.0f, 30.0f, FQuat::Identity, FColor::Red, false, 2.0f, 0, 1);
+	//DrawDebugCapsule(GetWorld(), endPos, 78.0f, 30.0f, FQuat::Identity, FColor::Red, false, 2.0f, 0, 1);
+
+	if (!bHit)
 	{
 		return;
 	}
@@ -298,12 +310,6 @@ void UEnemyFSM::TickDie()
 	}
 
 	currentTime += GetWorld()->DeltaTimeSeconds;
-
-	// P = P0 + vt
-	//FVector p0 = me->GetActorLocation();
-	//FVector vt = FVector(0, 0, -1) * 200 * GetWorld()->DeltaTimeSeconds;
-
-	//me->SetActorLocation(p0 + vt);
 
 	if (currentTime > 1)
 	{
