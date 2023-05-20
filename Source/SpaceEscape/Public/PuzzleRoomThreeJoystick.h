@@ -58,7 +58,6 @@ public:
 	UFUNCTION()
 	void BreakConstraintWhenClear();
 	void ControlByPlayerHand();
-	void GiveHapticFeedback();
 	void MoveFunction(char componentName);
 
 private:
@@ -74,4 +73,5 @@ private:
 	FTimerHandle stickHandle;
 	char otherCompNameForTimer;
 	bool bIsGrabed;
+	bool bForSafeReset;
 };

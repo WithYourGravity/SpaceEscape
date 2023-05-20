@@ -46,7 +46,8 @@ APuzzleRoomThreeJoystick::APuzzleRoomThreeJoystick()
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(stickMeshComp);
 	grabComp->grabType = EGrabType::LEVER;
-	grabComp->SetRelativeLocation(FVector(0, 0, 30.f));
+	grabComp->SetRelativeLocation(FVector(1.f, 0, 7.f));
+	grabComp->SetRelativeRotation(FRotator(90.f, 0, 0));
 	
 	constraintComp = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("constraintComp"));
 	constraintComp->SetupAttachment(RootComponent);
@@ -148,7 +149,15 @@ void APuzzleRoomThreeJoystick::StickOnOverlap(UPrimitiveComponent* OverlappedCom
 		return;
 	}
 
-	GiveHapticFeedback();
+	if (player->heldComponentLeft == this->grabComp)
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+	}
+	else
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+	}
+
 	otherCompNameForTimer = OtherComp->GetName()[0];
 	GetWorldTimerManager().SetTimer(stickHandle, FTimerDelegate::CreateUObject(this, &APuzzleRoomThreeJoystick::MoveFunction, otherCompNameForTimer), 0.6f, true, 0);
 }
@@ -167,20 +176,35 @@ void APuzzleRoomThreeJoystick::StickEndOverlap(UPrimitiveComponent* OverlappedCo
 void APuzzleRoomThreeJoystick::ResetButtonOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (puzzlePathFinding->GetbWasReport())
+	if (puzzlePathFinding->GetbWasReport() || bForSafeReset)
 	{
 		return;
 	}
-	GiveHapticFeedback();
+
+	if (OtherComp->GetName().Contains("left"))
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+	}
+	else
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+	}
+
 	// 튀어나온 상태이므로 평평한 상태로 돌린 후 초기화
 	if (!puzzlePathFinding->GetbisMoving())
 	{
 		puzzlePathFinding->MovingTrigger();
-		//puzzlePathFinding->ResetRegularlyUpCountForResetPuzzle();
 		FTimerHandle resetHandle;
 		GetWorldTimerManager().SetTimer(resetHandle, puzzlePathFinding, &APuzzleRoomThreePathFinding::ResetThisPuzzle, 2, false);
-		//puzzlePathFinding->ResetThisPuzzle();
 	}
+
+	// 한번 리셋하면 4초간 안되게끔
+	bForSafeReset = true;
+	FTimerHandle safeResetHandle;
+	GetWorldTimerManager().SetTimer(safeResetHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			bForSafeReset = false;
+		}), 4.f, false);
 }
 
 void APuzzleRoomThreeJoystick::ControlByPlayerHand()
@@ -196,18 +220,6 @@ void APuzzleRoomThreeJoystick::ControlByPlayerHand()
 	
 	stickMeshComp->AddForceAtLocation((playerHand->GetComponentLocation() - grabComp->GetComponentLocation()) * 6000, grabComp->GetComponentLocation());
 	playerHand->SetWorldLocation(grabComp->GetComponentLocation());
-}
-
-void APuzzleRoomThreeJoystick::GiveHapticFeedback()
-{
-	if (player->heldComponentLeft == this->grabComp)
-	{
-		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
-	}
-	else
-	{
-		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
-	}
 }
 
 void APuzzleRoomThreeJoystick::MoveFunction(char componentName)
