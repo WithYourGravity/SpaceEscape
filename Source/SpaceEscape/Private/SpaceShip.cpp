@@ -6,6 +6,8 @@
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
 #include "PuzzleRoomThreeJoystick.h"
+#include "RoomManager.h"
+#include "SpaceShipJoystick.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -95,6 +97,9 @@ void ASpaceShip::BeginPlay()
 	forJoyLocComp->OnComponentBeginOverlap.AddDynamic(this, &ASpaceShip::OnOverlapJoystick);
 
 	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
+
+	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
+	rm->gameClearDele.AddUFunction(this, FName("SpawnControlableJoystick"));
 }
 
 // Called every frame
@@ -139,12 +144,12 @@ void ASpaceShip::OnOverlapJoystick(UPrimitiveComponent* OverlappedComponent, AAc
 		stickComp->SetCollisionProfileName(FName("NoCollision"));
 
 		stickLoc = forJoyLocComp->GetComponentLocation();
-		stickFinalLoc = stickLoc + FVector(0, 0, -11.f);
+		stickFinalLoc = stickLoc + FVector(0, 0, -10.f);
 		stickComp->SetWorldLocation(stickLoc);
 		GetWorldTimerManager().SetTimer(stickDownHandle, FTimerDelegate::CreateLambda([&]()
 			{
 				stickComp->SetWorldLocation(FMath::Lerp(stickLoc, stickFinalLoc, stickTimer));
-				stickTimer += GetWorld()->GetDeltaSeconds() * 0.4f;
+				stickTimer += GetWorld()->GetDeltaSeconds() * 0.2f;
 				stickTimer = FMath::Clamp(stickTimer, 0.f, 1.f);
 				if (stickTimer == 1)
 				{
@@ -154,6 +159,7 @@ void ASpaceShip::OnOverlapJoystick(UPrimitiveComponent* OverlappedComponent, AAc
 	}
 }
 
+// 우주선에 탑승시키는 함수
 void ASpaceShip::BoardingShip()
 {
 	// 비행기 탑승범위가 아니라면 리턴
@@ -192,5 +198,29 @@ void ASpaceShip::BoardingShip()
 		player->Turn(FVector2D(50, 0));
 		bIsBoarding = true;
 	}
+}
+
+// 모스까지 완료시 우주선 돌릴수있는 조이스틱 스폰하는 함수
+void ASpaceShip::SpawnControlableJoystick()
+{
+	stickComp->DestroyComponent();
+	player->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+
+	stickLoc = forJoyLocComp->GetComponentLocation() + FVector(0, 0, -16.5f);
+	controlableStick = GetWorld()->SpawnActor<ASpaceShipJoystick>(ASpaceShipJoystick::StaticClass(), stickLoc, GetActorRotation().Add(0, -90.f, 0));
+	controlableStick->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+
+	stickFinalLoc = stickLoc + FVector(0, 0, 10.f);
+	stickTimer = 0;
+	GetWorldTimerManager().SetTimer(stickDownHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			controlableStick->SetActorLocation(FMath::Lerp(stickLoc, stickFinalLoc, stickTimer));
+			stickTimer += GetWorld()->GetDeltaSeconds() * 0.4f;
+			stickTimer = FMath::Clamp(stickTimer, 0.f, 1.f);
+			if (stickTimer == 1)
+			{
+				GetWorldTimerManager().ClearTimer(stickDownHandle);
+			}
+		}), GetWorld()->GetDeltaSeconds(), true, 1.f);
 }
 

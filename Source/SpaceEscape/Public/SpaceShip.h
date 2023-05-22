@@ -48,6 +48,8 @@ public:
 	void OnOverlapJoystick(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void BoardingShip();
+	UFUNCTION()
+	void SpawnControlableJoystick();
 
 private:
 	UPROPERTY()
@@ -61,4 +63,8 @@ private:
 	float stickTimer;
 	UPROPERTY()
 	class UStaticMeshComponent* stickComp;
+	UPROPERTY()
+	class ASpaceShipJoystick* controlableStick;
+	UPROPERTY()
+	class ARoomManager* rm;
 };
