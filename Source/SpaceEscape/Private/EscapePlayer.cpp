@@ -17,6 +17,7 @@
 #include "PlayerInfoWidget.h"
 #include "SpaceEscapeGameModeBase.h"
 #include "SpaceShip.h"
+#include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -110,27 +111,11 @@ AEscapePlayer::AEscapePlayer()
 
 	gunStorageComp = CreateDefaultSubobject<USceneComponent>(TEXT("gunStorageComp"));
 	gunStorageComp->SetupAttachment(vrCamera);
-	gunStorageComp->SetRelativeLocation(FVector(0.0f, -30.0f, 6.0f));
+	gunStorageComp->SetRelativeLocation(FVector(-34.0f, 0.0f, -4.0f));
 
-	gunOverlapComp = CreateDefaultSubobject<USphereComponent>(TEXT("gunOverlapComp"));
+	gunOverlapComp = CreateDefaultSubobject<UBoxComponent>(TEXT("gunOverlapComp"));
 	gunOverlapComp->SetupAttachment(gunStorageComp);
-	gunOverlapComp->SetSphereRadius(10.0f);
-
-	gunOverlapMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunOverlapMeshComp"));
-	gunOverlapMeshComp->SetupAttachment(gunStorageComp);
-	gunOverlapMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	gunOverlapMeshComp->SetVisibility(true);
-
-	ConstructorHelpers::FObjectFinder<UMaterial> tempMat(TEXT("/Script/Engine.Material'/Engine/VREditor/LaserPointer/M_LaserPointer-Core.M_LaserPointer-Core'"));
-	if (tempMat.Succeeded())
-	{
-		gunOverlapMaterial = tempMat.Object;
-	}
-	ConstructorHelpers::FObjectFinder<UMaterial> tempMat2(TEXT("/Script/Engine.Material'/Engine/VREditor/LaserPointer/M_LaserPointer-Outer.M_LaserPointer-Outer'"));
-	if (tempMat2.Succeeded())
-	{
-		gunOverlapDefaultMaterial = tempMat2.Object;
-	}
+	gunOverlapComp->SetBoxExtent(FVector(35, 100, 40));
 }
 
 // Called when the game starts or when spawned
@@ -416,6 +401,15 @@ void AEscapePlayer::TryGrabLeft()
 {
 	UGrabComponent* grabComp = GetGrabComponentNearMotionController(leftHand);
 
+	if (bIsOverlapGunStorage && storedGun)
+	{
+		bIsGrabbedLeft = true;
+		grabComp = storedGun->grabComp;
+		storedGun->SetActorHiddenInGame(false);
+		storedGun->gunMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
+		storedGun = nullptr;
+	}
+
 	// 만약 잡았다면
 	if (bIsGrabbedLeft && grabComp)
 	{
@@ -434,6 +428,15 @@ void AEscapePlayer::TryGrabLeft()
 void AEscapePlayer::TryGrabRight()
 {
 	UGrabComponent* grabComp = GetGrabComponentNearMotionController(rightHand);
+
+	if (bIsOverlapGunStorage && storedGun)
+	{
+		bIsGrabbedRight = true;
+		grabComp = storedGun->grabComp;
+		storedGun->SetActorHiddenInGame(false);
+		storedGun->gunMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
+		storedGun = nullptr;
+	}
 
 	// 만약 잡았다면
 	if (bIsGrabbedRight && grabComp)
@@ -488,7 +491,9 @@ void AEscapePlayer::UnTryGrabRight()
 	}
 }
 
-UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionControllerComponent* motionController)
+UGrabComponent* AEscapePlayer::
+
+GetGrabComponentNearMotionController(UMotionControllerComponent* motionController)
 {
 	// 중심점
 	FVector center = motionController->GetComponentLocation();
@@ -609,25 +614,18 @@ void AEscapePlayer::Die()
 void AEscapePlayer::OnGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AGun* overlappedGun = Cast<AGun>(OtherActor);
-	if (grabbedGun && overlappedGun)
+	if (OtherComp == leftIndexFingerCollision || OtherComp == rightIndexFingerCollision)
 	{
 		bIsOverlapGunStorage = true;
-
-		if (gunOverlapMaterial)
-		{
-			gunOverlapMeshComp->SetMaterial(0, gunOverlapMaterial);
-		}
 	}
 }
 
 void AEscapePlayer::EndGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	bIsOverlapGunStorage = false;
-	if (gunOverlapDefaultMaterial)
+	if (OtherComp == leftIndexFingerCollision || OtherComp == rightIndexFingerCollision)
 	{
-		gunOverlapMeshComp->SetMaterial(0, gunOverlapDefaultMaterial);
+		bIsOverlapGunStorage = false;
 	}
 }
 
@@ -635,6 +633,4 @@ void AEscapePlayer::CallBoardingShip()
 {
 	auto ship = Cast<ASpaceShip>(UGameplayStatics::GetActorOfClass(this, ASpaceShip::StaticClass()));
 	ship->BoardingShip();
-
-	UE_LOG(LogTemp, Warning, TEXT("Calling"));
 }

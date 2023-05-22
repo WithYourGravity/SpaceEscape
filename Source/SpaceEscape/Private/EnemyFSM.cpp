@@ -3,6 +3,7 @@
 
 #include "EnemyFSM.h"
 #include "AIController.h"
+#include "Doors.h"
 #include "EscapePlayer.h"
 #include "NavigationSystem.h"
 #include "PlayerInfoWidget.h"
@@ -36,6 +37,8 @@ void UEnemyFSM::BeginPlay()
 	ai = Cast<AAIController>(me->GetController());
 
 	HP = maxHP;
+
+	door = Cast<ADoors>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoors::StaticClass()));
 }
 
 
@@ -60,6 +63,12 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		break;
 	case EEnemyState::DIE:
 		TickDie();
+		break;
+	case EEnemyState::STUCK:
+		TickStuck();
+		break;
+	case EEnemyState::KNOCK:
+		TickKnock();
 		break;
 	default:
 		break;
@@ -155,9 +164,10 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 	else if (moveState == EEnemyMoveSubState::CRAWL)
 	{
 		me->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
-		me->GetCapsuleComponent()->SetCapsuleHalfHeight(34.0f);
-		me->GetMesh()->SetRelativeLocation(FVector(0, 0, -34));
-		me->SetActorLocation(me->GetActorLocation() + FVector(0, 0, -54));
+		me->GetCapsuleComponent()->SetCapsuleRadius(15.0f);
+		me->GetCapsuleComponent()->SetCapsuleHalfHeight(15.0f);
+		me->GetMesh()->SetRelativeLocation(FVector(0, 0, -15));
+		me->SetActorLocation(me->GetActorLocation() + FVector(0, 0, -73));
 	}
 
 	ai->StopMovement();
@@ -168,13 +178,16 @@ bool UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius,
 	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 	FNavLocation loc;
 	bool result = ns->GetRandomReachablePointInRadius(centerLocation, radius, loc);
-	dest = loc.Location;
+	if (result)
+	{
+		dest = loc.Location;
+	}
 	return result;
 }
 
 void UEnemyFSM::AttackPlayer()
 {
-	if (target->GetHP() <= 0)
+	if (target && target->GetHP() <= 0)
 	{
 		return;
 	}
@@ -196,7 +209,7 @@ void UEnemyFSM::AttackPlayer()
 	}
 
 	target->SubtractHP(power);
-	target->infoUI->PrintCurrentHP();
+	//target->infoUI->PrintCurrentHP();
 	target->infoUI->PrintCurrentHPPercent();
 
 	if (target->GetHP() == 0)
@@ -258,6 +271,33 @@ void UEnemyFSM::TickMove()
 		}
 	}
 
+	
+	// 문이 열렸을 때 제자리에 오래 있는 상태이면 enemy들끼리 JAMMED
+	if (door && !door->bIsOpenOverlaping)
+	{
+		currentTime += GetWorld()->DeltaTimeSeconds;
+		if (currentTime <= 0.1f)
+		{
+			prevLocation = me->GetActorLocation();
+		}
+		else if (currentTime >= 3.0f)
+		{
+			curLocation = me->GetActorLocation();
+			if (FVector::Distance(prevLocation, curLocation) <= 10.0f)
+			{
+				SetState(EEnemyState::STUCK);
+			}
+
+			currentTime = 0.0f;
+		}
+	}
+
+	// 문이 닫혀있고 문 가까이에 있으면 KNOCK
+	if (door && door->bIsOpenOverlaping && bIsOverlapDoor)
+	{
+		SetState(EEnemyState::KNOCK);
+	}
+
 	// target 과 가까워지면 공격 상태로 전환
 	if (dir.Size() < attackRange)
 	{
@@ -314,6 +354,31 @@ void UEnemyFSM::TickDie()
 	if (currentTime > 1)
 	{
 		me->Destroy();
+	}
+}
+
+void UEnemyFSM::TickStuck()
+{
+	// 새로운 랜덤 위치 가져오기
+	GetRandomPositionInNavMesh(me->GetActorLocation(), 200.0f, randomPos);
+
+	// 랜덤 위치로 이동
+	auto result = ai->MoveToLocation(randomPos);
+	// 목적지에 도착하면
+	if (result == EPathFollowingRequestResult::AlreadyAtGoal || result == EPathFollowingRequestResult::Failed)
+	{
+		SetState(EEnemyState::MOVE);
+
+		// 새로운 랜덤 위치 가져오기
+		GetRandomPositionInNavMesh(me->GetActorLocation(), randomPositionRadius, randomPos);
+	}
+}
+
+void UEnemyFSM::TickKnock()
+{
+	if (door && !door->bIsOpenOverlaping)
+	{
+		SetState(EEnemyState::MOVE);
 	}
 }
 

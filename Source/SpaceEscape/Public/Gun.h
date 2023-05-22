@@ -83,7 +83,6 @@ public:
 
 private:
 	// Crosshair
-
 	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class ACrosshair> crosshairFactory;
 

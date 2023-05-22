@@ -1,0 +1,55 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "EnemyDoorOverlap.h"
+
+#include "EnemyFSM.h"
+#include "ResearcherEnemy.h"
+#include "Components/SphereComponent.h"
+
+// Sets default values
+AEnemyDoorOverlap::AEnemyDoorOverlap()
+{
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
+	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("sphereComp"));
+	SetRootComponent(sphereComp);
+	sphereComp->SetSphereRadius(100.0f);
+}
+
+// Called when the game starts or when spawned
+void AEnemyDoorOverlap::BeginPlay()
+{
+	Super::BeginPlay();
+
+	sphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemyDoorOverlap::OnBeginOverlap);
+	sphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemyDoorOverlap::OnEndOverlap);
+}
+
+// Called every frame
+void AEnemyDoorOverlap::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+void AEnemyDoorOverlap::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	auto enemy = Cast<AResearcherEnemy>(OtherActor);
+	if (enemy && enemy->enemyFSM)
+	{
+		enemy->enemyFSM->bIsOverlapDoor = true;
+	}
+}
+
+void AEnemyDoorOverlap::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	auto enemy = Cast<AResearcherEnemy>(OtherActor);
+	if (enemy && enemy->enemyFSM)
+	{
+		enemy->enemyFSM->bIsOverlapDoor = false;
+	}
+}

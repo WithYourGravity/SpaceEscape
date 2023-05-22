@@ -99,8 +99,6 @@ void AMagazine::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	if (grabComp->bIsHeld)
 	{
-		FString name = OtherComp->GetName();
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *name);
 		gun = Cast<AGun>(OtherActor);
 		if (gun != nullptr && gun->bIsOnGrabbed)
 		{
@@ -137,7 +135,6 @@ void AMagazine::OnDropped()
 			gun->DropMagazine();
 		}
 	}
-	
 }
 
 void AMagazine::GrabMagazine()

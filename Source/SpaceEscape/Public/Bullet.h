@@ -35,6 +35,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	class UNiagaraSystem* bloodEffect;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	class UMaterialInstance* bloodDecal;
+
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	TSubclassOf<class AActor> hitEffect;
 	

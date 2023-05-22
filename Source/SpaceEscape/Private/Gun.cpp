@@ -191,12 +191,22 @@ void AGun::OnDropped()
 		}
 	}
 
-	if (player && player->bIsOverlapGunStorage)
+	if (player && player->bIsOverlapGunStorage && player->storedGun == nullptr)
 	{
 		gunMeshComp->SetSimulatePhysics(false);
 		gunMeshComp->AttachToComponent(player->gunStorageComp, FAttachmentTransformRules::KeepWorldTransform);
 		gunMeshComp->SetWorldLocation(player->gunStorageComp->GetComponentLocation());
-		gunMeshComp->SetRelativeRotation(FRotator(-30, 225, 0));
+		player->storedGun = this;
+
+		gunMeshComp->SetCollisionProfileName(FName("NoCollision"));
+
+		SetActorHiddenInGame(true);
+
+		// haptic effect
+		if (grabHapticEffect)
+		{
+			GetWorld()->GetFirstPlayerController()->PlayHapticEffect(grabHapticEffect, grabComp->GetHeldByHand());
+		}
 	}
 }
 
@@ -319,12 +329,12 @@ void AGun::DrawCrosshair()
 		crosshair->crosshairComp->SetVisibility(false);
 	}
 
-	crosshair->SetActorScale3D(FVector(FMath::Max<float>(1.0f, distance * 0.002f)));
+	//crosshair->SetActorScale3D(FVector(FMath::Max<float>(1.0f, distance * 0.002f)));
 	//crosshair->SetActorScale3D(FVector( distance * 0.002f));
 
-	//float distAlpha = distance / (10000.0f - 0.01f);
-	//distAlpha = FMath::Clamp(distAlpha, 0.01f, 1.0f);
-	//crosshair->SetActorScale3D(FVector(FMath::Lerp<float>(1.0f, 10000.0f, distAlpha)));
+	float distAlpha = distance / (10000.0f - 0.01f);
+	distAlpha = FMath::Clamp(distAlpha, 0.01f, 1.0f);
+	crosshair->SetActorScale3D(FVector(FMath::Lerp<float>(1.0f, 10000.0f, distAlpha)));
 	//crosshair->SetActorScale3D(FVector(100.0f));
 
 	//crosshair->SetActorScale3D(FVector(FMath::Max<float>(0.1f, 1 - (distance - FMath::Fmod(distance, 1000.0f)) / 10000.0f)));

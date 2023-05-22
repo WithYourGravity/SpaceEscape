@@ -16,20 +16,20 @@ void UPlayerInfoWidget::NativeConstruct()
 
 	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
 	
-	PrintCurrentHP();
+	//PrintCurrentHP();
 	PrintCurrentHPPercent();
 	PrintCurrentPlayTime();
 }
 
-void UPlayerInfoWidget::PrintCurrentHP()
-{
-	if (player == nullptr)
-	{
-		return;
-	}
-
-	curHP->SetText(FText::AsNumber(player->GetHP()));
-}
+//void UPlayerInfoWidget::PrintCurrentHP()
+//{
+//	if (player == nullptr)
+//	{
+//		return;
+//	}
+//
+//	curHP->SetText(FText::AsNumber(player->GetHP()));
+//}
 
 void UPlayerInfoWidget::PrintCurrentHPPercent()
 {
@@ -38,6 +38,7 @@ void UPlayerInfoWidget::PrintCurrentHPPercent()
 		return;
 	}
 
+	curHP->SetText(FText::AsNumber((player->GetHP() / static_cast<float>(player->maxHP)) * 100));
 	curHPPercent->SetPercent(player->GetHP() / static_cast<float>(player->maxHP));
 }
 

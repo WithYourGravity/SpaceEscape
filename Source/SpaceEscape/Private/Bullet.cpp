@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Components/DecalComponent.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -79,6 +80,8 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 			if (enemyFSM)
 			{
 				UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), bloodEffect, SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation());
+				
+				auto blood = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), bloodDecal, FVector(50.0f), SweepResult.ImpactPoint, FRotator(-90, 0, 0), 5.0f);
 
 				if (enemyFSM->bIsDying)
 				{

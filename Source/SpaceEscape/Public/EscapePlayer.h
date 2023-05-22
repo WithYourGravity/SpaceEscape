@@ -181,7 +181,6 @@ public:
 	// Object Grab 여부
 	bool bIsGrabbedRight = false;
 	bool bIsGrabbedLeft = false;
-	bool bIsGrabbed = false;
 	
 	// 잡기 시도 기능
 	void TryGrabLeft();
@@ -235,17 +234,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Storage")
 	class USceneComponent* gunStorageComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Storage")
-	class USphereComponent* gunOverlapComp;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Storage")
+	class UBoxComponent* gunOverlapComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Storage")
-	class UStaticMeshComponent* gunOverlapMeshComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Storage")
-	class UMaterial* gunOverlapMaterial;
-	UPROPERTY(EditDefaultsOnly, Category = "Storage")
-	class UMaterial* gunOverlapDefaultMaterial;
-
+	UPROPERTY()
+	class AGun* storedGun;
 
 	bool bIsOverlapGunStorage = false;
 
@@ -253,6 +246,7 @@ public:
 	void OnGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void EndGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 
 // Board
 	UFUNCTION()

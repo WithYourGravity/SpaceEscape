@@ -15,7 +15,7 @@ enum class EEnemyState : uint8
 	DAMAGE,
 	DIE,
 	KNOCK,
-	JAMMED,
+	STUCK,
 };
 
 UENUM(BlueprintType)
@@ -107,6 +107,8 @@ public:
 
 	bool bIsDying = false;
 
+	bool bIsOverlapDoor = false;
+
 	// 피격 알림 이벤트 함수
 	void OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart);
 
@@ -127,10 +129,19 @@ private:
 	void TickDamage();
 	// 죽음 상태
 	void TickDie();
+	// 뭉쳐있는 상태
+	void TickStuck();
+	// 문 두드리기 상태
+	void TickKnock();
 
 	void SetState(EEnemyState next);
 
 	int32 HP;
 
 	int32 power = 10;
+
+	UPROPERTY()
+	class ADoors* door;
+	FVector prevLocation;
+	FVector curLocation;
 };
