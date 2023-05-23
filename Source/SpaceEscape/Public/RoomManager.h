@@ -49,7 +49,15 @@ public:
 	class AEscapePlayer* player;
 	void SenseOn();
 	void SenseOff();
-	void HighlightObject();
-	void UnHilightObject();
-	float alpha;
+	void GetInteractionObjectToArray();
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UActorComponent> smComp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR1Comp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR2Comp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR3Comp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseAlwaysComp;
 };

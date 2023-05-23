@@ -12,6 +12,9 @@ ABattery::ABattery()
 	SetRootComponent(meshComp);
 	meshComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
 	meshComp->SetSimulatePhysics(true);
+
+	Tags.Add(FName("Sense"));
+	meshComp->ComponentTags.Add(FName("Sense.R1"));
 }
 
 // Called when the game starts or when spawned
