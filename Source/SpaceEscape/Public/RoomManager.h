@@ -43,4 +43,13 @@ public:
 	int GetCurrentPlayingStage();
 	FStageClearDele stageClearDele;
 	FGameClearDele gameClearDele;
+
+	// sense ฐüทร
+	UPROPERTY()
+	class AEscapePlayer* player;
+	void SenseOn();
+	void SenseOff();
+	void HighlightObject();
+	void UnHilightObject();
+	float alpha;
 };

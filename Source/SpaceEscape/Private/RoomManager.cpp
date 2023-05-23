@@ -3,7 +3,10 @@
 
 #include "RoomManager.h"
 #include "EngineUtils.h"
+#include "EscapePlayer.h"
 #include "PuzzleBase.h"
+#include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ARoomManager::ARoomManager()
@@ -24,6 +27,8 @@ void ARoomManager::BeginPlay()
 		APuzzleBase* pz = *it;
 		pz->puzzleClearDele.AddUFunction(this, FName("AddSolvedPuzzleCount"));
 	}
+
+	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
 }
 
 // Called every frame
@@ -66,5 +71,51 @@ void ARoomManager::MoveOnNextStage()
 int ARoomManager::GetCurrentPlayingStage()
 {
 	return playingStage;
+}
+
+void ARoomManager::SenseOn()
+{
+	alpha = 0;
+	FTimerHandle senseHandle;
+	GetWorldTimerManager().SetTimer(senseHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			player->vrCamera->SetFieldOfView(FMath::Lerp(90.f, 120.f, alpha));
+			alpha += GetWorld()->GetDeltaSeconds();
+			if (alpha >= 1)
+			{
+				GetWorldTimerManager().ClearTimer(senseHandle);
+			}
+		}), GetWorld()->GetDeltaSeconds(), true);
+	player->vrCamera->PostProcessSettings.ColorSaturation = FVector4::Zero();
+
+	HighlightObject();
+}
+
+void ARoomManager::SenseOff()
+{
+	alpha = 0;
+	FTimerHandle senseHandle;
+	GetWorldTimerManager().SetTimer(senseHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			player->vrCamera->SetFieldOfView(FMath::Lerp(120.f, 90.f, alpha));
+			alpha += GetWorld()->GetDeltaSeconds();
+			if (alpha >= 1)
+			{
+				GetWorldTimerManager().ClearTimer(senseHandle);
+			}
+		}), GetWorld()->GetDeltaSeconds(), true);
+	player->vrCamera->PostProcessSettings.ColorSaturation = FVector4::One();
+
+	UnHilightObject();
+}
+
+void ARoomManager::HighlightObject()
+{
+
+}
+
+void ARoomManager::UnHilightObject()
+{
+
 }
 
