@@ -101,6 +101,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Collision")
 	class USphereComponent* leftIndexFingerCollision;
 
+	UPROPERTY(VisibleAnywhere, Category = "Watch")
+	class UStaticMeshComponent* watch;
+
 	// Widget
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
 	class UWidgetComponent* infoWidgetComp;
@@ -110,6 +113,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
 	class UWidgetComponent* dieWidgetComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	class UWidgetComponent* damageWidgetComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	class UDamageWidget* damageUI;
 
 	void AppearInfoWidget();
 	void DisappearInfoWidget();

@@ -73,6 +73,13 @@ public:
 	bool bDoReloading = false;
 	bool bFireCompleted = false;
 
+	// Sound
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundCue* fireSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class UAudioComponent* fireAudioComp;
+
 	UFUNCTION()
 	void OnGrabbed();
 	UFUNCTION()

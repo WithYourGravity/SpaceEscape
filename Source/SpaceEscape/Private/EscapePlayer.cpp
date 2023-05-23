@@ -3,6 +3,7 @@
 
 #include "EscapePlayer.h"
 #include "Crosshair.h"
+#include "DamageWidget.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "EnhancedInputComponent.h"
@@ -86,10 +87,25 @@ AEscapePlayer::AEscapePlayer()
 	leftIndexFingerCollision->SetCollisionProfileName(FName("FingerPreset"));
 	leftIndexFingerCollision->SetSphereRadius(0.5f);
 
+	// Watch
+	watch = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("watch"));
+	watch->SetupAttachment(leftHand);
+	watch->SetCollisionProfileName(FName("NoCollision"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempWatchMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Watch/Watch.Watch'"));
+	if (tempWatchMesh.Succeeded())
+	{
+		watch->SetStaticMesh(tempWatchMesh.Object);
+		watch->SetRelativeLocation(FVector(-3.6f, 1.0f, 5.0f));
+		watch->SetRelativeRotation(FRotator(-60.0f, 45.0f, -120.0f));
+		watch->SetRelativeScale3D(FVector(3.5f));
+	}
+
 	// Widget
 	infoWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("infoWidgetComp"));
-	infoWidgetComp->SetupAttachment(leftHand);
-	infoWidgetComp->SetVisibility(false);
+	infoWidgetComp->SetupAttachment(watch);
+	infoWidgetComp->SetRelativeLocation(FVector(0.0f, 0.0f, 2.3f));
+	infoWidgetComp->SetRelativeRotation(FRotator(90.0f, 0.0f, -90.0f));
+	infoWidgetComp->SetRelativeScale3D(FVector(0.004f));
 
 	dieWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("dieWidgetComp"));
 	dieWidgetComp->SetupAttachment(RootComponent);
@@ -97,6 +113,10 @@ AEscapePlayer::AEscapePlayer()
 	dieWidgetComp->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
 	dieWidgetComp->SetRelativeScale3D(FVector(0.5f));
 	dieWidgetComp->SetVisibility(false);
+
+	damageWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("damageWidgetComp"));
+	damageWidgetComp->SetupAttachment(vrCamera);
+	damageWidgetComp->SetVisibility(false);
 
 	// Teleport
 	teleportCircle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("teleportCircle"));
@@ -163,6 +183,7 @@ void AEscapePlayer::BeginPlay()
 	HP = maxHP;
 
 	infoUI = Cast<UPlayerInfoWidget>(infoWidgetComp->GetUserWidgetObject());
+	damageUI = Cast<UDamageWidget>(damageWidgetComp->GetUserWidgetObject());
 
 	gunOverlapComp->OnComponentBeginOverlap.AddDynamic(this, &AEscapePlayer::OnGunStorageOverlap);
 	gunOverlapComp->OnComponentEndOverlap.AddDynamic(this, &AEscapePlayer::EndGunStorageOverlap);

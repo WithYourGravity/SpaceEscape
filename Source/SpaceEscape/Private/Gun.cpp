@@ -15,9 +15,11 @@
 #include "MotionControllerComponent.h"
 #include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Haptics/HapticFeedbackEffect_Base.h"
 #include "Components/WidgetComponent.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AGun::AGun()
@@ -26,7 +28,6 @@ AGun::AGun()
 	PrimaryActorTick.bCanEverTick = true;
 
 	gunMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunMeshComp"));
-	//gunMeshComp->SetupAttachment(RootComponent);
 	SetRootComponent(gunMeshComp);
 	gunMeshComp->SetSimulatePhysics(true);
 	gunMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
@@ -83,6 +84,17 @@ AGun::AGun()
 	{
 		grabHapticEffect = tempHapticEffect.Object;
 	}
+
+	// Sound
+	ConstructorHelpers::FObjectFinder<USoundCue> tempFireSoundCue(TEXT("/Script/Engine.SoundCue'/Game/MilitaryWeapSilver/Sound/Pistol/Cues/PistolA_Fire_Cue.PistolA_Fire_Cue'"));
+	if (tempFireSoundCue.Succeeded())
+	{
+		fireSoundCue = tempFireSoundCue.Object;
+	}
+
+	fireAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("fireAudioComp"));
+	fireAudioComp->bAutoActivate = false;
+	fireAudioComp->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -253,6 +265,12 @@ void AGun::Fire(float fireAlpha)
 			if (grabHapticEffect)
 			{
 				GetWorld()->GetFirstPlayerController()->PlayHapticEffect(grabHapticEffect, grabComp->GetHeldByHand());
+			}
+
+			if (fireSoundCue && fireAudioComp->IsValidLowLevelFast())
+			{
+				fireAudioComp->SetSound(fireSoundCue);
+				fireAudioComp->Play();
 			}
 		}
 	}

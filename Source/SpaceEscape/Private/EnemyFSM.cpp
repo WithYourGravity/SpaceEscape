@@ -3,6 +3,7 @@
 
 #include "EnemyFSM.h"
 #include "AIController.h"
+#include "DamageWidget.h"
 #include "Doors.h"
 #include "EscapePlayer.h"
 #include "NavigationSystem.h"
@@ -10,6 +11,7 @@
 #include "ResearcherEnemy.h"
 #include "ResearcherEnemyAnim.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -208,6 +210,7 @@ void UEnemyFSM::AttackPlayer()
 		return;
 	}
 
+	ShowAttackPlayerEffect();
 	target->SubtractHP(power);
 	//target->infoUI->PrintCurrentHP();
 	target->infoUI->PrintCurrentHPPercent();
@@ -215,6 +218,23 @@ void UEnemyFSM::AttackPlayer()
 	if (target->GetHP() == 0)
 	{
 		target->Die();
+	}
+}
+
+void UEnemyFSM::ShowAttackPlayerEffect()
+{
+	if (target)
+	{
+		target->damageWidgetComp->SetVisibility(true);
+		target->damageUI->PlayDamageAnimation();
+	}
+}
+
+void UEnemyFSM::HiddenAttackPlayerEffect()
+{
+	if (target)
+	{
+		target->damageWidgetComp->SetVisibility(false);
 	}
 }
 

@@ -117,7 +117,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackPlayer();
-	
+
+	void ShowAttackPlayerEffect();
+	UFUNCTION(BlueprintCallable)
+	void HiddenAttackPlayerEffect();
+
 private:
 	// 대기 상태
 	void TickIdle();
