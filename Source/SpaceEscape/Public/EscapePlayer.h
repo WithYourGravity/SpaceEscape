@@ -65,7 +65,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_DropMagazineRight;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	class UInputAction* IA_AppearInfo;
+	class UInputAction* IA_Sense;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_BoardShip;
 
@@ -119,9 +119,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	class UDamageWidget* damageUI;
-
-	void AppearInfoWidget();
-	void DisappearInfoWidget();
 
 // Teleport
 public:
@@ -260,4 +257,10 @@ public:
 // Board
 	UFUNCTION()
 	void CallBoardingShip();
+
+	UPROPERTY()
+	class ARoomManager* roomManager;
+
+	void CallSenseOn();
+	void CallSenseOff();
 };

@@ -16,6 +16,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraDataInterfaceArrayFunctionLibrary.h"
 #include "PlayerInfoWidget.h"
+#include "RoomManager.h"
 #include "SpaceEscapeGameModeBase.h"
 #include "SpaceShip.h"
 #include "Components/BoxComponent.h"
@@ -187,6 +188,8 @@ void AEscapePlayer::BeginPlay()
 
 	gunOverlapComp->OnComponentBeginOverlap.AddDynamic(this, &AEscapePlayer::OnGunStorageOverlap);
 	gunOverlapComp->OnComponentEndOverlap.AddDynamic(this, &AEscapePlayer::EndGunStorageOverlap);
+
+	roomManager = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
 }
 
 // Called every frame
@@ -261,8 +264,8 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_FireRight, ETriggerEvent::Completed, this, &AEscapePlayer::FireCompleted);
 		InputSystem->BindAction(IA_DropMagazineLeft, ETriggerEvent::Started, this, &AEscapePlayer::DropMagazine);
 		InputSystem->BindAction(IA_DropMagazineRight, ETriggerEvent::Started, this, &AEscapePlayer::DropMagazine);
-		InputSystem->BindAction(IA_AppearInfo, ETriggerEvent::Started, this, &AEscapePlayer::AppearInfoWidget);
-		InputSystem->BindAction(IA_AppearInfo, ETriggerEvent::Completed, this, &AEscapePlayer::DisappearInfoWidget);
+		InputSystem->BindAction(IA_Sense, ETriggerEvent::Started, this, &AEscapePlayer::CallSenseOn);
+		InputSystem->BindAction(IA_Sense, ETriggerEvent::Completed, this, &AEscapePlayer::CallSenseOff);
 		InputSystem->BindAction(IA_BoardShip, ETriggerEvent::Started, this, &AEscapePlayer::CallBoardingShip);
 	}
 }
@@ -294,16 +297,6 @@ void AEscapePlayer::Turn(const FInputActionValue& values)
 	FVector2D axis = values.Get<FVector2D>();
 	AddControllerYawInput(axis.X);
 	AddControllerPitchInput(axis.Y);
-}
-
-void AEscapePlayer::AppearInfoWidget()
-{
-	infoWidgetComp->SetVisibility(true);
-}
-
-void AEscapePlayer::DisappearInfoWidget()
-{
-	infoWidgetComp->SetVisibility(false);
 }
 
 void AEscapePlayer::TeleportStart(const FInputActionValue& values)
@@ -654,4 +647,14 @@ void AEscapePlayer::CallBoardingShip()
 {
 	auto ship = Cast<ASpaceShip>(UGameplayStatics::GetActorOfClass(this, ASpaceShip::StaticClass()));
 	ship->BoardingShip();
+}
+
+void AEscapePlayer::CallSenseOn()
+{
+	roomManager->SenseOn();
+}
+
+void AEscapePlayer::CallSenseOff()
+{
+	roomManager->SenseOff();
 }
