@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "PuzzleRoomThreeJoystick.generated.h"
+#include "SpaceShipJoystick.generated.h"
 
 UCLASS()
-class SPACEESCAPE_API APuzzleRoomThreeJoystick : public AActor
+class SPACEESCAPE_API ASpaceShipJoystick : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	APuzzleRoomThreeJoystick();
+	ASpaceShipJoystick();
 
 protected:
 	// Called when the game starts or when spawned
@@ -43,9 +43,6 @@ public:
 	class USphereComponent* leftPosComp;
 	UPROPERTY(EditDefaultsOnly)
 	class USphereComponent* rightPosComp;
-	UPROPERTY(EditDefaultsOnly)
-	class USphereComponent* resetButtonComp;
-
 
 	UFUNCTION()
 	void ChangeIsGrabed();
@@ -53,25 +50,21 @@ public:
 	void StickOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void StickEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	UFUNCTION()
-	void ResetButtonOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void BreakConstraintWhenClear();
 	void ControlByPlayerHand();
-	void MoveFunction(char componentName);
+	void RotateFunction(char componentName);
 
 private:
-
 	UPROPERTY()
 	class AEscapePlayer* player;
-	UPROPERTY()
-	class APuzzleRoomThreePathFinding* puzzlePathFinding;
 	UPROPERTY(EditDefaultsOnly)
 	class UHapticFeedbackEffect_Base* hapticFeedback;
 	UPROPERTY()
 	class UMotionControllerComponent* playerHand;
+	UPROPERTY()
+	class ASpaceShip* ship;
+
 	FTimerHandle stickHandle;
 	char otherCompNameForTimer;
 	bool bIsGrabed;
-	bool bForSafeReset;
+
 };

@@ -19,6 +19,7 @@ APuzzleRoomThreeMorse::APuzzleRoomThreeMorse()
 	{
 		screenComp->SetWidgetClass(tempWidget.Class);
 	}
+	screenComp->SetDrawSize(FVector2D(1920.f, 1080.f));
 }
 
 void APuzzleRoomThreeMorse::BeginPlay()
@@ -56,8 +57,8 @@ void APuzzleRoomThreeMorse::addToTempString(float second)
 	{
 		tempString.AppendChar('0');
 	}
-	UE_LOG(LogTemp, Warning, TEXT("tempstring is : %s"), *tempString);
-	UE_LOG(LogTemp, Warning, TEXT("pushed time is : %f"), second);
+	//UE_LOG(LogTemp, Warning, TEXT("tempstring is : %s"), *tempString);
+	//UE_LOG(LogTemp, Warning, TEXT("pushed time is : %f"), second);
 }
 
 // 임시 문자열을 번역해서 스크린에 출력할 문자열에 추가하는 함수
