@@ -41,6 +41,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun")
 	int32 maxBulletCount = 25;
 
+	// Sound
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundCue* magazineSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class UAudioComponent* magazineAudioComp;
+
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
@@ -58,7 +65,8 @@ private:
 	int32 currentBulletCount;
 
 	float grabValue = 0.0f;
-	bool bIsLoadingMagazine = false;
+
+	bool bIsPlayMagazineSound = false;
 
 	void GrabMagazine();
 };

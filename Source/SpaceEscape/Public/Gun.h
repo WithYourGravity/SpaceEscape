@@ -78,8 +78,15 @@ public:
 	class USoundCue* fireSoundCue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
-	class UAudioComponent* fireAudioComp;
+	class USoundCue* reloadMagInsertSoundCue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundCue* reloadSlideRackSoundCue;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class UAudioComponent* fireAudioComp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class UAudioComponent* reloadAudioComp;
+	
 	UFUNCTION()
 	void OnGrabbed();
 	UFUNCTION()

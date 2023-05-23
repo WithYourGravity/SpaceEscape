@@ -6,6 +6,8 @@
 #include "GrabComponent.h"
 #include "Gun.h"
 #include "MotionControllerComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AMagazine::AMagazine()
@@ -47,6 +49,16 @@ AMagazine::AMagazine()
 	grabComp->grabType = EGrabType::SNAP;
 	grabComp->SetRelativeLocation(FVector(-5, 0, -14));
 	grabComp->SetRelativeRotation(FRotator(90, 0, 0));
+
+	ConstructorHelpers::FObjectFinder<USoundCue> tempMagazineSoundCue(TEXT("/Script/Engine.SoundCue'/Game/MilitaryWeapSilver/Sound/Rifle/Cues/Rifle_Reload_Cue.Rifle_Reload_Cue'"));
+	if (tempMagazineSoundCue.Succeeded())
+	{
+		magazineSoundCue = tempMagazineSoundCue.Object;
+	}
+
+	magazineAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("magazineAudioComp"));
+	magazineAudioComp->bAutoActivate = false;
+	magazineAudioComp->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -157,4 +169,22 @@ void AMagazine::GrabMagazine()
 	grabValue = FMath::Clamp(grabValue, 0.0f, 1.0f);
 
 	SetActorLocation(FMath::Lerp<FVector>(startPos, endPos, grabValue));
+
+	if (grabValue >= 1.0f)
+	{
+		if (!bIsPlayMagazineSound)
+		{
+			bIsPlayMagazineSound = true;
+
+			if (magazineSoundCue && magazineAudioComp->IsValidLowLevelFast())
+			{
+				magazineAudioComp->SetSound(magazineSoundCue);
+				magazineAudioComp->Play();
+			}
+		}
+	}
+	else
+	{
+		bIsPlayMagazineSound = false;
+	}
 }
