@@ -14,6 +14,8 @@ enum class EEnemyState : uint8
 	ATTACK,
 	DAMAGE,
 	DIE,
+	KNOCK,
+	STUCK,
 };
 
 UENUM(BlueprintType)
@@ -105,6 +107,8 @@ public:
 
 	bool bIsDying = false;
 
+	bool bIsOverlapDoor = false;
+
 	// 피격 알림 이벤트 함수
 	void OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart);
 
@@ -113,7 +117,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackPlayer();
-	
+
+	void ShowAttackPlayerEffect();
+	UFUNCTION(BlueprintCallable)
+	void HiddenAttackPlayerEffect();
+
 private:
 	// 대기 상태
 	void TickIdle();
@@ -125,6 +133,10 @@ private:
 	void TickDamage();
 	// 죽음 상태
 	void TickDie();
+	// 뭉쳐있는 상태
+	void TickStuck();
+	// 문 두드리기 상태
+	void TickKnock();
 
 	void SetState(EEnemyState next);
 
@@ -132,5 +144,8 @@ private:
 
 	int32 power = 10;
 
-	bool bIsStartCrawl = false;
+	UPROPERTY()
+	class ADoors* door;
+	FVector prevLocation;
+	FVector curLocation;
 };

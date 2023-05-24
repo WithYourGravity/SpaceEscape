@@ -58,7 +58,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Fire")
 	TSubclassOf<class ABullet> bulletFactory;
-
+	
 	UPROPERTY()
 	class AMagazine* magazine;
 
@@ -72,6 +72,13 @@ public:
 	bool bOnReloading = false;
 	bool bDoReloading = false;
 	bool bFireCompleted = false;
+
+	// Sound
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundCue* fireSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class UAudioComponent* fireAudioComp;
 
 	UFUNCTION()
 	void OnGrabbed();
@@ -90,7 +97,7 @@ private:
 	class ACrosshair* crosshair;
 
 	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
-	float crosshairScale = 0.3f;
+	float crosshairScale = 0.2f;
 	
 	UPROPERTY(EditAnywhere, Category = "Fire", meta = (AllowPrivateAccess = true))
 	float fireDistance = 10000.0f;

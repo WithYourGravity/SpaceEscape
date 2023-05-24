@@ -3,6 +3,7 @@
 
 #include "EscapePlayer.h"
 #include "Crosshair.h"
+#include "DamageWidget.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "EnhancedInputComponent.h"
@@ -15,7 +16,10 @@
 #include "NiagaraComponent.h"
 #include "NiagaraDataInterfaceArrayFunctionLibrary.h"
 #include "PlayerInfoWidget.h"
+#include "RoomManager.h"
 #include "SpaceEscapeGameModeBase.h"
+#include "SpaceShip.h"
+#include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -84,10 +88,25 @@ AEscapePlayer::AEscapePlayer()
 	leftIndexFingerCollision->SetCollisionProfileName(FName("FingerPreset"));
 	leftIndexFingerCollision->SetSphereRadius(0.5f);
 
+	// Watch
+	watch = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("watch"));
+	watch->SetupAttachment(leftHand);
+	watch->SetCollisionProfileName(FName("NoCollision"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempWatchMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/Watch/Watch.Watch'"));
+	if (tempWatchMesh.Succeeded())
+	{
+		watch->SetStaticMesh(tempWatchMesh.Object);
+		watch->SetRelativeLocation(FVector(-3.6f, 1.0f, 5.0f));
+		watch->SetRelativeRotation(FRotator(-60.0f, 45.0f, -120.0f));
+		watch->SetRelativeScale3D(FVector(3.5f));
+	}
+
 	// Widget
 	infoWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("infoWidgetComp"));
-	infoWidgetComp->SetupAttachment(leftHand);
-	infoWidgetComp->SetVisibility(false);
+	infoWidgetComp->SetupAttachment(watch);
+	infoWidgetComp->SetRelativeLocation(FVector(0.0f, 0.0f, 2.3f));
+	infoWidgetComp->SetRelativeRotation(FRotator(90.0f, 0.0f, -90.0f));
+	infoWidgetComp->SetRelativeScale3D(FVector(0.004f));
 
 	dieWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("dieWidgetComp"));
 	dieWidgetComp->SetupAttachment(RootComponent);
@@ -95,6 +114,10 @@ AEscapePlayer::AEscapePlayer()
 	dieWidgetComp->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
 	dieWidgetComp->SetRelativeScale3D(FVector(0.5f));
 	dieWidgetComp->SetVisibility(false);
+
+	damageWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("damageWidgetComp"));
+	damageWidgetComp->SetupAttachment(vrCamera);
+	damageWidgetComp->SetVisibility(false);
 
 	// Teleport
 	teleportCircle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("teleportCircle"));
@@ -109,34 +132,18 @@ AEscapePlayer::AEscapePlayer()
 
 	gunStorageComp = CreateDefaultSubobject<USceneComponent>(TEXT("gunStorageComp"));
 	gunStorageComp->SetupAttachment(vrCamera);
-	gunStorageComp->SetRelativeLocation(FVector(0.0f, -30.0f, 6.0f));
+	gunStorageComp->SetRelativeLocation(FVector(-34.0f, 0.0f, -4.0f));
 
-	gunOverlapComp = CreateDefaultSubobject<USphereComponent>(TEXT("gunOverlapComp"));
+	gunOverlapComp = CreateDefaultSubobject<UBoxComponent>(TEXT("gunOverlapComp"));
 	gunOverlapComp->SetupAttachment(gunStorageComp);
-	gunOverlapComp->SetSphereRadius(10.0f);
-
-	gunOverlapMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunOverlapMeshComp"));
-	gunOverlapMeshComp->SetupAttachment(gunStorageComp);
-	gunOverlapMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	gunOverlapMeshComp->SetVisibility(true);
-
-	ConstructorHelpers::FObjectFinder<UMaterial> tempMat(TEXT("/Script/Engine.Material'/Engine/VREditor/LaserPointer/M_LaserPointer-Core.M_LaserPointer-Core'"));
-	if (tempMat.Succeeded())
-	{
-		gunOverlapMaterial = tempMat.Object;
-	}
-	ConstructorHelpers::FObjectFinder<UMaterial> tempMat2(TEXT("/Script/Engine.Material'/Engine/VREditor/LaserPointer/M_LaserPointer-Outer.M_LaserPointer-Outer'"));
-	if (tempMat2.Succeeded())
-	{
-		gunOverlapDefaultMaterial = tempMat2.Object;
-	}
+	gunOverlapComp->SetBoxExtent(FVector(35, 100, 40));
 }
 
 // Called when the game starts or when spawned
 void AEscapePlayer::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	// Enhanced Input 사용처리
 	auto PC = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PC)
@@ -177,9 +184,12 @@ void AEscapePlayer::BeginPlay()
 	HP = maxHP;
 
 	infoUI = Cast<UPlayerInfoWidget>(infoWidgetComp->GetUserWidgetObject());
+	damageUI = Cast<UDamageWidget>(damageWidgetComp->GetUserWidgetObject());
 
 	gunOverlapComp->OnComponentBeginOverlap.AddDynamic(this, &AEscapePlayer::OnGunStorageOverlap);
 	gunOverlapComp->OnComponentEndOverlap.AddDynamic(this, &AEscapePlayer::EndGunStorageOverlap);
+
+	roomManager = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
 }
 
 // Called every frame
@@ -254,10 +264,10 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_FireRight, ETriggerEvent::Completed, this, &AEscapePlayer::FireCompleted);
 		InputSystem->BindAction(IA_DropMagazineLeft, ETriggerEvent::Started, this, &AEscapePlayer::DropMagazine);
 		InputSystem->BindAction(IA_DropMagazineRight, ETriggerEvent::Started, this, &AEscapePlayer::DropMagazine);
-		InputSystem->BindAction(IA_AppearInfo, ETriggerEvent::Started, this, &AEscapePlayer::AppearInfoWidget);
-		InputSystem->BindAction(IA_AppearInfo, ETriggerEvent::Completed, this, &AEscapePlayer::DisappearInfoWidget);
+		InputSystem->BindAction(IA_Sense, ETriggerEvent::Started, this, &AEscapePlayer::CallSenseOn);
+		InputSystem->BindAction(IA_Sense, ETriggerEvent::Completed, this, &AEscapePlayer::CallSenseOff);
+		InputSystem->BindAction(IA_BoardShip, ETriggerEvent::Started, this, &AEscapePlayer::CallBoardingShip);
 	}
-	
 }
 
 void AEscapePlayer::Move(const FInputActionValue& values)
@@ -287,16 +297,6 @@ void AEscapePlayer::Turn(const FInputActionValue& values)
 	FVector2D axis = values.Get<FVector2D>();
 	AddControllerYawInput(axis.X);
 	AddControllerPitchInput(axis.Y);
-}
-
-void AEscapePlayer::AppearInfoWidget()
-{
-	infoWidgetComp->SetVisibility(true);
-}
-
-void AEscapePlayer::DisappearInfoWidget()
-{
-	infoWidgetComp->SetVisibility(false);
 }
 
 void AEscapePlayer::TeleportStart(const FInputActionValue& values)
@@ -415,6 +415,15 @@ void AEscapePlayer::TryGrabLeft()
 {
 	UGrabComponent* grabComp = GetGrabComponentNearMotionController(leftHand);
 
+	if (bIsOverlapGunStorage && storedGun)
+	{
+		bIsGrabbedLeft = true;
+		grabComp = storedGun->grabComp;
+		storedGun->SetActorHiddenInGame(false);
+		storedGun->gunMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
+		storedGun = nullptr;
+	}
+
 	// 만약 잡았다면
 	if (bIsGrabbedLeft && grabComp)
 	{
@@ -433,6 +442,15 @@ void AEscapePlayer::TryGrabLeft()
 void AEscapePlayer::TryGrabRight()
 {
 	UGrabComponent* grabComp = GetGrabComponentNearMotionController(rightHand);
+
+	if (bIsOverlapGunStorage && storedGun)
+	{
+		bIsGrabbedRight = true;
+		grabComp = storedGun->grabComp;
+		storedGun->SetActorHiddenInGame(false);
+		storedGun->gunMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
+		storedGun = nullptr;
+	}
 
 	// 만약 잡았다면
 	if (bIsGrabbedRight && grabComp)
@@ -487,7 +505,9 @@ void AEscapePlayer::UnTryGrabRight()
 	}
 }
 
-UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionControllerComponent* motionController)
+UGrabComponent* AEscapePlayer::
+
+GetGrabComponentNearMotionController(UMotionControllerComponent* motionController)
 {
 	// 중심점
 	FVector center = motionController->GetComponentLocation();
@@ -583,6 +603,8 @@ void AEscapePlayer::Die()
 	inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	GetWorld()->GetFirstPlayerController()->SetInputMode(inputMode);
 
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	dieWidgetComp->SetVisibility(true);
 
 	FRotator endRot = GetActorRotation().Add(0.0f, 0.0f, 90.0f);
@@ -606,24 +628,33 @@ void AEscapePlayer::Die()
 void AEscapePlayer::OnGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AGun* overlappedGun = Cast<AGun>(OtherActor);
-	if (grabbedGun && overlappedGun)
+	if (OtherComp == leftIndexFingerCollision || OtherComp == rightIndexFingerCollision)
 	{
 		bIsOverlapGunStorage = true;
-
-		if (gunOverlapMaterial)
-		{
-			gunOverlapMeshComp->SetMaterial(0, gunOverlapMaterial);
-		}
 	}
 }
 
 void AEscapePlayer::EndGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	bIsOverlapGunStorage = false;
-	if (gunOverlapDefaultMaterial)
+	if (OtherComp == leftIndexFingerCollision || OtherComp == rightIndexFingerCollision)
 	{
-		gunOverlapMeshComp->SetMaterial(0, gunOverlapDefaultMaterial);
+		bIsOverlapGunStorage = false;
 	}
+}
+
+void AEscapePlayer::CallBoardingShip()
+{
+	auto ship = Cast<ASpaceShip>(UGameplayStatics::GetActorOfClass(this, ASpaceShip::StaticClass()));
+	ship->BoardingShip();
+}
+
+void AEscapePlayer::CallSenseOn()
+{
+	roomManager->SenseOn();
+}
+
+void AEscapePlayer::CallSenseOff()
+{
+	roomManager->SenseOff();
 }

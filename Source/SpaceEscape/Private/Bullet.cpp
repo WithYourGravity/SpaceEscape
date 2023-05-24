@@ -3,11 +3,12 @@
 
 #include "Bullet.h"
 #include "EnemyFSM.h"
-#include "NiagaraComponent.h"
 #include "ResearcherEnemy.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Components/DecalComponent.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -32,6 +33,7 @@ ABullet::ABullet()
 	movementComp->MaxSpeed = 3000;
 	movementComp->bShouldBounce = true;
 	movementComp->Bounciness = 0.1f;
+	movementComp->ProjectileGravityScale = 0.0f;
 }
 
 // Called when the game starts or when spawned
@@ -77,7 +79,9 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 			auto enemyFSM = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(TEXT("enemyFSM")));
 			if (enemyFSM)
 			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bloodEffect, SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation(), true);
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), bloodEffect, SweepResult.ImpactPoint, SweepResult.ImpactNormal.Rotation());
+
+				GetWorld()->SpawnActor<AActor>(bloodDecalEffect, SweepResult.ImpactPoint, FRotator(0, 0, 0));
 
 				if (enemyFSM->bIsDying)
 				{

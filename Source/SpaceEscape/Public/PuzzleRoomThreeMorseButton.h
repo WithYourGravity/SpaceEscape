@@ -14,6 +14,8 @@ class SPACEESCAPE_API APuzzleRoomThreeMorseButton : public AButtonBase
 	GENERATED_BODY()
 
 public:
+	APuzzleRoomThreeMorseButton();
+
 	virtual void ButtonTriggered() override;
 	virtual void ButtonEnded() override;
 	void AddTimeStart();

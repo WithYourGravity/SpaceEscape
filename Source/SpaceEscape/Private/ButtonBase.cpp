@@ -15,7 +15,7 @@ AButtonBase::AButtonBase()
 
 	buttonBodyComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("buttonBodyComp"));
 	SetRootComponent(buttonBodyComp);
-	buttonBodyComp->SetRelativeScale3D(FVector(0.5));
+	buttonBodyComp->SetRelativeScale3D(FVector(0.2));
 	buttonBodyComp->SetCollisionProfileName(TEXT("NoCollision"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempButtonBodyMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/switchers/source/switchers_bigbutton.switchers_bigbutton'"));
 	if (tempButtonBodyMesh.Succeeded())
@@ -87,7 +87,11 @@ void AButtonBase::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 
 	// 손과 오버랩되면 진동 울리게 처리
 	auto player = Cast<AEscapePlayer>(OtherActor);
-	if (player)
+	if (OtherComp->GetName().Contains("left"))
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+	}
+	else
 	{
 		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
 	}

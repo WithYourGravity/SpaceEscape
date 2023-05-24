@@ -29,8 +29,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info", meta = (BindWidget))
 	class UTextBlock* curSecond;
 
-	UFUNCTION(BlueprintCallable)
-	void PrintCurrentHP();
+	//UFUNCTION(BlueprintCallable)
+	//void PrintCurrentHP();
 	UFUNCTION(BlueprintCallable)
 	void PrintCurrentHPPercent();
 	void PrintCurrentPlayTime();

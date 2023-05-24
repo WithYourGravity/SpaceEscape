@@ -66,6 +66,7 @@ void APuzzleRoomTwoFlame::DoTrace()
 	{
 		// 플레이어 죽음 처리
 		pl->Die();
+		UE_LOG(LogTemp, Warning, TEXT("You Died"));
 	}
 }
 

@@ -3,12 +3,15 @@
 
 #include "EnemyFSM.h"
 #include "AIController.h"
+#include "DamageWidget.h"
+#include "Doors.h"
 #include "EscapePlayer.h"
 #include "NavigationSystem.h"
 #include "PlayerInfoWidget.h"
 #include "ResearcherEnemy.h"
 #include "ResearcherEnemyAnim.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -36,6 +39,8 @@ void UEnemyFSM::BeginPlay()
 	ai = Cast<AAIController>(me->GetController());
 
 	HP = maxHP;
+
+	door = Cast<ADoors>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoors::StaticClass()));
 }
 
 
@@ -61,6 +66,12 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	case EEnemyState::DIE:
 		TickDie();
 		break;
+	case EEnemyState::STUCK:
+		TickStuck();
+		break;
+	case EEnemyState::KNOCK:
+		TickKnock();
+		break;
 	default:
 		break;
 	}
@@ -72,9 +83,9 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 
 	if (HP <= 0)
 	{
-		//state = EEnemyState::DIE;
 		SetState(EEnemyState::DIE);
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		me->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		// 죽음 애니메이션 재생
 		FString sectionName = FString(TEXT("Die"));
@@ -94,10 +105,7 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 	}
 	else
 	{
-		//state = EEnemyState::DAMAGE;
 		SetState(EEnemyState::DAMAGE);
-
-		//currentTime = 0;
 
 		// 피격 애니메이션 재생
 		FString sectionName = FString(TEXT("Damage"));
@@ -124,7 +132,6 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			if (moveState == EEnemyMoveSubState::INJUREDWALKLEFT)
 			{
 				moveState = EEnemyMoveSubState::CRAWL;
-				bIsStartCrawl = true;
 			}
 			else
 			{
@@ -141,7 +148,6 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			if (moveState == EEnemyMoveSubState::INJUREDWALKRIGHT)
 			{
 				moveState = EEnemyMoveSubState::CRAWL;
-				bIsStartCrawl = true;
 			}
 			else
 			{
@@ -149,23 +155,21 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			}
 		}
 		anim->PlayDamageAnim(*sectionName);
-		/*if (bIsStartCrawl)
-		{
-			bIsStartCrawl = false;
-			anim->PlayDamageAnim(FName(TEXT("Crawl")));
-		}*/
 	}
-
-	//anim->animState = state;
+	
 	anim->animMoveState = moveState;
 	if (moveState == EEnemyMoveSubState::INJUREDWALKLEFT || moveState == EEnemyMoveSubState::INJUREDWALKRIGHT
 	)
 	{
-		me->GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		me->GetCharacterMovement()->MaxWalkSpeed = 150.0f;
 	}
 	else if (moveState == EEnemyMoveSubState::CRAWL)
 	{
 		me->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
+		me->GetCapsuleComponent()->SetCapsuleRadius(15.0f);
+		me->GetCapsuleComponent()->SetCapsuleHalfHeight(15.0f);
+		me->GetMesh()->SetRelativeLocation(FVector(0, 0, -15));
+		me->SetActorLocation(me->GetActorLocation() + FVector(0, 0, -73));
 	}
 
 	ai->StopMovement();
@@ -176,29 +180,61 @@ bool UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius,
 	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 	FNavLocation loc;
 	bool result = ns->GetRandomReachablePointInRadius(centerLocation, radius, loc);
-	dest = loc.Location;
+	if (result)
+	{
+		dest = loc.Location;
+	}
 	return result;
 }
 
 void UEnemyFSM::AttackPlayer()
 {
-	if (target->GetHP() <= 0)
-	{
-		return;
-	}
-	
-	if (FVector::DotProduct(target->GetActorLocation() - me->GetActorLocation(), me->GetActorForwardVector()) <= FMath::Cos(5.0f))
+	if (target && target->GetHP() <= 0)
 	{
 		return;
 	}
 
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(me);
+	FVector startPos = me->GetActorLocation() + me->GetActorForwardVector() * 60.0f;
+	FVector endPos = startPos + me->GetActorForwardVector() * 30.0f;
+
+	FHitResult HitInfo;
+	bool bHit = GetWorld()->SweepSingleByObjectType(HitInfo, startPos, endPos, FQuat::Identity, ECC_Pawn, FCollisionShape::MakeCapsule(30.0f, 78.0f), params);
+
+	//DrawDebugCapsule(GetWorld(), startPos, 78.0f, 30.0f, FQuat::Identity, FColor::Red, false, 2.0f, 0, 1);
+	//DrawDebugCapsule(GetWorld(), endPos, 78.0f, 30.0f, FQuat::Identity, FColor::Red, false, 2.0f, 0, 1);
+
+	if (!bHit)
+	{
+		return;
+	}
+
+	ShowAttackPlayerEffect();
 	target->SubtractHP(power);
-	target->infoUI->PrintCurrentHP();
+	//target->infoUI->PrintCurrentHP();
 	target->infoUI->PrintCurrentHPPercent();
 
 	if (target->GetHP() == 0)
 	{
 		target->Die();
+	}
+}
+
+void UEnemyFSM::ShowAttackPlayerEffect()
+{
+	if (target)
+	{
+		target->damageWidgetComp->SetVisibility(true);
+		target->damageUI->PlayDamageAnimation();
+	}
+}
+
+void UEnemyFSM::HiddenAttackPlayerEffect()
+{
+	if (target)
+	{
+		target->damageWidgetComp->SetVisibility(false);
 	}
 }
 
@@ -209,12 +245,9 @@ void UEnemyFSM::TickIdle()
 	{
 		if (target != nullptr)
 		{
-			//state = EEnemyState::MOVE;
-			//currentTime = 0.0f;
 			SetState(EEnemyState::MOVE);
 
 			// 애니메이션 상태 동기화
-			//anim->animState = state;
 			anim->animMoveState = moveState;
 
 			// 최초 랜덤한 위치 정해주기
@@ -258,17 +291,41 @@ void UEnemyFSM::TickMove()
 		}
 	}
 
+	
+	// 문이 열렸을 때 제자리에 오래 있는 상태이면 enemy들끼리 JAMMED
+	if (door && !door->bIsOpenOverlaping)
+	{
+		currentTime += GetWorld()->DeltaTimeSeconds;
+		if (currentTime <= 0.1f)
+		{
+			prevLocation = me->GetActorLocation();
+		}
+		else if (currentTime >= 3.0f)
+		{
+			curLocation = me->GetActorLocation();
+			if (FVector::Distance(prevLocation, curLocation) <= 10.0f)
+			{
+				SetState(EEnemyState::STUCK);
+			}
+
+			currentTime = 0.0f;
+		}
+	}
+
+	// 문이 닫혀있고 문 가까이에 있으면 KNOCK
+	if (door && door->bIsOpenOverlaping && bIsOverlapDoor)
+	{
+		SetState(EEnemyState::KNOCK);
+	}
+
 	// target 과 가까워지면 공격 상태로 전환
 	if (dir.Size() < attackRange)
 	{
 		// 길 찾기 기능 정지
 		ai->StopMovement();
-
-		//state = EEnemyState::ATTACK;
+		
 		SetState(EEnemyState::ATTACK);
-
-		// 애니메이션 상태 동기화
-		//anim->animState = state;
+		
 		// 공격 애니메이션 재생 활성화
 		anim->bAttackPlay = true;
 		// 공격 상태 전환 시 대기 시간이 바로 끝나도록 처리
@@ -290,8 +347,6 @@ void UEnemyFSM::TickAttack()
 	float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
 	if (distance > attackRange)
 	{
-		//state = EEnemyState::MOVE;
-		//anim->animState = state;
 		SetState(EEnemyState::MOVE);
 
 		GetRandomPositionInNavMesh(me->GetActorLocation(), randomPositionRadius, randomPos);
@@ -303,9 +358,6 @@ void UEnemyFSM::TickDamage()
 	currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime > damageDelayTime)
 	{
-		//state = EEnemyState::MOVE;
-		//currentTime = 0.0f;
-		//anim->animState = state;
 		SetState(EEnemyState::MOVE);
 	}
 }
@@ -319,15 +371,34 @@ void UEnemyFSM::TickDie()
 
 	currentTime += GetWorld()->DeltaTimeSeconds;
 
-	// P = P0 + vt
-	//FVector p0 = me->GetActorLocation();
-	//FVector vt = FVector(0, 0, -1) * 200 * GetWorld()->DeltaTimeSeconds;
-
-	//me->SetActorLocation(p0 + vt);
-
 	if (currentTime > 1)
 	{
 		me->Destroy();
+	}
+}
+
+void UEnemyFSM::TickStuck()
+{
+	// 새로운 랜덤 위치 가져오기
+	GetRandomPositionInNavMesh(me->GetActorLocation(), 200.0f, randomPos);
+
+	// 랜덤 위치로 이동
+	auto result = ai->MoveToLocation(randomPos);
+	// 목적지에 도착하면
+	if (result == EPathFollowingRequestResult::AlreadyAtGoal || result == EPathFollowingRequestResult::Failed)
+	{
+		SetState(EEnemyState::MOVE);
+
+		// 새로운 랜덤 위치 가져오기
+		GetRandomPositionInNavMesh(me->GetActorLocation(), randomPositionRadius, randomPos);
+	}
+}
+
+void UEnemyFSM::TickKnock()
+{
+	if (door && !door->bIsOpenOverlaping)
+	{
+		SetState(EEnemyState::MOVE);
 	}
 }
 

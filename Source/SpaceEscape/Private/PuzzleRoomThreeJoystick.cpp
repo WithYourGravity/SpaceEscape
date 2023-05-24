@@ -19,11 +19,11 @@ APuzzleRoomThreeJoystick::APuzzleRoomThreeJoystick()
 
 	sceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("sceneComp"));
 	SetRootComponent(sceneComp);
-	sceneComp->SetRelativeScale3D(FVector(0.5f));
+	sceneComp->SetRelativeScale3D(FVector(0.43f));
 
 	baseMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("baseMeshComp"));
 	baseMeshComp->SetupAttachment(RootComponent);
-	baseMeshComp->SetCollisionProfileName(FName("BlockAllDynamic"));
+	baseMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempBaseMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/SM_JoystickBase.SM_JoystickBase'"));
     if (tempBaseMesh.Succeeded())
     {
@@ -33,9 +33,11 @@ APuzzleRoomThreeJoystick::APuzzleRoomThreeJoystick()
 	stickMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("stickMeshComp"));
 	stickMeshComp->SetupAttachment(RootComponent);
 	stickMeshComp->SetRelativeLocation(FVector(0, 0, 15.f));
+	stickMeshComp->SetRelativeRotation(FRotator(0, 90.f, 0));
 	stickMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 	stickMeshComp->SetSimulatePhysics(true);
-	ConstructorHelpers::FObjectFinder<UStaticMesh>tempStickMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/SM_Joystick.SM_Joystick'"));
+	stickMeshComp->SetRelativeScale3D(FVector(3.f));
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempStickMesh(TEXT("/Script/Engine.StaticMesh'/Game/Yeni/Assets/MainSpaceShip/Meshes/PirateFighter/SM_PirateFighter_Joystick.SM_PirateFighter_Joystick'"));
 	if (tempStickMesh.Succeeded())
 	{
 		stickMeshComp->SetStaticMesh(tempStickMesh.Object);
@@ -44,7 +46,8 @@ APuzzleRoomThreeJoystick::APuzzleRoomThreeJoystick()
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(stickMeshComp);
 	grabComp->grabType = EGrabType::LEVER;
-	grabComp->SetRelativeLocation(FVector(0, 0, 30.f));
+	grabComp->SetRelativeLocation(FVector(1.f, 0, 7.f));
+	grabComp->SetRelativeRotation(FRotator(90.f, 0, 0));
 	
 	constraintComp = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("constraintComp"));
 	constraintComp->SetupAttachment(RootComponent);
@@ -60,32 +63,32 @@ APuzzleRoomThreeJoystick::APuzzleRoomThreeJoystick()
 
 	stickPosComp = CreateDefaultSubobject<USphereComponent>(TEXT("stickPosComp"));
 	stickPosComp->SetupAttachment(stickMeshComp);
-	stickPosComp->SetRelativeLocation(FVector(0, 0, 36.f));
-	stickPosComp->SetSphereRadius(6.f);
+	stickPosComp->SetRelativeLocation(FVector(0, 0, 12.f));
+	stickPosComp->SetSphereRadius(2.f);
 	stickPosComp->SetCollisionProfileName(FName("FingerPreset"));
 
 	forwardPosComp = CreateDefaultSubobject<USphereComponent>(TEXT("forwardPosComp"));
 	forwardPosComp->SetupAttachment(RootComponent);
-	forwardPosComp->SetSphereRadius(6.f);
-	forwardPosComp->SetRelativeLocation(FVector(20.f, 0, 50.f));
+	forwardPosComp->SetSphereRadius(9.f);
+	forwardPosComp->SetRelativeLocation(FVector(0, -20.f, 45.f));
 	forwardPosComp->SetCollisionProfileName(FName("PuzzleButtonPreset"));
 
 	backPosComp = CreateDefaultSubobject<USphereComponent>(TEXT("backPosComp"));
 	backPosComp->SetupAttachment(RootComponent);
-	backPosComp->SetSphereRadius(6.f);
-	backPosComp->SetRelativeLocation(FVector(-20.f, 0, 50.f));
+	backPosComp->SetSphereRadius(9.f);
+	backPosComp->SetRelativeLocation(FVector(0, 20.f, 45.f));
 	backPosComp->SetCollisionProfileName(FName("PuzzleButtonPreset"));
 
 	leftPosComp = CreateDefaultSubobject<USphereComponent>(TEXT("leftPosComp"));
 	leftPosComp->SetupAttachment(RootComponent);
-	leftPosComp->SetSphereRadius(6.f);
-	leftPosComp->SetRelativeLocation(FVector(0, -20.f, 50.f));
+	leftPosComp->SetSphereRadius(9.f);
+	leftPosComp->SetRelativeLocation(FVector(-20.f, 0, 45.f));
 	leftPosComp->SetCollisionProfileName(FName("PuzzleButtonPreset"));
 
 	rightPosComp = CreateDefaultSubobject<USphereComponent>(TEXT("rightPosComp"));
 	rightPosComp->SetupAttachment(RootComponent);
-	rightPosComp->SetSphereRadius(6.f);
-	rightPosComp->SetRelativeLocation(FVector(0, 20.f, 50.f));
+	rightPosComp->SetSphereRadius(9.f);
+	rightPosComp->SetRelativeLocation(FVector(20.f, 0, 45.f));
 	rightPosComp->SetCollisionProfileName(FName("PuzzleButtonPreset"));
 
 	resetButtonComp = CreateDefaultSubobject<USphereComponent>(TEXT("resetButtonComp"));
@@ -99,6 +102,9 @@ APuzzleRoomThreeJoystick::APuzzleRoomThreeJoystick()
 	{
 		hapticFeedback = tempHaptic.Object;
 	}
+
+	Tags.Add(FName("Sense"));
+	stickMeshComp->ComponentTags.Add(FName("Sense.R3"));
 }
 
 // Called when the game starts or when spawned
@@ -118,13 +124,16 @@ void APuzzleRoomThreeJoystick::BeginPlay()
 	stickPosComp->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomThreeJoystick::StickOnOverlap);
 	stickPosComp->OnComponentEndOverlap.AddDynamic(this, &APuzzleRoomThreeJoystick::StickEndOverlap);
 	resetButtonComp->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomThreeJoystick::ResetButtonOnOverlap);
+
+	puzzlePathFinding->puzzleClearDele.AddUFunction(this, FName("BreakConstraintWhenClear"));
 }
 
 // Called every frame
 void APuzzleRoomThreeJoystick::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (bIsGrabed)
+
+	if (bIsGrabed && !puzzlePathFinding->GetbWasReport())
 	{
 		ControlByPlayerHand();
 	}
@@ -143,7 +152,15 @@ void APuzzleRoomThreeJoystick::StickOnOverlap(UPrimitiveComponent* OverlappedCom
 		return;
 	}
 
-	GiveHapticFeedback();
+	if (player->heldComponentLeft == this->grabComp)
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+	}
+	else
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+	}
+
 	otherCompNameForTimer = OtherComp->GetName()[0];
 	GetWorldTimerManager().SetTimer(stickHandle, FTimerDelegate::CreateUObject(this, &APuzzleRoomThreeJoystick::MoveFunction, otherCompNameForTimer), 0.6f, true, 0);
 }
@@ -162,26 +179,39 @@ void APuzzleRoomThreeJoystick::StickEndOverlap(UPrimitiveComponent* OverlappedCo
 void APuzzleRoomThreeJoystick::ResetButtonOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (puzzlePathFinding->GetbWasReport())
+	if (puzzlePathFinding->GetbWasReport() || bForSafeReset)
 	{
 		return;
 	}
-	GiveHapticFeedback();
+
+	if (OtherComp->GetName().Contains("left"))
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+	}
+	else
+	{
+		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+	}
+
 	// 튀어나온 상태이므로 평평한 상태로 돌린 후 초기화
 	if (!puzzlePathFinding->GetbisMoving())
 	{
 		puzzlePathFinding->MovingTrigger();
-		//puzzlePathFinding->ResetRegularlyUpCountForResetPuzzle();
 		FTimerHandle resetHandle;
 		GetWorldTimerManager().SetTimer(resetHandle, puzzlePathFinding, &APuzzleRoomThreePathFinding::ResetThisPuzzle, 2, false);
-		//puzzlePathFinding->ResetThisPuzzle();
 	}
+
+	// 한번 리셋하면 4초간 안되게끔
+	bForSafeReset = true;
+	FTimerHandle safeResetHandle;
+	GetWorldTimerManager().SetTimer(safeResetHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			bForSafeReset = false;
+		}), 4.f, false);
 }
 
 void APuzzleRoomThreeJoystick::ControlByPlayerHand()
 {
-	UMotionControllerComponent* playerHand;
-
 	if (player->heldComponentLeft == this->grabComp)
 	{
 		playerHand = player->leftHand;
@@ -193,18 +223,6 @@ void APuzzleRoomThreeJoystick::ControlByPlayerHand()
 	
 	stickMeshComp->AddForceAtLocation((playerHand->GetComponentLocation() - grabComp->GetComponentLocation()) * 6000, grabComp->GetComponentLocation());
 	playerHand->SetWorldLocation(grabComp->GetComponentLocation());
-}
-
-void APuzzleRoomThreeJoystick::GiveHapticFeedback()
-{
-	if (player->heldComponentLeft == this->grabComp)
-	{
-		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
-	}
-	else
-	{
-		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
-	}
 }
 
 void APuzzleRoomThreeJoystick::MoveFunction(char componentName)
@@ -225,5 +243,13 @@ void APuzzleRoomThreeJoystick::MoveFunction(char componentName)
 	{
 		puzzlePathFinding->MovePlayingNode(EMoveDir::Right);
 	}
+}
+
+void APuzzleRoomThreeJoystick::BreakConstraintWhenClear()
+{
+	constraintComp->BreakConstraint();
+	stickMeshComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	grabComp->grabType = EGrabType::SNAP;
+	grabComp->TryGrab(playerHand);
 }
 

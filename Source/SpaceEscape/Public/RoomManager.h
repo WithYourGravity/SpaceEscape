@@ -43,4 +43,23 @@ public:
 	int GetCurrentPlayingStage();
 	FStageClearDele stageClearDele;
 	FGameClearDele gameClearDele;
+
+	// sense ฐüทร
+	UPROPERTY()
+	class AEscapePlayer* player;
+	void SenseOn();
+	void SenseOff();
+	void GetInteractionObjectToArray();
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UActorComponent> smComp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR1Comp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR2Comp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR3Comp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR4Comp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseAlwaysComp;
 };

@@ -65,7 +65,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_DropMagazineRight;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	class UInputAction* IA_AppearInfo;
+	class UInputAction* IA_Sense;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_BoardShip;
 
 
 	// 이동처리 함수
@@ -99,6 +101,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Collision")
 	class USphereComponent* leftIndexFingerCollision;
 
+	UPROPERTY(VisibleAnywhere, Category = "Watch")
+	class UStaticMeshComponent* watch;
+
 	// Widget
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
 	class UWidgetComponent* infoWidgetComp;
@@ -109,8 +114,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
 	class UWidgetComponent* dieWidgetComp;
 
-	void AppearInfoWidget();
-	void DisappearInfoWidget();
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	class UWidgetComponent* damageWidgetComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	class UDamageWidget* damageUI;
 
 // Teleport
 public:
@@ -179,7 +187,6 @@ public:
 	// Object Grab 여부
 	bool bIsGrabbedRight = false;
 	bool bIsGrabbedLeft = false;
-	bool bIsGrabbed = false;
 	
 	// 잡기 시도 기능
 	void TryGrabLeft();
@@ -233,17 +240,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Storage")
 	class USceneComponent* gunStorageComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Storage")
-	class USphereComponent* gunOverlapComp;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Storage")
+	class UBoxComponent* gunOverlapComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Storage")
-	class UStaticMeshComponent* gunOverlapMeshComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Storage")
-	class UMaterial* gunOverlapMaterial;
-	UPROPERTY(EditDefaultsOnly, Category = "Storage")
-	class UMaterial* gunOverlapDefaultMaterial;
-
+	UPROPERTY()
+	class AGun* storedGun;
 
 	bool bIsOverlapGunStorage = false;
 
@@ -251,4 +252,15 @@ public:
 	void OnGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void EndGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+
+// Board
+	UFUNCTION()
+	void CallBoardingShip();
+
+	UPROPERTY()
+	class ARoomManager* roomManager;
+
+	void CallSenseOn();
+	void CallSenseOff();
 };

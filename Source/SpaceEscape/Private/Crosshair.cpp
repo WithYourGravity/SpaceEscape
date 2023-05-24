@@ -31,7 +31,7 @@ ACrosshair::ACrosshair()
 
 	crosshairComp->SetCollisionProfileName(FName("NoCollision"));
 	crosshairComp->SetRelativeRotation(FRotator(90, 0, 0));
-	crosshairComp->SetRelativeScale3D(FVector(0.001f));
+	crosshairComp->SetRelativeScale3D(FVector(0.05f));
 	crosshairComp->SetVisibility(false);
 
 }

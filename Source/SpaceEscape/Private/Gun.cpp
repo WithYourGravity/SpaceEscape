@@ -15,8 +15,11 @@
 #include "MotionControllerComponent.h"
 #include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Haptics/HapticFeedbackEffect_Base.h"
+#include "Components/WidgetComponent.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AGun::AGun()
@@ -25,7 +28,6 @@ AGun::AGun()
 	PrimaryActorTick.bCanEverTick = true;
 
 	gunMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunMeshComp"));
-	//gunMeshComp->SetupAttachment(RootComponent);
 	SetRootComponent(gunMeshComp);
 	gunMeshComp->SetSimulatePhysics(true);
 	gunMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
@@ -77,13 +79,22 @@ AGun::AGun()
 	magazineBoxComp->SetRelativeLocation(FVector(-5.0f, 0.0f, -16.0f));
 	magazineBoxComp->SetBoxExtent(FVector(10, 6, 7));
 
-	//muzzleFlashComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("muzzleFlashComp"));
-
 	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base> tempHapticEffect(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
 	if (tempHapticEffect.Succeeded())
 	{
 		grabHapticEffect = tempHapticEffect.Object;
 	}
+
+	// Sound
+	ConstructorHelpers::FObjectFinder<USoundCue> tempFireSoundCue(TEXT("/Script/Engine.SoundCue'/Game/MilitaryWeapSilver/Sound/Pistol/Cues/PistolA_Fire_Cue.PistolA_Fire_Cue'"));
+	if (tempFireSoundCue.Succeeded())
+	{
+		fireSoundCue = tempFireSoundCue.Object;
+	}
+
+	fireAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("fireAudioComp"));
+	fireAudioComp->bAutoActivate = false;
+	fireAudioComp->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -192,12 +203,22 @@ void AGun::OnDropped()
 		}
 	}
 
-	if (player && player->bIsOverlapGunStorage)
+	if (player && player->bIsOverlapGunStorage && player->storedGun == nullptr)
 	{
 		gunMeshComp->SetSimulatePhysics(false);
 		gunMeshComp->AttachToComponent(player->gunStorageComp, FAttachmentTransformRules::KeepWorldTransform);
 		gunMeshComp->SetWorldLocation(player->gunStorageComp->GetComponentLocation());
-		gunMeshComp->SetRelativeRotation(FRotator(-30, 225, 0));
+		player->storedGun = this;
+
+		gunMeshComp->SetCollisionProfileName(FName("NoCollision"));
+
+		SetActorHiddenInGame(true);
+
+		// haptic effect
+		if (grabHapticEffect)
+		{
+			GetWorld()->GetFirstPlayerController()->PlayHapticEffect(grabHapticEffect, grabComp->GetHeldByHand());
+		}
 	}
 }
 
@@ -245,6 +266,12 @@ void AGun::Fire(float fireAlpha)
 			{
 				GetWorld()->GetFirstPlayerController()->PlayHapticEffect(grabHapticEffect, grabComp->GetHeldByHand());
 			}
+
+			if (fireSoundCue && fireAudioComp->IsValidLowLevelFast())
+			{
+				fireAudioComp->SetSound(fireSoundCue);
+				fireAudioComp->Play();
+			}
 		}
 	}
 }
@@ -270,9 +297,9 @@ void AGun::DropMagazine()
 				magazine->SetActorLocation(endPos);
 
 				magazine->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-				magazine->boxComp->SetSimulatePhysics(true);
+				magazine->magazineMeshComp->SetSimulatePhysics(true);
 				magazine->grabComp->grabType = EGrabType::SNAP;
-				magazine->boxComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
+				magazine->magazineMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 				magazine->gun = nullptr;
 				magazine = nullptr;
 
@@ -296,8 +323,13 @@ void AGun::DrawCrosshair()
 	FCollisionQueryParams params;
 	// 자기자신 무시
 	params.AddIgnoredActor(this);
+	params.AddIgnoredComponent(player->rightAim);
+	params.AddIgnoredComponent(player->leftAim);
+	params.AddIgnoredComponent(Cast<UPrimitiveComponent>(player->dieWidgetComp));
+	params.AddIgnoredComponent(Cast<UPrimitiveComponent>(player->infoWidgetComp));
 
-	bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+	//bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+	bool bHit = GetWorld()->SweepSingleByChannel(hitInfo, startPos, endPos, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(5.0f), params);
 
 	float distance = 0;
 	// 충돌이 발생하면
@@ -305,16 +337,17 @@ void AGun::DrawCrosshair()
 	{
 		// 충돌한 지점에 Crosshair 표시
 		crosshair->crosshairComp->SetVisibility(true);
-		crosshair->SetActorLocation(hitInfo.Location);
+		crosshair->SetActorLocation(hitInfo.ImpactPoint);
 		distance = hitInfo.Distance;
 	}
 	// 그렇지 않으면
 	else
 	{
+
 		crosshair->crosshairComp->SetVisibility(false);
 	}
 
-	crosshair->SetActorScale3D(FVector(FMath::Max<float>(1, distance * crosshairScale)));
+	crosshair->SetActorScale3D(FVector(FMath::Max<float>(1.0f, distance * 0.002f)));
 
 	// Crosshair 가 카메라를 바라보도록 처리
 	if (player)

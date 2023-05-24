@@ -31,13 +31,16 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	class UParticleSystem* bulletTrailComp;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	class UParticleSystem* bloodEffect;
+	class UNiagaraSystem* bloodEffect;
+	
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	TSubclassOf<class AActor> bloodDecalEffect;
 
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	TSubclassOf<class AActor> hitEffect;
-
+	
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

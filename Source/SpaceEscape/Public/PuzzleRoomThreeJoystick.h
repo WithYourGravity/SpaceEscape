@@ -55,8 +55,9 @@ public:
 	void StickEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	UFUNCTION()
 	void ResetButtonOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void BreakConstraintWhenClear();
 	void ControlByPlayerHand();
-	void GiveHapticFeedback();
 	void MoveFunction(char componentName);
 
 private:
@@ -67,8 +68,10 @@ private:
 	class APuzzleRoomThreePathFinding* puzzlePathFinding;
 	UPROPERTY(EditDefaultsOnly)
 	class UHapticFeedbackEffect_Base* hapticFeedback;
-
+	UPROPERTY()
+	class UMotionControllerComponent* playerHand;
 	FTimerHandle stickHandle;
 	char otherCompNameForTimer;
 	bool bIsGrabed;
+	bool bForSafeReset;
 };
