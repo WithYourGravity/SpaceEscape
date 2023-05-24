@@ -14,6 +14,8 @@ class SPACEESCAPE_API APuzzleRoomThreeMorseLever : public ALeverBase
 	GENERATED_BODY()
 
 public:
+	APuzzleRoomThreeMorseLever();
+
 	virtual void LeverTriggered() override;
 	FMorseLeverDele morseLeverDele;
 };

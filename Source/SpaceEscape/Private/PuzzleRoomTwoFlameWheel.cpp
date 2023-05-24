@@ -30,6 +30,9 @@ APuzzleRoomTwoFlameWheel::APuzzleRoomTwoFlameWheel()
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(meshComp);
 	grabComp->grabType = EGrabType::LEVER;
+
+	Tags.Add(FName("Sense"));
+	meshComp->ComponentTags.Add(FName("Sense.R2"));
 }
 
 // Called when the game starts or when spawned

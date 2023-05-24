@@ -106,6 +106,8 @@ APuzzleRoomOneTouchPad::APuzzleRoomOneTouchPad()
 	{
 		hapticFeedback = tempHaptic.Object;
 	}
+
+	Tags.Add(FName("Sense"));
 }
 
 void APuzzleRoomOneTouchPad::BeginPlay()

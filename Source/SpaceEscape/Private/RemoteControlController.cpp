@@ -88,6 +88,9 @@ ARemoteControlController::ARemoteControlController()
 	{
 		hapticFeedback = tempHaptic.Object;
 	}
+
+	Tags.Add(FName("Sense"));
+	tabletMeshComp->ComponentTags.Add(FName("Sense.R1"));
 }
 
 // Called when the game starts or when spawned
