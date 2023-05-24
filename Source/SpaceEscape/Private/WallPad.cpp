@@ -66,6 +66,7 @@ void AWallPad::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other
 	{
 		gravityWidget->GravityActivate();
 		bActiveOnce = true;
+		ReportClear();
 	}
 }
 

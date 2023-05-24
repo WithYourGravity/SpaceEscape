@@ -78,6 +78,11 @@ int ARoomManager::GetCurrentPlayingStage()
 	return playingStage;
 }
 
+int ARoomManager::GetSolvedPuzzleCount()
+{
+	return solvedPuzzleCount;
+}
+
 // 센스 기능 켜주는 함수
 void ARoomManager::SenseOn()
 {

@@ -21,7 +21,9 @@ public:
 	class UTextBlock* TextBlock_word;
 	UPROPERTY(EditDefaultsOnly)
 	class UImage* Image_back;
-
+	UPROPERTY(EditDefaultsOnly)
+	class UImage* Image_black;
+	
 	FString GetCurrentScreen();
 	void deleteCurrentScreen();
 	void addCurrentScreen(FString number);

@@ -5,8 +5,10 @@
 
 #include "EscapePlayer.h"
 #include "GravityChange.h"
+#include "PuzzleRoomOneBattery.h"
 #include "PuzzleRoomOneTouchPadPanelWidget.h"
 #include "PuzzleRoomTwoTouchPadPanelWidget.h"
+#include "RoomManager.h"
 #include "Components/BoxComponent.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -132,6 +134,8 @@ void APuzzleRoomOneTouchPad::BeginPlay()
 	{
 		rmOnePanelWidget->deleteCurrentScreen();
 		answer = "0714";
+
+		rmOnePanelWidget->TextBlock_word->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
@@ -142,6 +146,11 @@ void APuzzleRoomOneTouchPad::BeginPlay()
 
 	// 중력 매니저 캐스팅
 	gc = Cast<AGravityChange>(UGameplayStatics::GetActorOfClass(this, AGravityChange::StaticClass()));
+
+	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
+
+	battery = Cast<APuzzleRoomOneBattery>(UGameplayStatics::GetActorOfClass(this, APuzzleRoomOneBattery::StaticClass()));
+	battery->puzzleClearDele.AddUFunction(this, FName("WhenBatteryOn"));
 }
 
 // 터치패드의 입력에 따라 기능을 실행하는 함수
@@ -193,7 +202,7 @@ void APuzzleRoomOneTouchPad::TouchPadOverlap(UPrimitiveComponent* OverlappedComp
 {
 	// 터치 입력 후 일정 시간동안 입력 안되게 처리
 	// && 퍼즐이 클리어되면 입력 안되게 처리
-	if (!bCanTouch || GetbWasReport())
+	if (!bCanTouch || GetbWasReport() || rm->GetSolvedPuzzleCount() == 0)
 	{
 		return;
 	}
@@ -221,6 +230,17 @@ void APuzzleRoomOneTouchPad::TouchPadOverlap(UPrimitiveComponent* OverlappedComp
 	{
 		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
 	}
+}
+
+void APuzzleRoomOneTouchPad::WhenBatteryOn()
+{
+	if (!rmOnePanelWidget)
+	{
+		return;
+	}
+
+	rmOnePanelWidget->Image_black->SetVisibility(ESlateVisibility::Hidden);
+	rmOnePanelWidget->TextBlock_word->SetVisibility(ESlateVisibility::Visible);
 }
 
 // 엔터입력 들어왔을 때 패스워드 확인하는 함수
