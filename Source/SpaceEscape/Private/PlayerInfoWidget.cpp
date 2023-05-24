@@ -4,9 +4,10 @@
 #include "PlayerInfoWidget.h"
 #include "EscapePlayer.h"
 #include "SpaceEscapeGameModeBase.h"
-#include "Components/ProgressBar.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMaterialLibrary.h"
 
 void UPlayerInfoWidget::NativeConstruct()
 {
@@ -15,21 +16,15 @@ void UPlayerInfoWidget::NativeConstruct()
 	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
-	
-	//PrintCurrentHP();
+
+	if (hpMI)
+	{
+		hpDMI = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, hpMI);
+	}
+
 	PrintCurrentHPPercent();
 	PrintCurrentPlayTime();
 }
-
-//void UPlayerInfoWidget::PrintCurrentHP()
-//{
-//	if (player == nullptr)
-//	{
-//		return;
-//	}
-//
-//	curHP->SetText(FText::AsNumber(player->GetHP()));
-//}
 
 void UPlayerInfoWidget::PrintCurrentHPPercent()
 {
@@ -38,8 +33,11 @@ void UPlayerInfoWidget::PrintCurrentHPPercent()
 		return;
 	}
 
-	curHP->SetText(FText::AsNumber((player->GetHP() / static_cast<float>(player->maxHP)) * 100));
-	curHPPercent->SetPercent(player->GetHP() / static_cast<float>(player->maxHP));
+	float curHPPer = player->GetHP() / static_cast<float>(player->maxHP);
+
+	hpDMI->SetScalarParameterValue(FName("percent"), curHPPer);
+	curHPPercentImage->SetBrushFromMaterial(hpDMI);
+	curHP->SetText(FText::AsNumber(curHPPer * 100));
 }
 
 void UPlayerInfoWidget::PrintCurrentPlayTime()

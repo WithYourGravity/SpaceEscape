@@ -109,6 +109,9 @@ AGun::AGun()
 	reloadAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("reloadAudioComp"));
 	reloadAudioComp->bAutoActivate = false;
 	reloadAudioComp->SetupAttachment(slideGrabComp);
+
+	Tags.Add(FName("Sense"));
+	gunMeshComp->ComponentTags.Add(FName("Sense.Always"));
 }
 
 // Called when the game starts or when spawned

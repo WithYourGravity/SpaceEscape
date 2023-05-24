@@ -19,9 +19,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info", meta = (BindWidget))
 	class UTextBlock* curHP;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info", meta = (BindWidget))
-	class UProgressBar* curHPPercent;
+	class UImage* curHPPercentImage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info", meta = (BindWidget))
 	class UTextBlock* curMinute;
@@ -29,8 +29,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info", meta = (BindWidget))
 	class UTextBlock* curSecond;
 
-	//UFUNCTION(BlueprintCallable)
-	//void PrintCurrentHP();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info")
+	class UMaterialInstance* hpMI;
+
 	UFUNCTION(BlueprintCallable)
 	void PrintCurrentHPPercent();
 	void PrintCurrentPlayTime();
@@ -41,4 +42,7 @@ private:
 
 	UPROPERTY()
 	class ASpaceEscapeGameModeBase* gm;
+
+	UPROPERTY()
+	class UMaterialInstanceDynamic* hpDMI;
 };

@@ -64,6 +64,9 @@ AClipboard::AClipboard()
 	{
 		eraseBrushMaterialInterface = tempEraseBrushMaterialInterface.Object;
 	}
+
+	Tags.Add(FName("Sense"));
+	boardMeshComp->ComponentTags.Add(FName("Sense.R2"));
 }
 
 // Called when the game starts or when spawned

@@ -71,6 +71,9 @@ AMarker::AMarker()
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(RootComponent);
 	grabComp->grabType = EGrabType::MARKER;
+
+	Tags.Add(FName("Sense"));
+	rootCylinderMeshComp->ComponentTags.Add(FName("Sense.R2"));
 }
 
 // Called when the game starts or when spawned

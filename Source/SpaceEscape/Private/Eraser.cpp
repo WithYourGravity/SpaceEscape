@@ -17,9 +17,9 @@ AEraser::AEraser()
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
 	SetRootComponent(boxComp);
 	boxComp->SetBoxExtent(FVector(6.5f, 3.0f, 1.5f));
-	
 
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("meshComp"));
+	//SetRootComponent(meshComp);
 	meshComp->SetupAttachment(RootComponent);
 	meshComp->SetSimulatePhysics(true);
 	meshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
@@ -34,6 +34,8 @@ AEraser::AEraser()
 
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(RootComponent);
+	//grabComp->SetRelativeLocation(FVector(27.5f, -25.5f, 14.5f));
+	//grabComp->SetRelativeRotation(FRotator(-5.0f, 50.0f, 35.0f));
 	grabComp->grabType = EGrabType::MARKER;
 }
 

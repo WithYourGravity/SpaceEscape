@@ -106,7 +106,7 @@ AEscapePlayer::AEscapePlayer()
 	infoWidgetComp->SetupAttachment(watch);
 	infoWidgetComp->SetRelativeLocation(FVector(0.0f, 0.0f, 2.3f));
 	infoWidgetComp->SetRelativeRotation(FRotator(90.0f, 0.0f, -90.0f));
-	infoWidgetComp->SetRelativeScale3D(FVector(0.004f));
+	infoWidgetComp->SetRelativeScale3D(FVector(0.0035f));
 
 	dieWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("dieWidgetComp"));
 	dieWidgetComp->SetupAttachment(RootComponent);
