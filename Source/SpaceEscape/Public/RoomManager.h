@@ -59,5 +59,7 @@ public:
 	UPROPERTY()
 	TArray<UStaticMeshComponent*> arrSenseR3Comp;
 	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR4Comp;
+	UPROPERTY()
 	TArray<UStaticMeshComponent*> arrSenseAlwaysComp;
 };

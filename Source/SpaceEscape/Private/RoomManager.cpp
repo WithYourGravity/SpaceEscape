@@ -13,6 +13,7 @@ ARoomManager::ARoomManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
 }
 
 // Called when the game starts or when spawned
@@ -55,6 +56,7 @@ void ARoomManager::AddSolvedPuzzleCount()
 // 다음 스테이지로 넘어가며 퍼즐카운트 초기화 해주는 함수
 void ARoomManager::MoveOnNextStage()
 {
+	SenseOff();
 	playingStage++;
 	solvedPuzzleCount = 0;
 	if (stageClearDele.IsBound())
@@ -62,6 +64,7 @@ void ARoomManager::MoveOnNextStage()
 		stageClearDele.Broadcast();
 	}
 
+	// 엔딩 처리 필요
 	if (gameClearDele.IsBound() && playingStage == 4)
 	{
 		gameClearDele.Broadcast();
@@ -69,11 +72,13 @@ void ARoomManager::MoveOnNextStage()
 	//UE_LOG(LogTemp, Warning, TEXT("Excuted"));
 }
 
+// 현재 stage를 반환하는 함수
 int ARoomManager::GetCurrentPlayingStage()
 {
 	return playingStage;
 }
 
+// 센스 기능 켜주는 함수
 void ARoomManager::SenseOn()
 {
 	player->vrCamera->PostProcessSettings.ColorSaturation = FVector4::Zero();
@@ -84,32 +89,40 @@ void ARoomManager::SenseOn()
 		sm->CustomDepthStencilValue = 1;
 	}
 
-	if (playingStage == 1)
+	switch (playingStage)
 	{
+	case 1 :
 		for (UStaticMeshComponent* sm : arrSenseR1Comp)
 		{
 			sm->SetRenderCustomDepth(true);
 			sm->CustomDepthStencilValue = 1;
 		}
-	}
-	else if (playingStage == 2)
-	{
+		break;
+	case 2 :
 		for (UStaticMeshComponent* sm : arrSenseR2Comp)
 		{
 			sm->SetRenderCustomDepth(true);
 			sm->CustomDepthStencilValue = 1;
 		}
-	}
-	else if (playingStage == 3)
-	{
+		break;
+	case 3:
 		for (UStaticMeshComponent* sm : arrSenseR3Comp)
 		{
 			sm->SetRenderCustomDepth(true);
 			sm->CustomDepthStencilValue = 1;
 		}
+		break;
+	case 4:
+		for (UStaticMeshComponent* sm : arrSenseR4Comp)
+		{
+			sm->SetRenderCustomDepth(true);
+			sm->CustomDepthStencilValue = 1;
+		}
+		break;
 	}
 }
 
+// 센스 기능 끄는 함수
 void ARoomManager::SenseOff()
 {
 	player->vrCamera->PostProcessSettings.ColorSaturation = FVector4::One();
@@ -120,32 +133,40 @@ void ARoomManager::SenseOff()
 		sm->CustomDepthStencilValue = 0;
 	}
 
-	if (playingStage == 1)
+	switch (playingStage)
 	{
+	case 1:
 		for (UStaticMeshComponent* sm : arrSenseR1Comp)
 		{
 			sm->SetRenderCustomDepth(false);
 			sm->CustomDepthStencilValue = 0;
 		}
-	}
-	else if (playingStage == 2)
-	{
+		break;
+	case 2:
 		for (UStaticMeshComponent* sm : arrSenseR2Comp)
 		{
 			sm->SetRenderCustomDepth(false);
 			sm->CustomDepthStencilValue = 0;
 		}
-	}
-	else if (playingStage == 3)
-	{
+		break;
+	case 3:
 		for (UStaticMeshComponent* sm : arrSenseR3Comp)
 		{
 			sm->SetRenderCustomDepth(false);
 			sm->CustomDepthStencilValue = 0;
 		}
+		break;
+	case 4:
+		for (UStaticMeshComponent* sm : arrSenseR4Comp)
+		{
+			sm->SetRenderCustomDepth(false);
+			sm->CustomDepthStencilValue = 0;
+		}
+		break;
 	}
 }
 
+// 게임 시작 시 모든 액터를 검사해 센스에 표시할 액터를 캐싱해놓는다
 void ARoomManager::GetInteractionObjectToArray()
 {
 	// 월드에 있는 모든 액터를 검사한다
@@ -153,53 +174,67 @@ void ARoomManager::GetInteractionObjectToArray()
 	{
 		AActor* actor = *it;
 		// sense태그가 붙어있다면
-		if (actor->ActorHasTag(FName("Sense")))
+		if (!actor->ActorHasTag(FName("Sense")))
 		{
-			// 컴포넌트에 태그를 확인하여 분류한다
-			auto compArray = actor->GetComponentsByTag(smComp, FName("Sense.R1"));
-			// 태그가 확인되면
-			if (!compArray.IsEmpty())
+			continue;
+		}
+		// 컴포넌트에 태그를 확인하여 분류한다
+		auto compArray = actor->GetComponentsByTag(smComp, FName("Sense.R1"));
+		// 태그가 확인되면
+		if (!compArray.IsEmpty())
+		{
+			for (UActorComponent* comp : compArray)
 			{
-				for (UActorComponent* comp : compArray)
-				{
-					// StaticMesh로 캐스팅해서 array에 추가해놓는다
-					UStaticMeshComponent* sm = Cast<UStaticMeshComponent>(comp);
-					arrSenseR1Comp.Add(sm);
-				}
-			}
-			// 다음 태그 확인 위해 array를 비운다
-			compArray.Empty();
-
-			compArray = actor->GetComponentsByTag(smComp, FName("Sense.R2"));
-			if (!compArray.IsEmpty())
-			{
-				for (UActorComponent* comp : compArray)
-				{
-					UStaticMeshComponent* sm = Cast<UStaticMeshComponent>(comp);
-					arrSenseR2Comp.Add(sm);
-				}
-			}
-			compArray.Empty();
-			compArray = actor->GetComponentsByTag(smComp, FName("Sense.R3"));
-			if (!compArray.IsEmpty())
-			{
-				for (UActorComponent* comp : compArray)
-				{
-					UStaticMeshComponent* sm = Cast<UStaticMeshComponent>(comp);
-					arrSenseR3Comp.Add(sm);
-				}
-			}
-			compArray.Empty();
-
-			compArray = actor->GetComponentsByTag(smComp, FName("Sense.Always"));
-			if (!compArray.IsEmpty())
-			{
-				for (UActorComponent* comp : compArray)
-				{
-					UStaticMeshComponent* sm = Cast<UStaticMeshComponent>(comp);
-					arrSenseAlwaysComp.Add(sm);
-				}
+				// StaticMesh로 캐스팅해서 array에 추가해놓는다
+				UStaticMeshComponent* sm = Cast<UStaticMeshComponent>(comp);
+				arrSenseR1Comp.Add(sm);
 			}
 		}
+		// 다음 태그 확인 위해 array를 비운다
+		compArray.Empty();
+
+		compArray = actor->GetComponentsByTag(smComp, FName("Sense.R2"));
+		if (!compArray.IsEmpty())
+		{
+			for (UActorComponent* comp : compArray)
+			{
+				UStaticMeshComponent* sm = Cast<UStaticMeshComponent>(comp);
+				arrSenseR2Comp.Add(sm);
+			}
+		}
+		compArray.Empty();
+
+		compArray = actor->GetComponentsByTag(smComp, FName("Sense.R3"));
+		if (!compArray.IsEmpty())
+		{
+			for (UActorComponent* comp : compArray)
+			{
+				UStaticMeshComponent* sm = Cast<UStaticMeshComponent>(comp);
+				arrSenseR3Comp.Add(sm);
+			}
+		}
+		compArray.Empty();
+
+		compArray = actor->GetComponentsByTag(smComp, FName("Sense.R4"));
+		if (!compArray.IsEmpty())
+		{
+			for (UActorComponent* comp : compArray)
+			{
+				UStaticMeshComponent* sm = Cast<UStaticMeshComponent>(comp);
+				arrSenseR4Comp.Add(sm);
+			}
+		}
+		compArray.Empty();
+
+		compArray = actor->GetComponentsByTag(smComp, FName("Sense.Always"));
+		if (!compArray.IsEmpty())
+		{
+			for (UActorComponent* comp : compArray)
+			{
+				UStaticMeshComponent* sm = Cast<UStaticMeshComponent>(comp);
+				arrSenseAlwaysComp.Add(sm);
+			}
+		}
+		compArray.Empty();
 	}
 }
