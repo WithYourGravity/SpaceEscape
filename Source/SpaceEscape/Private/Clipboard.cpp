@@ -99,11 +99,17 @@ void AClipboard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo
 	FVector2D collisionUV;
 	UGameplayStatics::FindCollisionUV(hitInfo, 0, collisionUV);
 
+	if (FVector2D::Distance(prevCollisionUV, collisionUV) > 1.0f)
+	{
+		
+	}
+
 	//UE_LOG(LogTemp, Warning, TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
 	FString s = FString::Printf(TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, s, true, FVector2D(1.5f));
 	collisionUVs.Add(collisionUV);
-	//pageMaterialInst->GetMaterial().UV
+
+	prevCollisionUV = collisionUV;
 
 	if (marker)
 	{

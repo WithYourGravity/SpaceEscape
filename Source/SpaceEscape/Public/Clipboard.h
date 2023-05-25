@@ -44,6 +44,8 @@ private:
 	int32 renderTextureSizeX = 1024;
 	int32 renderTextureSizeY = 1024;
 
+	FVector2D prevCollisionUV;
+
 	UPROPERTY()
 	class UTextureRenderTarget2D* renderToTexture;
 
