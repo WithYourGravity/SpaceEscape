@@ -99,6 +99,12 @@ void AClipboard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo
 	FVector2D collisionUV;
 	UGameplayStatics::FindCollisionUV(hitInfo, 0, collisionUV);
 
+	//UE_LOG(LogTemp, Warning, TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
+	FString s = FString::Printf(TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, s, true, FVector2D(1.5f));
+	collisionUVs.Add(collisionUV);
+	//pageMaterialInst->GetMaterial().UV
+
 	if (marker)
 	{
 		brushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4(collisionUV.X, collisionUV.Y, 0.0f, 1.0f));
@@ -107,6 +113,7 @@ void AClipboard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo
 		brushMaterialInstance->SetScalarParameterValue(FName("BrushStrength"), marker->brushStrength);
 
 		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), renderToTexture, brushMaterialInstance);
+		//UKismetRenderingLibrary::ExportRenderTarget(this, renderToTexture, TEXT("C:/Users/SBAuser/Desktop"), TEXT("rendertarget.png"));
 	}
 	else if (eraser)
 	{

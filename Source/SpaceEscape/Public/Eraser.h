@@ -23,8 +23,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Eraser")
-	class UBoxComponent* boxComp;
+	//UPROPERTY(EditDefaultsOnly, Category = "Eraser")
+	//class UBoxComponent* boxComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Eraser")
 	class UStaticMeshComponent* meshComp;

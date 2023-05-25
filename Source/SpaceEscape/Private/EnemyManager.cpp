@@ -23,7 +23,7 @@ void AEnemyManager::BeginPlay()
 	// 랜덤 생성 시간 구하기
 	float createTime = FMath::RandRange(minTime, maxTime);
 
-	GetWorld()->GetTimerManager().SetTimer(spawnTimer, this, &AEnemyManager::CreateEnemy, createTime);
+	//GetWorld()->GetTimerManager().SetTimer(spawnTimer, this, &AEnemyManager::CreateEnemy, createTime);
 
 	// 스폰 위치 동적 할당
 	FindSpawnPoints();

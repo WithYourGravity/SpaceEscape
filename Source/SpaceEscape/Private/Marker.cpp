@@ -109,11 +109,11 @@ void AMarker::OnGrabbed()
 
 	if (grabComp->GetHeldByHand() == EControllerHand::Right)
 	{
-		AttachToComponent(player->rightHandMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("markerSocket_r"));
+		AttachToComponent(player->rightHandMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("markerSocket_r"));
 	}
 	else
 	{
-		AttachToComponent(player->leftHandMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("markerSocket_l"));
+		AttachToComponent(player->leftHandMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("markerSocket_l"));
 	}
 }
 
