@@ -45,7 +45,7 @@ void APuzzleRoomTwoFlame::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// 해당 스테이지 진입시만 동작하게 처리
+	// 해당 스테이지 진입시만 동작하게 처리 (나중에)
 	if (!bIsClosed)
 	{
 		DoTrace();
@@ -54,19 +54,20 @@ void APuzzleRoomTwoFlame::Tick(float DeltaTime)
 
 void APuzzleRoomTwoFlame::DoTrace()
 {
+	FVector offset = (hitPoint->GetActorLocation() - sphereCompForTrace->GetComponentLocation()).GetSafeNormal() * 200;
 	FHitResult hitResult;
-	FVector startLoc = sphereCompForTrace->GetComponentLocation();
+	FVector startLoc = sphereCompForTrace->GetComponentLocation() + offset;
 	FVector endLoc = hitPoint->GetActorLocation();
 	TArray<AActor*> forIgnore;
-	UKismetSystemLibrary::SphereTraceSingle(this, startLoc, endLoc, 64.f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, forIgnore, EDrawDebugTrace::ForOneFrame, hitResult, true);
+	UKismetSystemLibrary::SphereTraceSingle(this, startLoc, endLoc, 64.f, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, forIgnore, EDrawDebugTrace::ForOneFrame, hitResult, true);
 
 	// 만약 플레이어가 닿았다면
-	auto pl = Cast<AEscapePlayer>(hitResult.GetActor());
+	AEscapePlayer* pl = Cast<AEscapePlayer>(hitResult.GetActor());
 	if (pl)
 	{
 		// 플레이어 죽음 처리
 		pl->Die();
-		UE_LOG(LogTemp, Warning, TEXT("You Died"));
+		//UE_LOG(LogTemp, Warning, TEXT("You Died"));
 	}
 }
 
