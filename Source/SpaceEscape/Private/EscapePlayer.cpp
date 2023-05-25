@@ -22,6 +22,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/WidgetInteractionComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -54,6 +55,13 @@ AEscapePlayer::AEscapePlayer()
 	rightAim = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("rightAim"));
 	rightAim->SetupAttachment(RootComponent);
 	rightAim->SetTrackingMotionSource(FName("RightAim"));
+
+	leftWidgetInteractionComp = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("leftWidgetInteractionComp"));
+	leftWidgetInteractionComp->SetupAttachment(leftAim);
+	leftWidgetInteractionComp->Deactivate();
+
+	rightWidgetInteractionComp = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("rightWidgetInteractionComp"));
+	rightWidgetInteractionComp->SetupAttachment(rightAim);
 
 	// Hand Mesh
 	// Left
@@ -267,6 +275,10 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_Sense, ETriggerEvent::Started, this, &AEscapePlayer::CallSenseOn);
 		InputSystem->BindAction(IA_Sense, ETriggerEvent::Completed, this, &AEscapePlayer::CallSenseOff);
 		InputSystem->BindAction(IA_BoardShip, ETriggerEvent::Started, this, &AEscapePlayer::CallBoardingShip);
+		InputSystem->BindAction(IA_WidgetLeft, ETriggerEvent::Started, this, &AEscapePlayer::SelectUIInputLeft);
+		InputSystem->BindAction(IA_WidgetLeft, ETriggerEvent::Completed, this, &AEscapePlayer::ReleaseUIInputLeft);
+		InputSystem->BindAction(IA_WidgetRight, ETriggerEvent::Started, this, &AEscapePlayer::SelectUIInputRight);
+		InputSystem->BindAction(IA_WidgetRight, ETriggerEvent::Completed, this, &AEscapePlayer::ReleaseUIInputRight);
 	}
 }
 
@@ -657,4 +669,38 @@ void AEscapePlayer::CallSenseOn()
 void AEscapePlayer::CallSenseOff()
 {
 	roomManager->SenseOff();
+}
+
+void AEscapePlayer::SelectUIInputLeft()
+{
+	if (leftWidgetInteractionComp)
+	{
+		leftWidgetInteractionComp->Activate(true);
+		leftWidgetInteractionComp->PressPointerKey(EKeys::LeftMouseButton);
+	}
+}
+
+void AEscapePlayer::SelectUIInputRight()
+{
+	if (rightWidgetInteractionComp)
+	{
+		rightWidgetInteractionComp->PressPointerKey(EKeys::LeftMouseButton);
+	}
+}
+
+void AEscapePlayer::ReleaseUIInputLeft()
+{
+	if (leftWidgetInteractionComp)
+	{
+		leftWidgetInteractionComp->ReleasePointerKey(EKeys::LeftMouseButton);
+		leftWidgetInteractionComp->Deactivate();
+	}
+}
+
+void AEscapePlayer::ReleaseUIInputRight()
+{
+	if (rightWidgetInteractionComp)
+	{
+		rightWidgetInteractionComp->ReleasePointerKey(EKeys::LeftMouseButton);
+	}
 }
