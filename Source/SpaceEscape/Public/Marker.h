@@ -58,6 +58,8 @@ public:
 	UPROPERTY()
 	class UMaterialInstance* colorMaterialInst;
 
+	FVector2D prevCollisionUV = FVector2D(INFINITY);
+
 	UFUNCTION()
 	void OnGrabbed();
 	UFUNCTION()

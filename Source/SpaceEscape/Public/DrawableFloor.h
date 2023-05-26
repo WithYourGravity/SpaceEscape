@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Clipboard.generated.h"
+#include "DrawableFloor.generated.h"
 
 UCLASS()
-class SPACEESCAPE_API AClipboard : public AActor
+class SPACEESCAPE_API ADrawableFloor : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AClipboard();
+	ADrawableFloor();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,18 +23,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Clipboard")
-	class UStaticMeshComponent* boardMeshComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Clipboard")
-	class UStaticMeshComponent* pageMeshComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	class UGrabComponent* grabComp;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//TArray<FVector2D> collisionUVs;
-	
+	UPROPERTY(EditDefaultsOnly, Category = "Floor")
+	class UStaticMeshComponent* floorMeshComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Clipboard")
 	class UMaterialInstance* pageMaterialInst;
@@ -45,15 +35,17 @@ private:
 	int32 renderTextureSizeX = 1024;
 	int32 renderTextureSizeY = 1024;
 
-	UPROPERTY()
-	class UTextureRenderTarget2D* renderToTexture;
+	FVector2D prevCollisionUV;
 
 	UPROPERTY()
-	class UMaterialInstanceDynamic* brushMaterialInstance;
+		class UTextureRenderTarget2D* renderToTexture;
+
 	UPROPERTY()
-	class UMaterialInstanceDynamic* eraseBrushMaterialInstance;
+		class UMaterialInstanceDynamic* brushMaterialInstance;
 	UPROPERTY()
-	class UMaterialInterface* paintBrushMaterialInterface;
+		class UMaterialInstanceDynamic* eraseBrushMaterialInstance;
 	UPROPERTY()
-	class UMaterialInterface* eraseBrushMaterialInterface;
+		class UMaterialInterface* paintBrushMaterialInterface;
+	UPROPERTY()
+		class UMaterialInterface* eraseBrushMaterialInterface;
 };

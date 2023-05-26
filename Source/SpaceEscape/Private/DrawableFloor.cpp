@@ -1,58 +1,29 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Clipboard.h"
+#include "DrawableFloor.h"
+
 #include "Eraser.h"
-#include "GrabComponent.h"
 #include "Marker.h"
-#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
 // Sets default values
-AClipboard::AClipboard()
+ADrawableFloor::ADrawableFloor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	boardMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("boardMeshComp"));
-	SetRootComponent(boardMeshComp);
-	boardMeshComp->SetSimulatePhysics(true);
-	boardMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempBoardMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/BoardNPencil/ClipBoard_board_1.ClipBoard_board_1'"));
+	floorMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("floorMeshComp"));
+	SetRootComponent(floorMeshComp);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempBoardMesh(TEXT("//Script/Engine.StaticMesh'/Game/Yeni/Assets/VerticalWalls/WallMeshes/SM_Floor_Main.SM_Floor_Main'"));
 	if (tempBoardMesh.Succeeded())
 	{
-		boardMeshComp->SetStaticMesh(tempBoardMesh.Object);
-		boardMeshComp->SetRelativeScale3D(FVector(0.5f));
+		floorMeshComp->SetStaticMesh(tempBoardMesh.Object);
+		floorMeshComp->SetRelativeScale3D(FVector(0.7f));
 	}
 
-	pageMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("pageMeshComp"));
-	pageMeshComp->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempPageMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/BoardNPencil/ClipBoard_page.ClipBoard_page'"));
-	if (tempPageMesh.Succeeded())
-	{
-		pageMeshComp->SetStaticMesh(tempPageMesh.Object);
-		pageMeshComp->SetCollisionProfileName(FName("BoardPreset"));
-	}
-
-	ConstructorHelpers::FObjectFinder<UMaterialInstance> tempMat(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/YSY/Assets/BoardNPencil/MI_Page.MI_Page'"));
-	if (tempMat.Succeeded())
-	{
-		pageMeshComp->SetMaterial(0, tempMat.Object);
-	}
-
-	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
-	grabComp->SetupAttachment(RootComponent);
-	grabComp->grabType = EGrabType::FREE;
-	grabComp->SetRelativeLocation(FVector(0.0f, 24.0f, 4.0f));
-	grabComp->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-
-	ConstructorHelpers::FObjectFinder<UMaterialInstance> tempPageMaterialInst(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/YSY/Assets/BoardNPencil/MI_Page.MI_Page'"));
-	if (tempPageMaterialInst.Succeeded())
-	{
-		pageMaterialInst = tempPageMaterialInst.Object;
-	}
 	ConstructorHelpers::FObjectFinder<UMaterialInterface> tempPaintBrushMaterialInterface(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/YSY/Assets/BoardNPencil/MI_PaintBrush.MI_PaintBrush'"));
 	if (tempPaintBrushMaterialInterface.Succeeded())
 	{
@@ -64,17 +35,14 @@ AClipboard::AClipboard()
 	{
 		eraseBrushMaterialInterface = tempEraseBrushMaterialInterface.Object;
 	}
-
-	Tags.Add(FName("Sense"));
-	boardMeshComp->ComponentTags.Add(FName("Sense.R2"));
 }
 
 // Called when the game starts or when spawned
-void AClipboard::BeginPlay()
+void ADrawableFloor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UMaterialInstanceDynamic* pageDynamicMaterial = pageMeshComp->CreateDynamicMaterialInstance(0, pageMaterialInst);
+	UMaterialInstanceDynamic* pageDynamicMaterial = floorMeshComp->CreateDynamicMaterialInstance(4, pageMaterialInst);
 
 	renderToTexture = UKismetRenderingLibrary::CreateRenderTarget2D(GetWorld(), renderTextureSizeX, renderTextureSizeY);
 
@@ -85,13 +53,13 @@ void AClipboard::BeginPlay()
 }
 
 // Called every frame
-void AClipboard::Tick(float DeltaTime)
+void ADrawableFloor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-void AClipboard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo)
+void ADrawableFloor::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo)
 {
 	AMarker* marker = Cast<AMarker>(brush);
 	AEraser* eraser = Cast<AEraser>(brush);
@@ -101,33 +69,30 @@ void AClipboard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo
 
 	if (marker)
 	{
-		//if (FVector2D::Distance(marker->prevCollisionUV, collisionUV) > 0.0001f || FVector2D::Distance(marker->prevCollisionUV, collisionUV) < 0.1f)
-		if (FVector2D::Distance(marker->prevCollisionUV, collisionUV) < 0.2f)
+		if (FVector2D::Distance(prevCollisionUV, collisionUV) > 0.0001f || FVector2D::Distance(prevCollisionUV, collisionUV) < 0.1f)
 		{
-			brushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4((marker->prevCollisionUV.X + collisionUV.X) / 2.0f, (marker->prevCollisionUV.Y + collisionUV.Y) / 2.0f, 0.0f, 1.0f));
+			UE_LOG(LogTemp, Warning, TEXT("!!!!!!!!!!!!!!!!"));
+			brushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4((prevCollisionUV.X + collisionUV.X) / 2.0f, (prevCollisionUV.Y + collisionUV.Y) / 2.0f, 0.0f, 1.0f));
 			brushMaterialInstance->SetScalarParameterValue(FName("BrushSize"), marker->brushSize);
+			//brushMaterialInstance->SetVectorParameterValue(FName("BrushColor"), FLinearColor::Black);
 			brushMaterialInstance->SetVectorParameterValue(FName("BrushColor"), marker->brushColor);
 			brushMaterialInstance->SetScalarParameterValue(FName("BrushStrength"), marker->brushStrength);
 
 			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), renderToTexture, brushMaterialInstance);
 		}
-		else
-		{
-			marker->prevCollisionUV = FVector2D(INFINITY);
-		}
 	}
-	
-	
+
+
 
 	//UE_LOG(LogTemp, Warning, TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
 	FString s = FString::Printf(TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, s, true, FVector2D(1.5f));
 	//collisionUVs.Add(collisionUV);
-	
+
 
 	if (marker)
 	{
-		marker->prevCollisionUV = collisionUV;
+		prevCollisionUV = collisionUV;
 
 		brushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4(collisionUV.X, collisionUV.Y, 0.0f, 1.0f));
 		brushMaterialInstance->SetScalarParameterValue(FName("BrushSize"), marker->brushSize);
@@ -147,3 +112,4 @@ void AClipboard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo
 		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), renderToTexture, eraseBrushMaterialInstance);
 	}
 }
+
