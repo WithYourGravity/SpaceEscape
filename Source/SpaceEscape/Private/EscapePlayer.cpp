@@ -62,6 +62,7 @@ AEscapePlayer::AEscapePlayer()
 
 	rightWidgetInteractionComp = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("rightWidgetInteractionComp"));
 	rightWidgetInteractionComp->SetupAttachment(rightAim);
+	rightWidgetInteractionComp->Deactivate();
 
 	// Hand Mesh
 	// Left
@@ -675,7 +676,6 @@ void AEscapePlayer::SelectUIInputLeft()
 {
 	if (leftWidgetInteractionComp)
 	{
-		leftWidgetInteractionComp->Activate(true);
 		leftWidgetInteractionComp->PressPointerKey(EKeys::LeftMouseButton);
 	}
 }
@@ -693,7 +693,6 @@ void AEscapePlayer::ReleaseUIInputLeft()
 	if (leftWidgetInteractionComp)
 	{
 		leftWidgetInteractionComp->ReleasePointerKey(EKeys::LeftMouseButton);
-		leftWidgetInteractionComp->Deactivate();
 	}
 }
 
@@ -704,3 +703,24 @@ void AEscapePlayer::ReleaseUIInputRight()
 		rightWidgetInteractionComp->ReleasePointerKey(EKeys::LeftMouseButton);
 	}
 }
+
+void AEscapePlayer::ActiveLeftWidgetInteraction()
+{
+	leftWidgetInteractionComp->Activate(true);
+}
+
+void AEscapePlayer::ActiveRightWidgetInteraction()
+{
+	rightWidgetInteractionComp->Activate(true);
+}
+
+void AEscapePlayer::DeactivateLeftWidgetInteraction()
+{
+	leftWidgetInteractionComp->Deactivate();
+}
+
+void AEscapePlayer::DeactivateRightWidgetInteraction()
+{
+	rightWidgetInteractionComp->Deactivate();
+}
+

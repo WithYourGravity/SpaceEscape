@@ -278,4 +278,9 @@ public:
 	void SelectUIInputRight();
 	void ReleaseUIInputLeft();
 	void ReleaseUIInputRight();
+
+	void ActiveLeftWidgetInteraction();
+	void ActiveRightWidgetInteraction();
+	void DeactivateLeftWidgetInteraction();
+	void DeactivateRightWidgetInteraction();
 };
