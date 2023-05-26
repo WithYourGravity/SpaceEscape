@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "PuzzleBase.h"
 #include "WallPad.generated.h"
 
 UCLASS()
-class SPACEESCAPE_API AWallPad : public AActor
+class SPACEESCAPE_API AWallPad : public APuzzleBase
 {
 	GENERATED_BODY()
 	

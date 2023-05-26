@@ -10,6 +10,7 @@
 #include "Components/SphereComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Haptics/HapticFeedbackEffect_Base.h"
 
 // Sets default values
 ASpaceShipJoystick::ASpaceShipJoystick()
@@ -91,12 +92,15 @@ ASpaceShipJoystick::ASpaceShipJoystick()
 	rightPosComp->SetSphereRadius(9.f);
 	rightPosComp->SetRelativeLocation(FVector(20.f, 0, 45.f));
 	rightPosComp->SetCollisionProfileName(FName("PuzzleButtonPreset"));
-
+	
 	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base>tempHaptic(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
 	if (tempHaptic.Succeeded())
 	{
 		hapticFeedback = tempHaptic.Object;
 	}
+	
+	Tags.Add(FName("Sense"));
+	stickMeshComp->ComponentTags.Add(FName("Sense.R4"));
 }
 
 // Called when the game starts or when spawned

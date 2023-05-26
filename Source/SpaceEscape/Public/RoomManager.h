@@ -32,7 +32,7 @@ private:
 	// 현재 단계에서 완료한 퍼즐 개수
 	int solvedPuzzleCount;
 	// 각 단계별 완료해야하는 퍼즐 개수가 담긴 맵
-	TMap<int, int> totalPuzzlePerStage = {{1, 2}, {2, 1}, {3, 2}};
+	TMap<int, int> totalPuzzlePerStage = {{1, 2}, {2, 2}, {3, 2}};
 	// 현재 단계에서 문을 열수 있는지
 	bool bCanOpenDoor;
 
@@ -41,6 +41,7 @@ public:
 	void AddSolvedPuzzleCount();
 	void MoveOnNextStage();
 	int GetCurrentPlayingStage();
+	int GetSolvedPuzzleCount();
 	FStageClearDele stageClearDele;
 	FGameClearDele gameClearDele;
 
@@ -49,7 +50,17 @@ public:
 	class AEscapePlayer* player;
 	void SenseOn();
 	void SenseOff();
-	void HighlightObject();
-	void UnHilightObject();
-	float alpha;
+	void GetInteractionObjectToArray();
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UActorComponent> smComp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR1Comp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR2Comp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR3Comp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseR4Comp;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> arrSenseAlwaysComp;
 };

@@ -24,6 +24,8 @@ public:
 	// 배터리가 고정될 위치 컴포넌트
 	UPROPERTY(EditDefaultsOnly)
 	class UBoxComponent* targerPosition;
+	UPROPERTY(EditDefaultsOnly)
+	class UStaticMeshComponent* cableMeshComp;
 	
 	UFUNCTION()
 	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);	

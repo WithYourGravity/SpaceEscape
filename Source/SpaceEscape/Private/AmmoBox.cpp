@@ -35,6 +35,8 @@ AAmmoBox::AAmmoBox()
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComp"));
 	grabComp->SetupAttachment(coverMeshComp);
 	grabComp->grabType = EGrabType::LEVER;
+
+	Tags.Add(FName("Sense"));
 }
 
 // Called when the game starts or when spawned

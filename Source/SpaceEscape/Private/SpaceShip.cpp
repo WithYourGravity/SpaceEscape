@@ -37,7 +37,7 @@ ASpaceShip::ASpaceShip()
 	forLocComp = CreateDefaultSubobject<USphereComponent>(TEXT("forLocComp"));
 	forLocComp->SetupAttachment(RootComponent);
 	forLocComp->SetCollisionProfileName(FName("NoCollision"));
-	forLocComp->SetRelativeLocation(FVector(280.f, 0, 200.f));
+	forLocComp->SetRelativeLocation(FVector(280.f, 0, 220.f));
 	forLocComp->SetSphereRadius(16.f);
 
 	forJoyLocComp = CreateDefaultSubobject<USphereComponent>(TEXT("forJoyLocComp"));
@@ -84,6 +84,15 @@ ASpaceShip::ASpaceShip()
 	if (tempButtonBP.Succeeded())
 	{
 		morseButtonActorComp->SetChildActorClass(tempButtonBP.Class);
+	}
+
+	rankingActorComp = CreateDefaultSubobject<UChildActorComponent>(TEXT("rankingActorComp"));
+	rankingActorComp->SetupAttachment(RootComponent);
+	rankingActorComp->SetRelativeLocationAndRotation(FVector(2000.f, 0, 700.f), FRotator(0, 180.f, 0));
+	ConstructorHelpers::FClassFinder<AActor>tempRanking(TEXT("/Script/Engine.Blueprint'/Game/LTG/Blueprints/BP_Ranking.BP_Ranking_C'"));
+	if (tempRanking.Succeeded())
+	{
+		rankingActorComp->SetChildActorClass(tempRanking.Class);
 	}
 }
 

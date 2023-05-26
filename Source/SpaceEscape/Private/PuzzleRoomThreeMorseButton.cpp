@@ -3,6 +3,12 @@
 
 #include "PuzzleRoomThreeMorseButton.h"
 
+APuzzleRoomThreeMorseButton::APuzzleRoomThreeMorseButton()
+{
+	Tags.Add(FName("Sense"));
+	buttonComp->ComponentTags.Add(FName("Sense.R3"));
+}
+
 void APuzzleRoomThreeMorseButton::ButtonTriggered()
 {
 	Super::ButtonTriggered();

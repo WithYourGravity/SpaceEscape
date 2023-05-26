@@ -37,6 +37,8 @@ AWallPad::AWallPad()
 	boxComp->SetBoxExtent(FVector(16.f, 32.f, 16.f));
 	boxComp->SetRelativeLocation(FVector(15.f, 0, 0));
 	boxComp->SetCollisionProfileName(FName("PuzzleButtonPreset"));
+
+	Tags.Add(FName("Sense"));
 }
 
 // Called when the game starts or when spawned
@@ -64,6 +66,7 @@ void AWallPad::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other
 	{
 		gravityWidget->GravityActivate();
 		bActiveOnce = true;
+		ReportClear();
 	}
 }
 
