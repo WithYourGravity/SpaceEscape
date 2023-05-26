@@ -22,8 +22,9 @@ void AEnemyManager::BeginPlay()
 
 	// 랜덤 생성 시간 구하기
 	float createTime = FMath::RandRange(minTime, maxTime);
-
-	GetWorld()->GetTimerManager().SetTimer(spawnTimer, this, &AEnemyManager::CreateEnemy, createTime);
+	
+	//GetWorld()->GetTimerManager().SetTimer(spawnTimer, this, &AEnemyManager::CreateEnemyRoomOne, createTime);
+	//GetWorld()->GetTimerManager().SetTimer(spawnTimer2, this, &AEnemyManager::CreateEnemyRoomTwo, createTime);
 
 	// 스폰 위치 동적 할당
 	FindSpawnPoints();
@@ -36,25 +37,85 @@ void AEnemyManager::Tick(float DeltaTime)
 
 }
 
-void AEnemyManager::CreateEnemy()
+//void AEnemyManager::CreateEnemy()
+//{
+//	if (enemyCount >= 10)
+//	{
+//		return;
+//	}
+//
+//	// 랜덤 위치
+//	int index = FMath::RandRange(0, spawnPoints.Num() - 1);
+//	// 적 생성 및 배치
+//	auto spawnEnemy = GetWorld()->SpawnActor<AResearcherEnemy>(enemyFactory, spawnPoints[index]->GetActorLocation(), FRotator(0));
+//
+//	// 다시 랜덤시간에 CreateEnemy 함수 호출되도록 타이머 설정
+//	float createTime = FMath::RandRange(minTime, maxTime);
+//	GetWorld()->GetTimerManager().SetTimer(spawnTimer, this, &AEnemyManager::CreateEnemy, createTime);
+//
+//	if (spawnEnemy)
+//	{
+//		enemyCount++;
+//	}
+//}
+
+void AEnemyManager::CreateEnemyRoomOne()
 {
-	if (enemyCount >= 10)
+	auto spawnEnemy = GetWorld()->SpawnActor<AResearcherEnemy>(enemyCreatureFactory, roomOneSpawnPoints[0]->GetActorLocation(), FRotator(0));
+
+	if (!spawnEnemy)
 	{
-		return;
+		float createTime = FMath::RandRange(minTime, maxTime);
+		GetWorld()->GetTimerManager().SetTimer(spawnTimer, this, &AEnemyManager::CreateEnemyRoomOne, createTime);
 	}
-
-	// 랜덤 위치
-	int index = FMath::RandRange(0, spawnPoints.Num() - 1);
-	// 적 생성 및 배치
-	auto spawnEnemy = GetWorld()->SpawnActor<AResearcherEnemy>(enemyFactory, spawnPoints[index]->GetActorLocation(), FRotator(0));
-
-	// 다시 랜덤시간에 CreateEnemy 함수 호출되도록 타이머 설정
-	float createTime = FMath::RandRange(minTime, maxTime);
-	GetWorld()->GetTimerManager().SetTimer(spawnTimer, this, &AEnemyManager::CreateEnemy, createTime);
-
-	if (spawnEnemy)
+	else
 	{
-		enemyCount++;
+		GetWorld()->GetTimerManager().ClearTimer(spawnTimer);
+	}
+}
+
+void AEnemyManager::CreateEnemyRoomTwo()
+{
+	int index1 = FMath::RandRange(0, roomTwoSpawnPoints.Num() - 1);
+	class AActor* temp = roomTwoSpawnPoints[index1];
+	roomTwoSpawnPoints[index1] = roomTwoSpawnPoints[roomTwoSpawnPoints.Num() - 1];
+	roomTwoSpawnPoints[roomTwoSpawnPoints.Num() - 1] = temp;
+
+	GetWorld()->GetTimerManager().SetTimer(alienSpawnTimer, this, &AEnemyManager::CreateAlien, 1.0f);
+
+	int index2 = FMath::RandRange(0, roomTwoSpawnPoints.Num() - 2);
+	temp = roomTwoSpawnPoints[index2];
+	roomTwoSpawnPoints[index2] = roomTwoSpawnPoints[roomTwoSpawnPoints.Num() - 2];
+	roomTwoSpawnPoints[roomTwoSpawnPoints.Num() - 2] = temp;
+
+	GetWorld()->GetTimerManager().SetTimer(androidSpawnTimer, this, &AEnemyManager::CreateAndroid, 1.0f);
+}
+
+void AEnemyManager::CreateAlien()
+{
+	auto spawnEnemy = GetWorld()->SpawnActor<AResearcherEnemy>(enemyAlienFactory, roomTwoSpawnPoints[roomTwoSpawnPoints.Num() - 1]->GetActorLocation(), FRotator(0));
+
+	if (!spawnEnemy)
+	{
+		GetWorld()->GetTimerManager().SetTimer(alienSpawnTimer, this, &AEnemyManager::CreateAlien, 1.0f);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().ClearTimer(alienSpawnTimer);
+	}
+}
+
+void AEnemyManager::CreateAndroid()
+{
+	auto spawnEnemy = GetWorld()->SpawnActor<AResearcherEnemy>(enemyAndroidFactory, roomTwoSpawnPoints[roomTwoSpawnPoints.Num() - 2]->GetActorLocation(), FRotator(0));
+
+	if (!spawnEnemy)
+	{
+		GetWorld()->GetTimerManager().SetTimer(androidSpawnTimer, this, &AEnemyManager::CreateAndroid, 1.0f);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().ClearTimer(androidSpawnTimer);
 	}
 }
 
@@ -64,10 +125,14 @@ void AEnemyManager::FindSpawnPoints()
 	{
 		AActor* spawn = *It;
 		// 찾은 액터의 이름에 해당 문자열을 포함하고 있다면
-		if (spawn->GetName().Contains(TEXT("BP_EnemySpawnPoint")))
+		if (spawn->GetName().Contains(TEXT("BP_RoomOneEnemySpawnPoint")))
 		{
 			// 스폰 목록에 추가
-			spawnPoints.Add(spawn);
+			roomOneSpawnPoints.Add(spawn);
+		}
+		else if (spawn->GetName().Contains(TEXT("BP_RoomTwoEnemySpawnPoint")))
+		{
+			roomTwoSpawnPoints.Add(spawn);
 		}
 	}
 }

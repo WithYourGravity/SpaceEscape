@@ -28,7 +28,7 @@ AResearcherEnemy::AResearcherEnemy()
 	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("enemyFSM"));
 
 	navInvokerComp = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("navInvokerComp"));
-	navInvokerComp->SetGenerationRadii(1000.0f, 1300.0f);
+	navInvokerComp->SetGenerationRadii(2000.0f, 2300.0f);
 
 	// 애니메이션 블루프린트 할당
 	ConstructorHelpers::FClassFinder<UAnimInstance> tempAnimClass(TEXT("/Script/Engine.AnimBlueprint'/Game/YSY/Blueprints/ABP_Enemy.ABP_Enemy_C'"));

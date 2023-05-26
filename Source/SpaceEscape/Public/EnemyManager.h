@@ -32,17 +32,30 @@ public:
 	float maxTime = 5.0f;
 	// 스폰할 위치 정보 배열
 	UPROPERTY(EditAnywhere, Category = "SpawnSettings")
-	TArray<class AActor*> spawnPoints;
+	TArray<class AActor*> roomOneSpawnPoints;
+	UPROPERTY(EditAnywhere, Category = "SpawnSettings")
+	TArray<class AActor*> roomTwoSpawnPoints;
 	// 적 블루프린트 할당 변수
 	UPROPERTY(EditAnywhere, Category = "SpawnSettings")
-	TSubclassOf<class AResearcherEnemy> enemyFactory;
+	TSubclassOf<class AResearcherEnemy> enemyAlienFactory;
+	UPROPERTY(EditAnywhere, Category = "SpawnSettings")
+	TSubclassOf<class AResearcherEnemy> enemyCreatureFactory;
+	UPROPERTY(EditAnywhere, Category = "SpawnSettings")
+	TSubclassOf<class AResearcherEnemy> enemyAndroidFactory;
 
 	FTimerHandle spawnTimer;
+	FTimerHandle spawnTimer2;
+	FTimerHandle alienSpawnTimer;
+	FTimerHandle androidSpawnTimer;
 
 	int32 enemyCount = 0;
 
 	// 적 생성 함수
-	void CreateEnemy();
+	void CreateEnemyRoomOne();
+	void CreateEnemyRoomTwo();
+
+	void CreateAlien();
+	void CreateAndroid();
 
 	// 스폰할 위치 동적으로 찾아 할당
 	void FindSpawnPoints();

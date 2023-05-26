@@ -98,6 +98,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FSM")
 	int32 maxHP = 9;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FSM")
+	int32 power = 10;
+
 	// 피격 대기 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
 	float damageDelayTime = 2.0f;
@@ -141,8 +144,6 @@ private:
 	void SetState(EEnemyState next);
 
 	int32 HP;
-
-	int32 power = 10;
 
 	UPROPERTY()
 	class ADoors* door;
