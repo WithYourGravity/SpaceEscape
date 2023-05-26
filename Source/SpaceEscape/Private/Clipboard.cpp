@@ -101,7 +101,12 @@ void AClipboard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo
 
 	if (FVector2D::Distance(prevCollisionUV, collisionUV) > 1.0f)
 	{
-		
+		brushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4((prevCollisionUV.X + collisionUV.X) / 2.0f, (prevCollisionUV.Y + collisionUV.Y) / 2.0f, 0.0f, 1.0f));
+		brushMaterialInstance->SetScalarParameterValue(FName("BrushSize"), marker->brushSize);
+		brushMaterialInstance->SetVectorParameterValue(FName("BrushColor"), FLinearColor::Black);
+		brushMaterialInstance->SetScalarParameterValue(FName("BrushStrength"), marker->brushStrength);
+
+		UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), renderToTexture, brushMaterialInstance);
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
