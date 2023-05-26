@@ -89,23 +89,30 @@ void APuzzleRoomThreeMorse::Enter()
 // 정답인지 틀렸는지 확인하는 함수
 void APuzzleRoomThreeMorse::CheckRightOrWrong()
 {
-	if (screenString == "ARTH")
+	if (screenString == "ARTH" && !bAnswerOnce)
 	{
+		bAnswerOnce = true;
 		screenWidget->TextBlock_E->SetVisibility(ESlateVisibility::Hidden);
 		setScreenText("END");
 		ReportClear();
 	}
 	else
 	{
-		screenString.Empty();
-		setScreenText(screenString);
+		setScreenText("");
 	}
+
+	screenString.Empty();
 }
 
 // 스크린에 인자로 들어온 String값을 출력하는 함수
 void APuzzleRoomThreeMorse::setScreenText(FString string)
 {
 	screenWidget->TextBlock_Morse->SetText(FText::FromString(string));
+}
+
+FString APuzzleRoomThreeMorse::GetScreenString()
+{
+	return screenString;
 }
 
 // 0와 1로 이뤄진 임시문자열을 영문자로 번역해서 뱉어내는 함수

@@ -26,7 +26,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UButton* btn_Credit;
 
+	UFUNCTION()
 	void GameStart();
+	UFUNCTION()
 	void GameExit();
+	UFUNCTION()
 	void ShowCredit();
 };

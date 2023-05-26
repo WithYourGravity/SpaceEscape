@@ -27,4 +27,33 @@ public:
 	class USceneComponent* sceneComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UWidgetComponent* widgetComp;
+
+	UFUNCTION()
+	void CalculateRecord();
+	UFUNCTION()
+	void SetVisible();
+	void LoadSavedData();
+	void SaveData();
+	void AddToRanking(FString curName);
+	void SetRankingDataToWidget();
+
+private:
+
+	UPROPERTY()
+	class ASpaceEscapeGameModeBase* gm;
+	UPROPERTY()
+	class ARoomManager* rm;
+	UPROPERTY()
+	class URankingWidget* rankingWidget;
+
+	UPROPERTY()
+	TMap<FString, int> rankerMap;
+	UPROPERTY()
+	TArray<int> rankTimeArr;
+	UPROPERTY()
+	TArray<FString> rankNameArr;
+
+	int curRecord;
+	int index;
+
 };

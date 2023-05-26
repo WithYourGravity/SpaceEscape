@@ -4,6 +4,7 @@
 #include "MainTitleWidget.h"
 
 #include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 
 void UMainTitleWidget::NativeConstruct()
 {
@@ -17,11 +18,16 @@ void UMainTitleWidget::NativeConstruct()
 void UMainTitleWidget::GameStart()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UMainTitleWidget::GameStart"));
+
+	// 시퀀스 재생
+
+	//  시퀀스 끝나면 플레이어 시작위치로, 플레이타임 시작
+
 }
 
 void UMainTitleWidget::GameExit()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UMainTitleWidget::GameExit"));
+	UKismetSystemLibrary::QuitGame(this, GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }
 
 void UMainTitleWidget::ShowCredit()

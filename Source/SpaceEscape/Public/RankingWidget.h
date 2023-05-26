@@ -18,22 +18,25 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
 	void GoToMain();
+	UFUNCTION()
 	void DeleteName();
+	UFUNCTION()
 	void EnterName();
 
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
-	class UTextBlock* text_NameFirst;
+	class UTextBlock* text_Name1;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
-	class UTextBlock* text_NameSecond;
+	class UTextBlock* text_Name2;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
-	class UTextBlock* text_NameThird;
+	class UTextBlock* text_Name3;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
-	class UTextBlock* text_TimeFirst;
+	class UTextBlock* text_Time1;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
-	class UTextBlock* text_TimeSecond;
+	class UTextBlock* text_Time2;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
-	class UTextBlock* text_TimeThird;
+	class UTextBlock* text_Time3;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UButton* btn_Exit;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
@@ -45,4 +48,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UTextBlock* text_MorseName;
 
+	UPROPERTY()
+	TArray<class UTextBlock*> nameBlockArray;
+	UPROPERTY()
+	TArray<class UTextBlock*> timeBlockArray;
+private:
+
+	UPROPERTY()
+	class APuzzleRoomThreeMorse* morse;
+	UPROPERTY()
+	class ARanking* rankingActor;
 };

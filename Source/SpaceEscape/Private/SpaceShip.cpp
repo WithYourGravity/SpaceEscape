@@ -212,7 +212,11 @@ void ASpaceShip::BoardingShip()
 // 모스까지 완료시 우주선 돌릴수있는 조이스틱 스폰하는 함수
 void ASpaceShip::SpawnControlableJoystick()
 {
-	stickComp->DestroyComponent();
+	if (stickComp)
+	{
+		stickComp->DestroyComponent();
+	}
+
 	player->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 
 	stickLoc = forJoyLocComp->GetComponentLocation() + FVector(0, 0, -16.5f);
