@@ -14,26 +14,28 @@ AEraser::AEraser()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
-	SetRootComponent(boxComp);
-	boxComp->SetBoxExtent(FVector(6.5f, 3.0f, 1.5f));
-	
+	//boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
+	//SetRootComponent(boxComp);
+	//boxComp->SetBoxExtent(FVector(6.5f, 3.0f, 1.5f));
 
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("meshComp"));
-	meshComp->SetupAttachment(RootComponent);
+	SetRootComponent(meshComp);
+	//meshComp->SetupAttachment(RootComponent);
 	meshComp->SetSimulatePhysics(true);
 	meshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/BoardNPencil/Yuta_Eraser_Mesh.Yuta_Eraser_Mesh'"));
 	if (tempMesh.Succeeded())
 	{
 		meshComp->SetStaticMesh(tempMesh.Object);
-		meshComp->SetRelativeLocation(FVector(27.5f, -25.5f, 14.5f));
-		meshComp->SetRelativeRotation(FRotator(-5.0f, 50.0f, 35.0f));
-		meshComp->SetRelativeScale3D(FVector(0.001f));
+		//meshComp->SetRelativeLocation(FVector(27.5f, -25.5f, 14.5f));
+		//meshComp->SetRelativeRotation(FRotator(-5.0f, 50.0f, 35.0f));
+		//meshComp->SetRelativeScale3D(FVector(0.001f));
 	}
 
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(RootComponent);
+	//grabComp->SetRelativeLocation(FVector(27.5f, -25.5f, 14.5f));
+	//grabComp->SetRelativeRotation(FRotator(-5.0f, 50.0f, 35.0f));
 	grabComp->grabType = EGrabType::MARKER;
 }
 
@@ -65,11 +67,11 @@ void AEraser::OnGrabbed()
 
 	if (grabComp->GetHeldByHand() == EControllerHand::Right)
 	{
-		AttachToComponent(player->rightHandMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("eraserSocket_r"));
+		AttachToComponent(player->rightHandMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("eraserSocket_r"));
 	}
 	else
 	{
-		AttachToComponent(player->leftHandMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("eraserSocket_l"));
+		AttachToComponent(player->leftHandMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("eraserSocket_l"));
 	}
 }
 

@@ -91,10 +91,27 @@ AGun::AGun()
 	{
 		fireSoundCue = tempFireSoundCue.Object;
 	}
+	ConstructorHelpers::FObjectFinder<USoundCue> tempReloadMagInsertSoundCue(TEXT("/Script/Engine.SoundCue'/Game/MilitaryWeapSilver/Sound/Pistol/Cues/Pistol_ReloadMagInsert_Cue.Pistol_ReloadMagInsert_Cue'"));
+	if (tempReloadMagInsertSoundCue.Succeeded())
+	{
+		reloadMagInsertSoundCue = tempReloadMagInsertSoundCue.Object;
+	}
+	ConstructorHelpers::FObjectFinder<USoundCue> tempReloadSlideRackSoundCue(TEXT("/Script/Engine.SoundCue'/Game/MilitaryWeapSilver/Sound/Pistol/Cues/Pistol_ReloadSlideRack_Cue.Pistol_ReloadSlideRack_Cue'"));
+	if (tempReloadSlideRackSoundCue.Succeeded())
+	{
+		reloadSlideRackSoundCue = tempReloadSlideRackSoundCue.Object;
+	}
 
 	fireAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("fireAudioComp"));
 	fireAudioComp->bAutoActivate = false;
-	fireAudioComp->SetupAttachment(RootComponent);
+	fireAudioComp->SetupAttachment(muzzleLocation);
+
+	reloadAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("reloadAudioComp"));
+	reloadAudioComp->bAutoActivate = false;
+	reloadAudioComp->SetupAttachment(slideGrabComp);
+
+	Tags.Add(FName("Sense"));
+	gunMeshComp->ComponentTags.Add(FName("Sense.Always"));
 }
 
 // Called when the game starts or when spawned
@@ -255,6 +272,11 @@ void AGun::Fire(float fireAlpha)
 			{
 				magazine->bulletMeshComp1->SetVisibility(false);
 				OpenSlider();
+				if (reloadMagInsertSoundCue && fireAudioComp->IsValidLowLevelFast())
+				{
+					fireAudioComp->SetSound(reloadMagInsertSoundCue);
+					fireAudioComp->Play();
+				}
 			}
 			else if (magazine->GetCurrentBulletCount() == 1)
 			{
@@ -343,7 +365,6 @@ void AGun::DrawCrosshair()
 	// 그렇지 않으면
 	else
 	{
-
 		crosshair->crosshairComp->SetVisibility(false);
 	}
 
@@ -379,6 +400,15 @@ void AGun::GrabSlider()
 		}
 	}
 
+	if (!bOnReloading)
+	{
+		if (reloadMagInsertSoundCue && reloadAudioComp->IsValidLowLevelFast())
+		{
+			reloadAudioComp->SetSound(reloadMagInsertSoundCue);
+			reloadAudioComp->Play();
+		}
+	}
+
 	bOnReloading = true;
 	bDoReloading = false;
 }
@@ -397,5 +427,15 @@ void AGun::CloseSlider()
 	slideGrabComp->SetRelativeLocation(initGunSlideCompLocation);
 	gunSlideMeshComp->SetRelativeLocation(initGunSlideMeshLocation);
 
+	if (!bDoReloading)
+	{
+		if (reloadSlideRackSoundCue && reloadAudioComp->IsValidLowLevelFast())
+		{
+			reloadAudioComp->SetSound(reloadSlideRackSoundCue);
+			reloadAudioComp->Play();
+		}
+	}
+
+	bOnReloading = false;
 	bDoReloading = true;
 }

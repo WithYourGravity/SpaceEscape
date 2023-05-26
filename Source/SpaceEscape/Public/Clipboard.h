@@ -32,14 +32,19 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
 	class UGrabComponent* grabComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<FVector2D> collisionUVs;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Grab")
+	class UMaterialInstance* pageMaterialInst;
+
 	void OnPaintVisualTraceLine(class AActor* brush, const FHitResult& hitInfo);
 
 private:
-	UPROPERTY()
-	class UMaterialInstance* pageMaterialInst;
-
 	int32 renderTextureSizeX = 1024;
 	int32 renderTextureSizeY = 1024;
+
+	FVector2D prevCollisionUV;
 
 	UPROPERTY()
 	class UTextureRenderTarget2D* renderToTexture;

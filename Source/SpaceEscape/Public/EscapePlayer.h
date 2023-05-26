@@ -68,7 +68,10 @@ public:
 	class UInputAction* IA_Sense;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_BoardShip;
-
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_WidgetLeft;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_WidgetRight;
 
 	// 이동처리 함수
 	void Move(const FInputActionValue& values);
@@ -89,6 +92,12 @@ public:
 	class UMotionControllerComponent* leftAim;
 	UPROPERTY(VisibleAnywhere, Category = "MotionController")
 	class UMotionControllerComponent* rightAim;
+
+	// WidgetInteraction
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+	class UWidgetInteractionComponent* leftWidgetInteractionComp;
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+	class UWidgetInteractionComponent* rightWidgetInteractionComp;
 
 	// Hand
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "MotionController")
@@ -263,4 +272,15 @@ public:
 
 	void CallSenseOn();
 	void CallSenseOff();
+
+// Widget Interaction
+	void SelectUIInputLeft();
+	void SelectUIInputRight();
+	void ReleaseUIInputLeft();
+	void ReleaseUIInputRight();
+
+	void ActiveLeftWidgetInteraction();
+	void ActiveRightWidgetInteraction();
+	void DeactivateLeftWidgetInteraction();
+	void DeactivateRightWidgetInteraction();
 };

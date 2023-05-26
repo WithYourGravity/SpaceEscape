@@ -22,6 +22,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/WidgetInteractionComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -54,6 +55,14 @@ AEscapePlayer::AEscapePlayer()
 	rightAim = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("rightAim"));
 	rightAim->SetupAttachment(RootComponent);
 	rightAim->SetTrackingMotionSource(FName("RightAim"));
+
+	leftWidgetInteractionComp = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("leftWidgetInteractionComp"));
+	leftWidgetInteractionComp->SetupAttachment(leftAim);
+	leftWidgetInteractionComp->Deactivate();
+
+	rightWidgetInteractionComp = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("rightWidgetInteractionComp"));
+	rightWidgetInteractionComp->SetupAttachment(rightAim);
+	rightWidgetInteractionComp->Deactivate();
 
 	// Hand Mesh
 	// Left
@@ -106,7 +115,7 @@ AEscapePlayer::AEscapePlayer()
 	infoWidgetComp->SetupAttachment(watch);
 	infoWidgetComp->SetRelativeLocation(FVector(0.0f, 0.0f, 2.3f));
 	infoWidgetComp->SetRelativeRotation(FRotator(90.0f, 0.0f, -90.0f));
-	infoWidgetComp->SetRelativeScale3D(FVector(0.004f));
+	infoWidgetComp->SetRelativeScale3D(FVector(0.0035f));
 
 	dieWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("dieWidgetComp"));
 	dieWidgetComp->SetupAttachment(RootComponent);
@@ -267,6 +276,10 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_Sense, ETriggerEvent::Started, this, &AEscapePlayer::CallSenseOn);
 		InputSystem->BindAction(IA_Sense, ETriggerEvent::Completed, this, &AEscapePlayer::CallSenseOff);
 		InputSystem->BindAction(IA_BoardShip, ETriggerEvent::Started, this, &AEscapePlayer::CallBoardingShip);
+		InputSystem->BindAction(IA_WidgetLeft, ETriggerEvent::Started, this, &AEscapePlayer::SelectUIInputLeft);
+		InputSystem->BindAction(IA_WidgetLeft, ETriggerEvent::Completed, this, &AEscapePlayer::ReleaseUIInputLeft);
+		InputSystem->BindAction(IA_WidgetRight, ETriggerEvent::Started, this, &AEscapePlayer::SelectUIInputRight);
+		InputSystem->BindAction(IA_WidgetRight, ETriggerEvent::Completed, this, &AEscapePlayer::ReleaseUIInputRight);
 	}
 }
 
@@ -658,3 +671,56 @@ void AEscapePlayer::CallSenseOff()
 {
 	roomManager->SenseOff();
 }
+
+void AEscapePlayer::SelectUIInputLeft()
+{
+	if (leftWidgetInteractionComp)
+	{
+		leftWidgetInteractionComp->PressPointerKey(EKeys::LeftMouseButton);
+	}
+}
+
+void AEscapePlayer::SelectUIInputRight()
+{
+	if (rightWidgetInteractionComp)
+	{
+		rightWidgetInteractionComp->PressPointerKey(EKeys::LeftMouseButton);
+	}
+}
+
+void AEscapePlayer::ReleaseUIInputLeft()
+{
+	if (leftWidgetInteractionComp)
+	{
+		leftWidgetInteractionComp->ReleasePointerKey(EKeys::LeftMouseButton);
+	}
+}
+
+void AEscapePlayer::ReleaseUIInputRight()
+{
+	if (rightWidgetInteractionComp)
+	{
+		rightWidgetInteractionComp->ReleasePointerKey(EKeys::LeftMouseButton);
+	}
+}
+
+void AEscapePlayer::ActiveLeftWidgetInteraction()
+{
+	leftWidgetInteractionComp->Activate(true);
+}
+
+void AEscapePlayer::ActiveRightWidgetInteraction()
+{
+	rightWidgetInteractionComp->Activate(true);
+}
+
+void AEscapePlayer::DeactivateLeftWidgetInteraction()
+{
+	leftWidgetInteractionComp->Deactivate();
+}
+
+void AEscapePlayer::DeactivateRightWidgetInteraction()
+{
+	rightWidgetInteractionComp->Deactivate();
+}
+

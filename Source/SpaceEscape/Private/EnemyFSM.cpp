@@ -92,6 +92,7 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 		if (moveState == EEnemyMoveSubState::CRAWL)
 		{
 			sectionName += FString(TEXT("Crawl"));
+			me->SetActorLocation(me->GetActorLocation() + FVector(0, 0, 73));
 		}
 		else
 		{
@@ -212,7 +213,6 @@ void UEnemyFSM::AttackPlayer()
 
 	ShowAttackPlayerEffect();
 	target->SubtractHP(power);
-	//target->infoUI->PrintCurrentHP();
 	target->infoUI->PrintCurrentHPPercent();
 
 	if (target->GetHP() == 0)
