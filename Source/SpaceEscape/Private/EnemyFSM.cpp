@@ -5,15 +5,19 @@
 #include "AIController.h"
 #include "DamageWidget.h"
 #include "Doors.h"
+#include "EnemyDoorOverlap.h"
 #include "EscapePlayer.h"
 #include "NavigationSystem.h"
 #include "PlayerInfoWidget.h"
 #include "ResearcherEnemy.h"
 #include "ResearcherEnemyAnim.h"
+#include "RoomManager.h"
+#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values for this component's properties
 UEnemyFSM::UEnemyFSM()
@@ -41,6 +45,10 @@ void UEnemyFSM::BeginPlay()
 	HP = maxHP;
 
 	door = Cast<ADoors>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoors::StaticClass()));
+
+	roomManager = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
+
+	doorOverlap = Cast<AEnemyDoorOverlap>(UGameplayStatics::GetActorOfClass(GetWorld(), AEnemyDoorOverlap::StaticClass()));
 }
 
 
@@ -113,11 +121,23 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 		if (moveState == EEnemyMoveSubState::CRAWL)
 		{
 			sectionName += FString(TEXT("Crawl"));
+
+			if (me->damageSpineSoundCue)
+			{
+				me->audioComp->SetSound(me->damageSpineSoundCue);
+				me->audioComp->Play();
+			}
 		}
 		else if (damagePart == EEnemyHitPart::CHEST)
 		{
 			//int32 index = FMath::RandRange(0, 1);
 			sectionName += FString::Printf(TEXT("Chest%d"), 1);
+
+			if (me->damageSpineSoundCue)
+			{
+				me->audioComp->SetSound(me->damageSpineSoundCue);
+				me->audioComp->Play();
+			}
 		}
 		else if (damagePart == EEnemyHitPart::HEAD)
 		{
@@ -126,6 +146,12 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 		else if (damagePart == EEnemyHitPart::LEFTARM)
 		{
 			sectionName += FString(TEXT("LeftArm"));
+
+			if (me->damageShoulderSoundCue)
+			{
+				me->audioComp->SetSound(me->damageShoulderSoundCue);
+				me->audioComp->Play();
+			}
 		}
 		else if (damagePart == EEnemyHitPart::LEFTLEG)
 		{
@@ -138,10 +164,22 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			{
 				moveState = EEnemyMoveSubState::INJUREDWALKRIGHT;
 			}
+
+			if (me->damageLegSoundCue)
+			{
+				me->audioComp->SetSound(me->damageLegSoundCue);
+				me->audioComp->Play();
+			}
 		}
 		else if (damagePart == EEnemyHitPart::RIGHTARM)
 		{
 			sectionName += FString(TEXT("RightArm"));
+
+			if (me->damageShoulderSoundCue)
+			{
+				me->audioComp->SetSound(me->damageShoulderSoundCue);
+				me->audioComp->Play();
+			}
 		}
 		else if (damagePart == EEnemyHitPart::RIGHTLEG)
 		{
@@ -153,6 +191,12 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			else
 			{
 				moveState = EEnemyMoveSubState::INJUREDWALKLEFT;
+			}
+
+			if (me->damageLegSoundCue)
+			{
+				me->audioComp->SetSound(me->damageLegSoundCue);
+				me->audioComp->Play();
 			}
 		}
 		anim->PlayDamageAnim(*sectionName);
@@ -214,6 +258,12 @@ void UEnemyFSM::AttackPlayer()
 	ShowAttackPlayerEffect();
 	target->SubtractHP(power);
 	target->infoUI->PrintCurrentHPPercent();
+	
+	if (me->moveSoundCue && me->audioComp->IsValidLowLevelFast())
+	{
+		me->audioComp->SetSound(me->attackSoundCue);
+		me->audioComp->Play();
+	}
 
 	if (target->GetHP() == 0)
 	{
@@ -258,6 +308,48 @@ void UEnemyFSM::TickIdle()
 
 void UEnemyFSM::TickMove()
 {
+	if (roomManager->GetCurrentPlayingStage() == 1 && door && door->bIsOpenOverlaping)
+	{
+		FVector destination = doorOverlap->GetActorLocation();
+
+		auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+
+		// 목적지 길 찾기 경로 데이터 검색
+		FPathFindingQuery query;
+		FAIMoveRequest req;
+		req.SetAcceptanceRadius(3);
+		req.SetGoalLocation(destination);
+		// 길 찾기를 위한 쿼리 생성
+		ai->BuildPathfindingQuery(req, query);
+		// 길 찾기 결과 가져오기
+		FPathFindingResult r = ns->FindPathSync(query);
+
+		// 목적지까지의 길찾기 성공 여부 확인
+		if (r.Result == ENavigationQueryResult::Success)
+		{
+			ai->MoveToLocation(destination);
+		}
+		else
+		{
+			// 랜덤 위치로 이동
+			auto result = ai->MoveToLocation(randomPos);
+			// 목적지에 도착하면
+			if (result == EPathFollowingRequestResult::AlreadyAtGoal || result == EPathFollowingRequestResult::Failed)
+			{
+				// 새로운 랜덤 위치 가져오기
+				GetRandomPositionInNavMesh(me->GetActorLocation(), randomPositionRadius, randomPos);
+			}
+		}
+
+		// 문이 닫혀있고 문 가까이에 있으면 KNOCK
+		if (bIsOverlapDoor)
+		{
+			SetState(EEnemyState::KNOCK);
+		}
+
+		return;
+	}
+
 	FVector destination = target->GetActorLocation();
 
 	FVector dir = destination - me->GetActorLocation();
@@ -292,7 +384,7 @@ void UEnemyFSM::TickMove()
 	}
 
 	
-	// 문이 열렸을 때 제자리에 오래 있는 상태이면 enemy들끼리 JAMMED
+	// 문이 열렸을 때 제자리에 오래 있는 상태이면 enemy들끼리 STUCK
 	if (door && !door->bIsOpenOverlaping)
 	{
 		currentTime += GetWorld()->DeltaTimeSeconds;
@@ -310,12 +402,6 @@ void UEnemyFSM::TickMove()
 
 			currentTime = 0.0f;
 		}
-	}
-
-	// 문이 닫혀있고 문 가까이에 있으면 KNOCK
-	if (door && door->bIsOpenOverlaping && bIsOverlapDoor)
-	{
-		SetState(EEnemyState::KNOCK);
 	}
 
 	// target 과 가까워지면 공격 상태로 전환
@@ -407,5 +493,37 @@ void UEnemyFSM::SetState(EEnemyState next)
 	state = next;
 	anim->animState = next;
 	currentTime = 0.0f;
+
+	if (!me->audioComp->IsValidLowLevelFast())
+	{
+		return;
+	}
+
+	me->audioComp->Stop();
+
+	if (next == EEnemyState::MOVE)
+	{
+		if (me->moveSoundCue)
+		{
+			me->audioComp->SetSound(me->moveSoundCue);
+			me->audioComp->Play();
+		}
+	}
+	else if (next == EEnemyState::KNOCK)
+	{
+		if (me->knockSoundCue)
+		{
+			me->audioComp->SetSound(me->knockSoundCue);
+			me->audioComp->Play();
+		}
+	}
+	else if (next == EEnemyState::DIE)
+	{
+		if (me->dieSoundCue)
+		{
+			me->audioComp->SetSound(me->dieSoundCue);
+			me->audioComp->Play();
+		}
+	}
 }
 

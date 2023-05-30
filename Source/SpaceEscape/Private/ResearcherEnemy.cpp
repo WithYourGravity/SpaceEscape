@@ -4,8 +4,10 @@
 #include "ResearcherEnemy.h"
 #include "EnemyFSM.h"
 #include "NavigationInvokerComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AResearcherEnemy::AResearcherEnemy()
@@ -39,6 +41,47 @@ AResearcherEnemy::AResearcherEnemy()
 
 	// 월드에 배치되거나 스폰될 때 자동으로 AIController부터 Possess될 수 있도록 설정
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	// Sound
+	ConstructorHelpers::FObjectFinder<USoundCue> tempAttackSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieAttackCue.ZombieAttackCue'"));
+	if (tempAttackSoundCue.Succeeded())
+	{
+		attackSoundCue = tempAttackSoundCue.Object;
+	}
+	ConstructorHelpers::FObjectFinder<USoundCue> tempDamageLegSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieAttackCue.ZombieAttackCue'"));
+	if (tempDamageLegSoundCue.Succeeded())
+	{
+		damageLegSoundCue = tempDamageLegSoundCue.Object;
+	}
+	ConstructorHelpers::FObjectFinder<USoundCue> tempDamageShoulderSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieAttackCue.ZombieAttackCue'"));
+	if (tempDamageShoulderSoundCue.Succeeded())
+	{
+		damageShoulderSoundCue = tempDamageShoulderSoundCue.Object;
+	}
+	ConstructorHelpers::FObjectFinder<USoundCue> tempDamageSpineSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieAttackCue.ZombieAttackCue'"));
+	if (tempDamageSpineSoundCue.Succeeded())
+	{
+		damageSpineSoundCue = tempDamageSpineSoundCue.Object;
+	}
+	ConstructorHelpers::FObjectFinder<USoundCue> tempMoveSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieMoveCue.ZombieMoveCue'"));
+	if (tempMoveSoundCue.Succeeded())
+	{
+		moveSoundCue = tempMoveSoundCue.Object;
+	}
+	ConstructorHelpers::FObjectFinder<USoundCue> tempDieSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieDieCue.ZombieDieCue'"));
+	if (tempDieSoundCue.Succeeded())
+	{
+		dieSoundCue = tempDieSoundCue.Object;
+	}
+	ConstructorHelpers::FObjectFinder<USoundCue> tempKnockSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieKnockCue.ZombieKnockCue'"));
+	if (tempKnockSoundCue.Succeeded())
+	{
+		knockSoundCue = tempKnockSoundCue.Object;
+	}
+
+	audioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("audioComp"));
+	audioComp->bAutoActivate = false;
+	audioComp->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned

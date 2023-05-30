@@ -101,15 +101,22 @@ void AClipboard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo
 
 	if (marker)
 	{
-		//if (FVector2D::Distance(marker->prevCollisionUV, collisionUV) > 0.0001f || FVector2D::Distance(marker->prevCollisionUV, collisionUV) < 0.1f)
 		if (FVector2D::Distance(marker->prevCollisionUV, collisionUV) < 0.2f)
 		{
-			brushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4((marker->prevCollisionUV.X + collisionUV.X) / 2.0f, (marker->prevCollisionUV.Y + collisionUV.Y) / 2.0f, 0.0f, 1.0f));
-			brushMaterialInstance->SetScalarParameterValue(FName("BrushSize"), marker->brushSize);
-			brushMaterialInstance->SetVectorParameterValue(FName("BrushColor"), marker->brushColor);
-			brushMaterialInstance->SetScalarParameterValue(FName("BrushStrength"), marker->brushStrength);
+			if (!marker->prevCollisionUV.Equals(FVector2D(INFINITY)))
+			{
+				for (float alpha = 0.001f; alpha < 0.999f; alpha += 0.1f)
+				{
+					FVector2D subDrawPoint = FMath::Lerp<FVector2D>(marker->prevCollisionUV, collisionUV, alpha);
+					//brushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4((marker->prevCollisionUV.X + collisionUV.X) / 2.0f, (marker->prevCollisionUV.Y + collisionUV.Y) / 2.0f, 0.0f, 1.0f));
+					brushMaterialInstance->SetVectorParameterValue(FName("HitPosition"), FVector4(subDrawPoint.X, subDrawPoint.Y, 0.0f, 1.0f));
+					brushMaterialInstance->SetScalarParameterValue(FName("BrushSize"), marker->brushSize);
+					brushMaterialInstance->SetVectorParameterValue(FName("BrushColor"), marker->brushColor);
+					brushMaterialInstance->SetScalarParameterValue(FName("BrushStrength"), marker->brushStrength);
 
-			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), renderToTexture, brushMaterialInstance);
+					UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), renderToTexture, brushMaterialInstance);
+				}
+			}
 		}
 		else
 		{
@@ -120,8 +127,8 @@ void AClipboard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hitInfo
 	
 
 	//UE_LOG(LogTemp, Warning, TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
-	FString s = FString::Printf(TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, s, true, FVector2D(1.5f));
+	/*FString s = FString::Printf(TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, s, true, FVector2D(1.5f));*/
 	//collisionUVs.Add(collisionUV);
 	
 

@@ -127,7 +127,7 @@ void AMarker::DetectHitBoard()
 {
 	FHitResult hitInfo;
 	FVector start = tipMeshComp->GetComponentLocation();
-	FVector end = start + tipMeshComp->GetUpVector() * 4.0f;
+	FVector end = start + tipMeshComp->GetUpVector() * 3.5f;
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(this);
 	params.bTraceComplex = true;
@@ -135,16 +135,18 @@ void AMarker::DetectHitBoard()
 
 	bool bHit = GetWorld()->LineTraceSingleByProfile(hitInfo, start, end, FName("BoardPreset"), params);
 	//bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, start, end, ECollisionChannel::ECC_WorldDynamic, params);
-	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1, 0, -1);
-	
 
 	if (bHit)
 	{
-		//DrawDebugSphere(GetWorld(), hitInfo.Location, 20.0f, 10, FColor::Yellow);
 		AClipboard* board = Cast<AClipboard>(hitInfo.GetActor());
 		if (board)
 		{
-			board->OnPaintVisualTraceLine(this, hitInfo);
+			float dir = FVector::DotProduct(board->GetActorUpVector(), (end - board->GetActorLocation()));
+
+			if (dir >= 0.0f)
+			{
+				board->OnPaintVisualTraceLine(this, hitInfo);
+			}
 		}
 
 		ADrawableFloor* floor = Cast<ADrawableFloor>(hitInfo.GetActor());
@@ -155,10 +157,7 @@ void AMarker::DetectHitBoard()
 	}
 	else
 	{
-		//if (!prevCollisionUV.Equals(FVector2D(INFINITY)))
-		//{
 		prevCollisionUV = FVector2D(INFINITY);
-		//}
 	}
 }
 

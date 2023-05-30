@@ -37,6 +37,9 @@ AEraser::AEraser()
 	//grabComp->SetRelativeLocation(FVector(27.5f, -25.5f, 14.5f));
 	//grabComp->SetRelativeRotation(FRotator(-5.0f, 50.0f, 35.0f));
 	grabComp->grabType = EGrabType::MARKER;
+
+	Tags.Add(FName("Sense"));
+	meshComp->ComponentTags.Add(FName("Sense.R2"));
 }
 
 // Called when the game starts or when spawned
@@ -97,7 +100,13 @@ void AEraser::DetectHitBoard()
 		AClipboard* board = Cast<AClipboard>(hitInfo.GetActor());
 		if (board)
 		{
-			board->OnPaintVisualTraceLine(this, hitInfo);
+			float dir = FVector::DotProduct(board->GetActorUpVector(), (end - board->GetActorLocation()));
+			FString s = FString::Printf(TEXT("%f"), dir);
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, s, true, FVector2D(1.5f));
+			if (dir >= 0.0f)
+			{
+				board->OnPaintVisualTraceLine(this, hitInfo);
+			}
 		}
 	}
 }

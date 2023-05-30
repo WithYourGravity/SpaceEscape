@@ -101,9 +101,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FSM")
 	int32 power = 10;
 
+
 	// 피격 대기 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
-	float damageDelayTime = 2.0f;
+	float damageDelayTime = 1.7f;
 	
 	UPROPERTY(EditAnywhere, Category = "FSM")
 	float randomPositionRadius = 500.0f;
@@ -147,6 +148,10 @@ private:
 
 	UPROPERTY()
 	class ADoors* door;
+	UPROPERTY()
+	class ARoomManager* roomManager;
+	UPROPERTY()
+	class AEnemyDoorOverlap* doorOverlap;
 	FVector prevLocation;
 	FVector curLocation;
 };
