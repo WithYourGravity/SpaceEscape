@@ -23,7 +23,7 @@ ARanking::ARanking()
 
 	widgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("widgetComp"));
 	widgetComp->SetupAttachment(RootComponent);
-	widgetComp->SetDrawSize(FVector2D(1920, 1080));
+	widgetComp->SetDrawSize(FVector2D(1080, 1920));
 	ConstructorHelpers::FClassFinder<UUserWidget>tempWidget(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/LTG/UI/WBP_RankingWidget.WBP_RankingWidget_C'"));
 	if (tempWidget.Succeeded())
 	{
@@ -42,7 +42,7 @@ void ARanking::BeginPlay()
 	rm->gameClearDele.AddUFunction(this, FName("CalculateRecord"));
 	rm->gameClearDele.AddUFunction(this, FName("SetVisible"));
 
-	//LoadSavedData();
+	LoadSavedData();
 }
 
 // Called every frame
@@ -67,9 +67,11 @@ void ARanking::CalculateRecord()
 	index = rankTimeArr.Find(curRecord);
 
 	// 랭킹에 들지 못하면 랭킹화면을 띄우고
-	if (index > 9)
+	// rankingWidget->nameBlockArray.Num() - 1
+	if (index > 1)
 	{
 		rankingWidget->switcher->SetActiveWidgetIndex(0);
+		SetRankingDataToWidget();
 	}
 	else
 	{
@@ -87,16 +89,16 @@ void ARanking::SetVisible()
 void ARanking::LoadSavedData()
 {
 	auto loadGameInstance = Cast<USpaceEscapeSaveGame>(UGameplayStatics::CreateSaveGameObject(USpaceEscapeSaveGame::StaticClass()));
-	if (!loadGameInstance)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("loadGameInstance is NULL"));
-		return;
-	}
+
 	loadGameInstance->saveIndex = 0;
 	loadGameInstance->slotName = "SpaceEscapeSaveSlot";
 
 	loadGameInstance = Cast<USpaceEscapeSaveGame>(UGameplayStatics::LoadGameFromSlot(loadGameInstance->slotName, loadGameInstance->saveIndex));
-
+	if (!loadGameInstance)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("loadGameInstance  is NULL"));
+		return;
+	}
 	rankerMap = loadGameInstance->rankerMap;
 }
 
@@ -122,17 +124,26 @@ void ARanking::AddToRanking(FString curName)
 {
 	// 신기록을 맵에 추가한다 (하나추가)
 	rankerMap.Add(curName, curRecord);
+
 	// 기록을 기준으로 sort한다
 	rankerMap.ValueSort([](int a, int b)
-	{
+		{
 			return a < b;
-	});
+		});
+
 	// key를 array로 뽑아낸다
 	rankerMap.GenerateKeyArray(rankNameArr);
-	// 맨 꼴찌 key를 알아낸다
-	FString lastRankedName = rankNameArr[rankNameArr.Num() - 1];
-	// 맨 꼴찌 정보를 맵에서 삭제한다 (하나삭제)
-	rankerMap.Remove(lastRankedName);
+
+	// 기록이 위젯의 출력데이터보다 많다면
+	if (rankerMap.Num() > rankingWidget->nameBlockArray.Num())
+	{
+
+		// 맨 꼴찌 key를 알아낸다
+		FString lastRankedName = rankNameArr[rankNameArr.Num() - 1];
+
+		// 맨 꼴찌 정보를 맵에서 삭제한다 (하나삭제)
+		rankerMap.Remove(lastRankedName);
+	}
 
 	SetRankingDataToWidget();
 	SaveData();
@@ -143,18 +154,24 @@ void ARanking::SetRankingDataToWidget()
 {
 	// key와 value를 array로 뽑아낸다
 	rankTimeArr.Empty();
-	//rankNameArr.Empty();
+	rankNameArr.Empty();
 	rankerMap.GenerateValueArray(rankTimeArr);
-	//rankerMap.GenerateKeyArray(rankNameArr);
+	rankerMap.GenerateKeyArray(rankNameArr);
 	// 반복문으로 존재하는 블럭 수 만큼 세팅해준다
 	for (int i = 0; i < rankingWidget->timeBlockArray.Num(); i++)
 	{
-		rankingWidget->timeBlockArray[i]->SetText(FText::FromString(FString::FromInt(rankTimeArr[i] / 60) + " : " + FString::FromInt(rankTimeArr[i] % 60)));
+		if (rankTimeArr.IsValidIndex(i))
+		{
+			rankingWidget->timeBlockArray[i]->SetText(FText::FromString(FString::FromInt(rankTimeArr[i] / 60) + " : " + FString::FromInt(rankTimeArr[i] % 60)));
+		}
 	}
 
 	for (int i = 0; i < rankingWidget->nameBlockArray.Num(); i++)
 	{
-		rankingWidget->nameBlockArray[i]->SetText(FText::FromString(rankNameArr[i]));
+		if (rankNameArr.IsValidIndex(i))
+		{
+			rankingWidget->nameBlockArray[i]->SetText(FText::FromString(rankNameArr[i]));
+		}
 	}
 }
 

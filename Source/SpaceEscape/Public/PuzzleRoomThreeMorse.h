@@ -31,6 +31,7 @@ public:
 	void CheckRightOrWrong();
 	void setScreenText(FString string);
 	FString GetScreenString();
+	void EmptyScreenString();
 	char Translater(FString code);
 
 private:

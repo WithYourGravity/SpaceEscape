@@ -88,7 +88,7 @@ ASpaceShip::ASpaceShip()
 
 	rankingActorComp = CreateDefaultSubobject<UChildActorComponent>(TEXT("rankingActorComp"));
 	rankingActorComp->SetupAttachment(RootComponent);
-	rankingActorComp->SetRelativeLocationAndRotation(FVector(2000.f, 0, 700.f), FRotator(0, 180.f, 0));
+	rankingActorComp->SetRelativeLocationAndRotation(FVector(2000.f, 0, 800.f), FRotator(0, 180.f, 0));
 	ConstructorHelpers::FClassFinder<AActor>tempRanking(TEXT("/Script/Engine.Blueprint'/Game/LTG/Blueprints/BP_Ranking.BP_Ranking_C'"));
 	if (tempRanking.Succeeded())
 	{

@@ -110,9 +110,16 @@ void APuzzleRoomThreeMorse::setScreenText(FString string)
 	screenWidget->TextBlock_Morse->SetText(FText::FromString(string));
 }
 
+// 현재 입력중인 screenstring을 반환하는 함수
 FString APuzzleRoomThreeMorse::GetScreenString()
 {
 	return screenString;
+}
+
+// 현재 입력중인 screenstring을 비우는 함수
+void APuzzleRoomThreeMorse::EmptyScreenString()
+{
+	screenString.Empty();
 }
 
 // 0와 1로 이뤄진 임시문자열을 영문자로 번역해서 뱉어내는 함수
