@@ -9,6 +9,8 @@
 #include "Components/WidgetComponent.h"
 #include "EngineUtils.h"
 #include "PuzzleRoomThreeMorseLever.h"
+#include "RoomManager.h"
+#include "Kismet/GameplayStatics.h"
 
 APuzzleRoomThreeMorse::APuzzleRoomThreeMorse()
 {
@@ -27,6 +29,10 @@ void APuzzleRoomThreeMorse::BeginPlay()
 	Super::BeginPlay();
 	// 출력할 화면 캐싱
 	screenWidget = Cast<UPuzzleRoomThreeMorseScreenWidget>(screenComp->GetWidget());
+
+	// 게임 종료후 이니셜 입력 기능위해 룸매니저 캐싱
+	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
+	rm->gameClearDele.AddUFunction(this, FName("ForEndingRanking"));
 
 	// 모스 버튼 찾아서 캐싱
 	for (TActorIterator<APuzzleRoomThreeMorseButton> it(GetWorld()); it; ++it)
@@ -74,7 +80,7 @@ void APuzzleRoomThreeMorse::Enter()
 	screenString.AppendChar(Translater(tempString));
 	setScreenText(screenString);
 
-	if (screenString.Len() == 4)
+	if (screenString.Len() == 5)
 	{
 		FTimerHandle checkHandle;
 		GetWorldTimerManager().SetTimer(checkHandle, FTimerDelegate::CreateLambda([&]()
@@ -89,18 +95,14 @@ void APuzzleRoomThreeMorse::Enter()
 // 정답인지 틀렸는지 확인하는 함수
 void APuzzleRoomThreeMorse::CheckRightOrWrong()
 {
-	if (screenString == "ARTH" && !bAnswerOnce)
+	if (screenString == "EARTH" && !bAnswerOnce)
 	{
 		bAnswerOnce = true;
-		screenWidget->TextBlock_E->SetVisibility(ESlateVisibility::Hidden);
-		setScreenText("END");
+		screenWidget->TextBlock_Small->SetText(FText::FromString("Destination Confirmed"));
 		ReportClear();
 	}
-	else
-	{
-		setScreenText("");
-	}
 
+	setScreenText("");
 	screenString.Empty();
 }
 
@@ -126,4 +128,9 @@ void APuzzleRoomThreeMorse::EmptyScreenString()
 char APuzzleRoomThreeMorse::Translater(FString code)
 {
 	return morse[code];
+}
+
+void APuzzleRoomThreeMorse::ForEndingRanking()
+{
+	screenWidget->TextBlock_Small->SetText(FText::FromString(""));
 }

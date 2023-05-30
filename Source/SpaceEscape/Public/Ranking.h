@@ -45,6 +45,8 @@ private:
 	class ARoomManager* rm;
 	UPROPERTY()
 	class URankingWidget* rankingWidget;
+	UPROPERTY()
+	class AEscapePlayer* player;
 
 	UPROPERTY()
 	TMap<FString, int> rankerMap;

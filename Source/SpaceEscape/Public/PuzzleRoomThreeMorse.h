@@ -27,15 +27,19 @@ public:
 	void addToTempString(float second);
 	UFUNCTION()
 	void Enter();
+	UFUNCTION()
+	void ForEndingRanking();
 
 	void CheckRightOrWrong();
 	void setScreenText(FString string);
-	FString GetScreenString();
 	void EmptyScreenString();
 	char Translater(FString code);
+	FString GetScreenString();
 
 private:
 
+	UPROPERTY()
+	class ARoomManager* rm;
 	bool bAnswerOnce;
 	// 스크린에 출력할 문자열
 	FString screenString;

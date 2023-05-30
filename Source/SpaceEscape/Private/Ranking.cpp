@@ -3,6 +3,7 @@
 
 #include "Ranking.h"
 
+#include "EscapePlayer.h"
 #include "RankingWidget.h"
 #include "RoomManager.h"
 #include "SpaceEscapeGameModeBase.h"
@@ -38,9 +39,13 @@ void ARanking::BeginPlay()
 	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
 	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
 	rankingWidget = Cast<URankingWidget>(widgetComp->GetWidget());
+	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
 
-	rm->gameClearDele.AddUFunction(this, FName("CalculateRecord"));
-	rm->gameClearDele.AddUFunction(this, FName("SetVisible"));
+	if (rm)
+	{
+		rm->gameClearDele.AddUFunction(this, FName("CalculateRecord"));
+		rm->gameClearDele.AddUFunction(this, FName("SetVisible"));
+	}
 
 	LoadSavedData();
 }
@@ -83,6 +88,9 @@ void ARanking::CalculateRecord()
 void ARanking::SetVisible()
 {
 	rankingWidget->SetVisibility(ESlateVisibility::Visible);
+
+	// 플레이어 인터렉션 활성화
+	player->ActiveRightWidgetInteraction();
 }
 
 // SaveGame클래스에 저장된 랭킹정보를 불러오는 함수

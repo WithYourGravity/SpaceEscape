@@ -25,6 +25,10 @@ public:
 	class UButton* btn_Exit;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UButton* btn_Credit;
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	class UButton* btn_CloseCredit;
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	class UWidgetSwitcher* switcher;
 
 	UFUNCTION()
 	void GameStart();
@@ -32,4 +36,11 @@ public:
 	void GameExit();
 	UFUNCTION()
 	void ShowCredit();
+	UFUNCTION()
+	void CloseCredit();
+	void DeactivatePlayerInteraction();
+
+private:
+	UPROPERTY()
+	class AEscapePlayer* player;
 };

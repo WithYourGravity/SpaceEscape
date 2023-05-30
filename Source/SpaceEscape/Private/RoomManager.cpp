@@ -31,10 +31,6 @@ void ARoomManager::BeginPlay()
 	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
 
 	GetInteractionObjectToArray();
-
-	// 테스트중
-	player->ActiveLeftWidgetInteraction();
-	player->DeactivateRightWidgetInteraction();
 }
 
 // Called every frame
