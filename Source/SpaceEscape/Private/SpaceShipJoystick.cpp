@@ -134,11 +134,13 @@ void ASpaceShipJoystick::Tick(float DeltaTime)
 	}
 }
 
+// 조이스틱이 잡혔는지 여부를 바꾸는 함수
 void ASpaceShipJoystick::ChangeIsGrabed()
 {
 	bIsGrabed = !bIsGrabed;
 }
 
+// 조이스틱을 움직여 앞뒤좌우 콜리전에 닿았을 때 실행되는 함수
 void ASpaceShipJoystick::StickOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -160,6 +162,7 @@ void ASpaceShipJoystick::StickOnOverlap(UPrimitiveComponent* OverlappedComponent
 	GetWorldTimerManager().SetTimer(stickHandle, FTimerDelegate::CreateUObject(this, &ASpaceShipJoystick::RotateFunction, otherCompNameForTimer), GetWorld()->DeltaTimeSeconds, true, 0);
 }
 
+// 조이스틱을 움직여 콜리전 오버랩이 끝났을때 실행되는 함수
 void ASpaceShipJoystick::StickEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
@@ -171,6 +174,7 @@ void ASpaceShipJoystick::StickEndOverlap(UPrimitiveComponent* OverlappedComponen
 	GetWorldTimerManager().ClearTimer(stickHandle);
 }
 
+// 플레이어가 조이스틱을 잡았을 때 틱에서 실행되는 함수
 void ASpaceShipJoystick::ControlByPlayerHand()
 {
 	if (player->heldComponentLeft == this->grabComp)
@@ -186,6 +190,7 @@ void ASpaceShipJoystick::ControlByPlayerHand()
 	playerHand->SetWorldLocation(grabComp->GetComponentLocation());
 }
 
+// 우주선 움직이는 함수
 void ASpaceShipJoystick::RotateFunction(char componentName)
 {
 	if(ship->GetActorRotation().Yaw > 88 && ship->GetActorRotation().Yaw < 92)

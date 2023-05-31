@@ -4,9 +4,9 @@
 #include "RemoteControlObject.h"
 
 #include "GrabComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
-
 
 // Sets default values
 ARemoteControlObject::ARemoteControlObject()
@@ -37,6 +37,15 @@ ARemoteControlObject::ARemoteControlObject()
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(RootComponent);
 	grabComp->grabType = EGrabType::FREE;
+
+	soundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("soundComp"));
+	soundComp->SetupAttachment(RootComponent);
+	soundComp->SetAutoActivate(false);
+	ConstructorHelpers::FObjectFinder<USoundWave>tempSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/remote_object_car.remote_object_car'"));
+    if (tempSound.Succeeded())
+    {
+		soundComp->SetSound(tempSound.Object);
+    }
 
 	Tags.Add(FName("Sense"));
 	meshComp->ComponentTags.Add(FName("Sense.R1"));
@@ -80,6 +89,8 @@ void ARemoteControlObject::ControlManager(FString input)
 	{
 		GetWorldTimerManager().SetTimer(turnHandle, this, &ARemoteControlObject::TurnRight, GetWorld()->DeltaTimeSeconds, true);
 	}
+
+	soundComp->Play();
 }
 
 void ARemoteControlObject::MoveForward()
@@ -109,11 +120,13 @@ void ARemoteControlObject::TurnLeft()
 void ARemoteControlObject::StopMove()
 {
 	GetWorldTimerManager().ClearTimer(moveHandle);
+	soundComp->Stop();
 }
 
 void ARemoteControlObject::StopTurn()
 {
 	GetWorldTimerManager().ClearTimer(turnHandle);
+	soundComp->Stop();
 }
 
 void ARemoteControlObject::CheckIsUp()

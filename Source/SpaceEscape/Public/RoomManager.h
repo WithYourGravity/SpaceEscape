@@ -28,9 +28,9 @@ public:
 
 private:
 	// 현재 플레이 중인 단계
-	int playingStage = 1;
+	int playingStage = 3;
 	// 현재 단계에서 완료한 퍼즐 개수
-	int solvedPuzzleCount;
+	int solvedPuzzleCount = 1;
 	// 각 단계별 완료해야하는 퍼즐 개수가 담긴 맵
 	TMap<int, int> totalPuzzlePerStage = {{1, 2}, {2, 2}, {3, 2}};
 	// 현재 단계에서 문을 열수 있는지

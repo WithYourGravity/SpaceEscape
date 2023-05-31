@@ -67,9 +67,14 @@ void ARoomManager::MoveOnNextStage()
 	// 엔딩 처리 필요
 	if (gameClearDele.IsBound() && playingStage == 4)
 	{
+		// 나중에 우주선에서 돌리고 뭔가 하면 실행되게 하면 될듯! 지금은 일단
 		gameClearDele.Broadcast();
+		UE_LOG(LogTemp, Warning, TEXT("gameClearDele Excuted"));
+		// 시퀀스 재생
+		// 우주선 우주밖으로 이동
+		// 랭킹계산
+
 	}
-	//UE_LOG(LogTemp, Warning, TEXT("Excuted"));
 }
 
 // 현재 stage를 반환하는 함수

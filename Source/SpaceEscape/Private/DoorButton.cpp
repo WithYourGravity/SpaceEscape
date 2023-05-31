@@ -20,6 +20,8 @@ ADoorButton::ADoorButton()
 	buttonMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("buttonMesh"));
 	buttonMesh->SetupAttachment(RootComponent);
 	buttonMesh->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
+
+	buttonMesh->SetVectorParameterValueOnMaterials(FName("doorStateColor"), FVector4(0.505f, 0.015f, 0.00974f, 1));
 }
 
 // Called when the game starts or when spawned
@@ -59,7 +61,7 @@ void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 		{
 			ReportOpen();
 			player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
-		}
+		}	
 		else
 		{
 			ReportOpen();
@@ -76,12 +78,15 @@ void ADoorButton::ReportOpen()
 	{
 		bOpened = true;
 		//UE_LOG(LogTemp, Warning, TEXT("ReportOpen() : Opened Onced"))
+		//문 열릴 때 색 바뀌기
+		buttonMesh->SetVectorParameterValueOnMaterials(FName("doorStateColor"), FVector4(0.505f, 0.015f, 0.00974f, 1));
 	}
 	else
 	{
 		bOpened = false;
 		bCanButtonClicked = false;
 		//UE_LOG(LogTemp, Warning, TEXT("ReportOpen() : Not to be Opened"))
+		buttonMesh->SetVectorParameterValueOnMaterials(FName("doorStateColor"), FVector4(0, 0.573f, 0.49f, 1));
 	}
 }
 
