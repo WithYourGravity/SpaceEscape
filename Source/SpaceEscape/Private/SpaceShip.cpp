@@ -88,7 +88,7 @@ ASpaceShip::ASpaceShip()
 
 	rankingActorComp = CreateDefaultSubobject<UChildActorComponent>(TEXT("rankingActorComp"));
 	rankingActorComp->SetupAttachment(RootComponent);
-	rankingActorComp->SetRelativeLocationAndRotation(FVector(2000.f, 0, 700.f), FRotator(0, 180.f, 0));
+	rankingActorComp->SetRelativeLocationAndRotation(FVector(2000.f, 0, 800.f), FRotator(0, 180.f, 0));
 	ConstructorHelpers::FClassFinder<AActor>tempRanking(TEXT("/Script/Engine.Blueprint'/Game/LTG/Blueprints/BP_Ranking.BP_Ranking_C'"));
 	if (tempRanking.Succeeded())
 	{
@@ -140,6 +140,7 @@ void ASpaceShip::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	}
 }
 
+// 길찾기 퍼즐의 조이스틱이 우주선에 조종석에 오버랩되면 실행되는 함수
 void ASpaceShip::OnOverlapJoystick(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -212,7 +213,11 @@ void ASpaceShip::BoardingShip()
 // 모스까지 완료시 우주선 돌릴수있는 조이스틱 스폰하는 함수
 void ASpaceShip::SpawnControlableJoystick()
 {
-	stickComp->DestroyComponent();
+	if (stickComp)
+	{
+		stickComp->DestroyComponent();
+	}
+
 	player->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 
 	stickLoc = forJoyLocComp->GetComponentLocation() + FVector(0, 0, -16.5f);

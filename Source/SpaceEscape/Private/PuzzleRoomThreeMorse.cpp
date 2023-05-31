@@ -9,6 +9,8 @@
 #include "Components/WidgetComponent.h"
 #include "EngineUtils.h"
 #include "PuzzleRoomThreeMorseLever.h"
+#include "RoomManager.h"
+#include "Kismet/GameplayStatics.h"
 
 APuzzleRoomThreeMorse::APuzzleRoomThreeMorse()
 {
@@ -27,6 +29,10 @@ void APuzzleRoomThreeMorse::BeginPlay()
 	Super::BeginPlay();
 	// 출력할 화면 캐싱
 	screenWidget = Cast<UPuzzleRoomThreeMorseScreenWidget>(screenComp->GetWidget());
+
+	// 게임 종료후 이니셜 입력 기능위해 룸매니저 캐싱
+	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
+	rm->gameClearDele.AddUFunction(this, FName("ForEndingRanking"));
 
 	// 모스 버튼 찾아서 캐싱
 	for (TActorIterator<APuzzleRoomThreeMorseButton> it(GetWorld()); it; ++it)
@@ -74,7 +80,7 @@ void APuzzleRoomThreeMorse::Enter()
 	screenString.AppendChar(Translater(tempString));
 	setScreenText(screenString);
 
-	if (screenString.Len() == 4)
+	if (screenString.Len() == 5)
 	{
 		FTimerHandle checkHandle;
 		GetWorldTimerManager().SetTimer(checkHandle, FTimerDelegate::CreateLambda([&]()
@@ -89,17 +95,15 @@ void APuzzleRoomThreeMorse::Enter()
 // 정답인지 틀렸는지 확인하는 함수
 void APuzzleRoomThreeMorse::CheckRightOrWrong()
 {
-	if (screenString == "ARTH")
+	if (screenString == "EARTH" && !bAnswerOnce)
 	{
-		screenWidget->TextBlock_E->SetVisibility(ESlateVisibility::Hidden);
-		setScreenText("END");
+		bAnswerOnce = true;
+		screenWidget->TextBlock_Small->SetText(FText::FromString("Destination Confirmed"));
 		ReportClear();
 	}
-	else
-	{
-		screenString.Empty();
-		setScreenText(screenString);
-	}
+
+	setScreenText("");
+	screenString.Empty();
 }
 
 // 스크린에 인자로 들어온 String값을 출력하는 함수
@@ -108,8 +112,25 @@ void APuzzleRoomThreeMorse::setScreenText(FString string)
 	screenWidget->TextBlock_Morse->SetText(FText::FromString(string));
 }
 
+// 현재 입력중인 screenstring을 반환하는 함수
+FString APuzzleRoomThreeMorse::GetScreenString()
+{
+	return screenString;
+}
+
+// 현재 입력중인 screenstring을 비우는 함수
+void APuzzleRoomThreeMorse::EmptyScreenString()
+{
+	screenString.Empty();
+}
+
 // 0와 1로 이뤄진 임시문자열을 영문자로 번역해서 뱉어내는 함수
 char APuzzleRoomThreeMorse::Translater(FString code)
 {
 	return morse[code];
+}
+
+void APuzzleRoomThreeMorse::ForEndingRanking()
+{
+	screenWidget->TextBlock_Small->SetText(FText::FromString(""));
 }

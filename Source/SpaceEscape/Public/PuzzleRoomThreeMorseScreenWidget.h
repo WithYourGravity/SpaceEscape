@@ -18,6 +18,6 @@ public:
 	UPROPERTY()
 	class UTextBlock* TextBlock_Morse;
 	UPROPERTY()
-	class UTextBlock* TextBlock_E;
+	class UTextBlock* TextBlock_Small;
 
 };

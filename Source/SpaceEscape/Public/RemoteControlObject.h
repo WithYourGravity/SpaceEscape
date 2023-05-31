@@ -29,6 +29,8 @@ public:
 	class USceneCaptureComponent2D* cameraCaptureComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UGrabComponent* grabComp;
+	UPROPERTY(EditDefaultsOnly)
+	class UAudioComponent* soundComp;
 
 	void ControlManager(FString input);
 	void MoveForward();
@@ -44,6 +46,7 @@ public:
 	FTimerHandle upCheckhandle;
 
 private:
+
 	float moveSpeed = 80;
 	float turnSpeed = 60;
 	bool bcanMove;

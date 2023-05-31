@@ -9,6 +9,7 @@
 #include "PuzzleRoomOneTouchPadPanelWidget.h"
 #include "PuzzleRoomTwoTouchPadPanelWidget.h"
 #include "RoomManager.h"
+#include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -107,6 +108,15 @@ APuzzleRoomOneTouchPad::APuzzleRoomOneTouchPad()
 	if (tempHaptic.Succeeded())
 	{
 		hapticFeedback = tempHaptic.Object;
+	}
+
+	soundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("soundComp"));
+	soundComp->SetupAttachment(RootComponent);
+	soundComp->SetAutoActivate(false);
+	ConstructorHelpers::FObjectFinder<USoundWave>tempSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/buttonSound.buttonSound'"));
+	if (tempSound.Succeeded())
+	{
+		soundComp->SetSound(tempSound.Object);
 	}
 
 	Tags.Add(FName("Sense"));
@@ -230,6 +240,8 @@ void APuzzleRoomOneTouchPad::TouchPadOverlap(UPrimitiveComponent* OverlappedComp
 	{
 		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
 	}
+
+	soundComp->Play();
 }
 
 void APuzzleRoomOneTouchPad::WhenBatteryOn()

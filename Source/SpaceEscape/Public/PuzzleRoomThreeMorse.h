@@ -27,12 +27,20 @@ public:
 	void addToTempString(float second);
 	UFUNCTION()
 	void Enter();
+	UFUNCTION()
+	void ForEndingRanking();
 
 	void CheckRightOrWrong();
 	void setScreenText(FString string);
+	void EmptyScreenString();
 	char Translater(FString code);
+	FString GetScreenString();
 
 private:
+
+	UPROPERTY()
+	class ARoomManager* rm;
+	bool bAnswerOnce;
 	// 스크린에 출력할 문자열
 	FString screenString;
 	// 모스버튼으로 입력된 0과 1을 담을 문자열

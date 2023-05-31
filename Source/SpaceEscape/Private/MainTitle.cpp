@@ -18,7 +18,7 @@ AMainTitle::AMainTitle()
 	widgetComp->SetupAttachment(RootComponent);
 	widgetComp->SetRelativeScale3D(FVector(0.15f));
 	widgetComp->SetRelativeLocation(FVector(0, 0, 120.f));
-	widgetComp->SetDrawSize(FVector2D(2000, 2000));
+	widgetComp->SetDrawSize(FVector2D(1080, 1920));
 	ConstructorHelpers::FClassFinder<UUserWidget>tempWidget(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/LTG/UI/WBP_MainTitleWidget.WBP_MainTitleWidget_C'"));
     if (tempWidget.Succeeded())
     {
