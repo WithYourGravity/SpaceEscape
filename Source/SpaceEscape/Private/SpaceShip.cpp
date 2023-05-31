@@ -140,6 +140,7 @@ void ASpaceShip::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	}
 }
 
+// 길찾기 퍼즐의 조이스틱이 우주선에 조종석에 오버랩되면 실행되는 함수
 void ASpaceShip::OnOverlapJoystick(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

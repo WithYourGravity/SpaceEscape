@@ -50,6 +50,8 @@ public:
 	class UPuzzleRoomOneTouchPadPanelWidget* rmOnePanelWidget;
 	UPROPERTY()
 	class UPuzzleRoomTwoTouchPadPanelWidget* rmTwoPanelWidget;
+	UPROPERTY(EditDefaultsOnly)
+	class UAudioComponent* soundComp;
 
 	UFUNCTION()
 	void TouchPadOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
