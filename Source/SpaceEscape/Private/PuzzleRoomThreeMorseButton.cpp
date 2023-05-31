@@ -3,6 +3,8 @@
 
 #include "PuzzleRoomThreeMorseButton.h"
 
+#include "Components/AudioComponent.h"
+
 APuzzleRoomThreeMorseButton::APuzzleRoomThreeMorseButton()
 {
 	Tags.Add(FName("Sense"));

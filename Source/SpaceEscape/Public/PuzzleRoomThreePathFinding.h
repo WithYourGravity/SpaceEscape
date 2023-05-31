@@ -118,5 +118,9 @@ public:
 	TArray<FVector> endingOriginLoc;
 	UPROPERTY()
 	class APuzzleRoomThreePathLocation* pathLoc;
+	UPROPERTY()
+	class USoundBase* successSound;
+	UPROPERTY()
+	class USoundBase* failSound;
 
 };

@@ -6,6 +6,7 @@
 #include "EscapePlayer.h"
 #include "PuzzleRoomTwoFlameHitPoint.h"
 #include "RoomManager.h"
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -29,6 +30,21 @@ APuzzleRoomTwoFlame::APuzzleRoomTwoFlame()
 
 	sphereCompForTrace = CreateDefaultSubobject<USphereComponent>(TEXT("CreateDefaultSubobject"));
 	sphereCompForTrace->SetupAttachment(RootComponent);
+
+	soundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("soundComp"));
+	soundComp->SetupAttachment(RootComponent);
+	soundComp->SetAutoActivate(true);
+	soundComp->SetVolumeMultiplier(2.f);
+	ConstructorHelpers::FObjectFinder<USoundWave>tempSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/FlameBurning.FlameBurning'"));
+	if (tempSound.Succeeded())
+	{
+		soundComp->SetSound(tempSound.Object);
+	}
+	ConstructorHelpers::FObjectFinder<USoundAttenuation>tempAttenuation(TEXT("/Script/Engine.SoundAttenuation'/Game/LTG/Assets/Sound/PuzzleSoundAttenuation.PuzzleSoundAttenuation'"));
+    if (tempAttenuation.Succeeded())
+    {
+		soundComp->AttenuationSettings = tempAttenuation.Object;
+    }
 }
 
 // Called when the game starts or when spawned
@@ -77,12 +93,13 @@ void APuzzleRoomTwoFlame::CloseValve(float degree)
 	{
 		return;
 	}
-	degreeToClose += (degree / 720.f);
+	degreeToClose += (degree / 540.f);
 	if (degreeToClose > 0.95)
 	{
 		degreeToClose = 1;
 		bIsClosed = true;
 	}
 	flameComp->SetRelativeScale3D(FMath::Lerp(FVector(1.f), FVector(0), degreeToClose));
+	soundComp->SetVolumeMultiplier(FMath::Lerp(1, 0, degreeToClose));
 }
 

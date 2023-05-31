@@ -47,9 +47,12 @@ private:
 	TArray<class AActor*> flameArray;
 	UPROPERTY()
 	class APuzzleRoomTwoFlame* selectedFlame;
+	UPROPERTY()
+	class USoundBase* wheelSound;
 
 	bool bIsGrabed;
 	bool bRecordOnce;
+	bool bsoundPlayOnce;
 	float laserRotateSpeed = 0.4f;
 	FVector startVector;
 	FVector playerDirection;

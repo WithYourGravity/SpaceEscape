@@ -46,6 +46,11 @@ ARemoteControlObject::ARemoteControlObject()
     {
 		soundComp->SetSound(tempSound.Object);
     }
+	ConstructorHelpers::FObjectFinder<USoundAttenuation>tempAttenuation(TEXT("/Script/Engine.SoundAttenuation'/Game/LTG/Assets/Sound/PuzzleSoundAttenuation.PuzzleSoundAttenuation'"));
+	if (tempAttenuation.Succeeded())
+	{
+		soundComp->AttenuationSettings = tempAttenuation.Object;
+	}
 
 	Tags.Add(FName("Sense"));
 	meshComp->ComponentTags.Add(FName("Sense.R1"));

@@ -50,8 +50,6 @@ public:
 	class UPuzzleRoomOneTouchPadPanelWidget* rmOnePanelWidget;
 	UPROPERTY()
 	class UPuzzleRoomTwoTouchPadPanelWidget* rmTwoPanelWidget;
-	UPROPERTY(EditDefaultsOnly)
-	class UAudioComponent* soundComp;
 
 	UFUNCTION()
 	void TouchPadOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -72,6 +70,12 @@ private:
 	class ARoomManager* rm;
 	UPROPERTY()
 	class APuzzleRoomOneBattery* battery;
+	UPROPERTY()
+	class USoundBase* buttonSound;
+	UPROPERTY()
+	class USoundBase* failSound;
+	UPROPERTY()
+	class USoundBase* successSound;
 
 	FString answer;
 	bool bCanTouch = true;

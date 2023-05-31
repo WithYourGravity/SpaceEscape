@@ -9,7 +9,6 @@
 #include "PuzzleRoomOneTouchPadPanelWidget.h"
 #include "PuzzleRoomTwoTouchPadPanelWidget.h"
 #include "RoomManager.h"
-#include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -110,13 +109,20 @@ APuzzleRoomOneTouchPad::APuzzleRoomOneTouchPad()
 		hapticFeedback = tempHaptic.Object;
 	}
 
-	soundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("soundComp"));
-	soundComp->SetupAttachment(RootComponent);
-	soundComp->SetAutoActivate(false);
 	ConstructorHelpers::FObjectFinder<USoundWave>tempSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/buttonSound.buttonSound'"));
 	if (tempSound.Succeeded())
 	{
-		soundComp->SetSound(tempSound.Object);
+		buttonSound = tempSound.Object;
+	}
+	ConstructorHelpers::FObjectFinder<USoundWave>tempFailSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/TouchPad_Failed.TouchPad_Failed'"));
+	if (tempFailSound.Succeeded())
+	{
+		failSound = tempFailSound.Object;
+	}
+	ConstructorHelpers::FObjectFinder<USoundWave>tempSuccessSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/Touchpad_Success.Touchpad_Success'"));
+	if (tempSuccessSound.Succeeded())
+	{
+		successSound = tempSuccessSound.Object;
 	}
 
 	Tags.Add(FName("Sense"));
@@ -241,7 +247,7 @@ void APuzzleRoomOneTouchPad::TouchPadOverlap(UPrimitiveComponent* OverlappedComp
 		player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
 	}
 
-	soundComp->Play();
+	UGameplayStatics::PlaySoundAtLocation(this, buttonSound, GetActorLocation(), FRotator::ZeroRotator);
 }
 
 void APuzzleRoomOneTouchPad::WhenBatteryOn()
@@ -265,16 +271,20 @@ void APuzzleRoomOneTouchPad::CheckPassword()
 			// 己傍 贸府
 			ReportClear();
 			rmOnePanelWidget->TextBlock_word->SetText(FText::FromString("SUCCESS"));
+			UGameplayStatics::PlaySoundAtLocation(this, successSound, GetActorLocation(), FRotator::ZeroRotator);
 		}
 		else
 		{
 			// 角菩 贸府
 			rmOnePanelWidget->TextBlock_word->SetText(FText::FromString("FAILED"));
+			UGameplayStatics::PlaySoundAtLocation(this, failSound, GetActorLocation(), FRotator::ZeroRotator);
 			FTimerHandle hd;
 			GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
 				{
 					rmOnePanelWidget->TextBlock_word->SetText(FText::FromString("ENTER PIN"));
 				}), 1.f, false);
+
+			
 		}
 	}
 	else
@@ -284,10 +294,12 @@ void APuzzleRoomOneTouchPad::CheckPassword()
 			ReportClear();
 			gc->ChangeGravity(false);
 			rmTwoPanelWidget->TextBlock_word->SetText(FText::FromString("SUCCESS"));
+			UGameplayStatics::PlaySoundAtLocation(this, successSound, GetActorLocation(), FRotator::ZeroRotator);
 		}
 		else
 		{
 			rmTwoPanelWidget->TextBlock_word->SetText(FText::FromString("FAILED"));
+			UGameplayStatics::PlaySoundAtLocation(this, failSound, GetActorLocation(), FRotator::ZeroRotator);
 			FTimerHandle hd;
 			GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
 				{

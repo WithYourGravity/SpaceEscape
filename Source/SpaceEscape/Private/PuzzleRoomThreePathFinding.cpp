@@ -36,6 +36,18 @@ APuzzleRoomThreePathFinding::APuzzleRoomThreePathFinding()
 	{
 		backPlateMesh->SetStaticMesh(tempBackPlate.Object);
 	}
+
+	ConstructorHelpers::FObjectFinder<USoundBase>tempSuccessSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/pathfinding_success.pathfinding_success'"));
+	if (tempSuccessSound.Succeeded())
+	{
+		successSound = tempSuccessSound.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<USoundBase>tempFailSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/TouchPad_Failed.TouchPad_Failed'"));
+	if (tempFailSound.Succeeded())
+	{
+		failSound = tempFailSound.Object;
+	}
 }
 
 void APuzzleRoomThreePathFinding::BeginPlay()
@@ -457,6 +469,9 @@ void APuzzleRoomThreePathFinding::PathLight()
 						blocks->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myRed);
 					}
 					MovingTrigger();
+
+					// 실패 사운드 재생
+					UGameplayStatics::PlaySound2D(this, failSound);
 					FTimerHandle resetHandle;
 					GetWorldTimerManager().SetTimer(resetHandle, this, &APuzzleRoomThreePathFinding::ResetThisPuzzle, 2, false);
 				}
@@ -558,6 +573,9 @@ void APuzzleRoomThreePathFinding::EndingEffect()
 		{
 			if (!bIsMoving)
 			{
+				// 성공사운드 재생
+				UGameplayStatics::PlaySound2D(this, successSound);
+
 				lerpTime = 0;
 				bEndingMoveTrigger = true;
 				//UE_LOG(LogTemp, Warning, TEXT("timer call once?"));
