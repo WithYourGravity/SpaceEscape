@@ -33,6 +33,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Door Button Settings")
 	TArray<class AActor*> outDoorActors;
 
+
 	//손이 버튼에 닿으면 문이 열린다
 	UFUNCTION()
 	void OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
