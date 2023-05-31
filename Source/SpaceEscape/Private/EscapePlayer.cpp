@@ -21,6 +21,7 @@
 #include "SpaceShip.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/SpotLightComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/WidgetInteractionComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -38,6 +39,9 @@ AEscapePlayer::AEscapePlayer()
 	vrCamera->SetupAttachment(RootComponent);
 	vrCamera->bUsePawnControlRotation = false;
 	vrCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
+
+	spotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("spotLight"));
+	spotLight->SetupAttachment(vrCamera);
 
 	// MotionController
 	leftHand = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftHand"));

@@ -83,6 +83,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "VRCamera")
 	class UCameraComponent* vrCamera;
 
+	UPROPERTY(VisibleAnywhere, Category = "Light")
+	class USpotLightComponent* spotLight;
+
 	// Controller
 	UPROPERTY(VisibleAnywhere, Category = "MotionController")
 	class UMotionControllerComponent* leftHand;
