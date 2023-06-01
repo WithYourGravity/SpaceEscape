@@ -43,8 +43,8 @@ void ARanking::BeginPlay()
 
 	if (rm)
 	{
-		rm->gameClearDele.AddUFunction(this, FName("CalculateRecord"));
-		rm->gameClearDele.AddUFunction(this, FName("SetVisible"));
+		rm->endingDele.AddUFunction(this, FName("CalculateRecord"));
+		rm->endingDele.AddUFunction(this, FName("SetVisible"));
 	}
 
 	LoadSavedData();
@@ -88,9 +88,6 @@ void ARanking::CalculateRecord()
 void ARanking::SetVisible()
 {
 	rankingWidget->SetVisibility(ESlateVisibility::Visible);
-
-	// 플레이어 인터렉션 활성화
-	player->ActiveRightWidgetInteraction();
 }
 
 // SaveGame클래스에 저장된 랭킹정보를 불러오는 함수

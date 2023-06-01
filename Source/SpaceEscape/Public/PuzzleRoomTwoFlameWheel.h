@@ -29,6 +29,8 @@ public:
 	class UStaticMeshComponent* meshComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UGrabComponent* grabComp;
+	UPROPERTY(EditDefaultsOnly)
+	class UAudioComponent* soundComp;
 
 	UFUNCTION()
 	void WhenPlayerGrab();
@@ -50,6 +52,7 @@ private:
 
 	bool bIsGrabed;
 	bool bRecordOnce;
+	bool bsoundPlayOnce;
 	float laserRotateSpeed = 0.4f;
 	FVector startVector;
 	FVector playerDirection;

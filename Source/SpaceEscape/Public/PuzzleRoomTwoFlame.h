@@ -33,6 +33,8 @@ public:
 	class UParticleSystemComponent* flameComp;
 	UPROPERTY(EditDefaultsOnly)
 	class USphereComponent* sphereCompForTrace;
+	UPROPERTY(EditDefaultsOnly)
+	class UAudioComponent* soundComp;
 
 	void DoTrace();
 	void CloseValve(float degree);

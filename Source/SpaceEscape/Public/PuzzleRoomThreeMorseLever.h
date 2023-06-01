@@ -18,4 +18,8 @@ public:
 
 	virtual void LeverTriggered() override;
 	FMorseLeverDele morseLeverDele;
+
+private:
+	UPROPERTY(EditDefaultsOnly)
+	class USoundBase* leverSound;
 };

@@ -20,7 +20,12 @@ public:
 	virtual void ButtonEnded() override;
 	void AddTimeStart();
 	FMorseButtonDele morseButtonDele;
+
 private:
 	float pushedTime;
 	FTimerHandle addTimeHandle;
+
+	UPROPERTY(EditDefaultsOnly)
+	class USoundBase* buttonSound;
+
 };

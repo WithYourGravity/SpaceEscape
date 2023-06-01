@@ -6,6 +6,7 @@
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
 #include "MotionControllerComponent.h"
+#include "RoomManager.h"
 #include "SpaceShip.h"
 #include "Components/SphereComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
@@ -114,6 +115,8 @@ void ASpaceShipJoystick::BeginPlay()
 
 	ship = Cast<ASpaceShip>(UGameplayStatics::GetActorOfClass(this, ASpaceShip::StaticClass()));
 
+	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
+
 	constraintComp->SetConstrainedComponents(baseMeshComp, FName("None"), stickMeshComp, FName("None"));
 
 	grabComp->onGrabbedDelegate.AddUFunction(this, TEXT("ChangeIsGrabed"));
@@ -144,7 +147,7 @@ void ASpaceShipJoystick::ChangeIsGrabed()
 void ASpaceShipJoystick::StickOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherComp->GetOwner() != this)
+	if (OtherComp->GetOwner() != this || bPlaySeqOnce)
 	{
 		return;
 	}
@@ -193,14 +196,21 @@ void ASpaceShipJoystick::ControlByPlayerHand()
 // 우주선 움직이는 함수
 void ASpaceShipJoystick::RotateFunction(char componentName)
 {
-	if(ship->GetActorRotation().Yaw > 88 && ship->GetActorRotation().Yaw < 92)
+	float yaw = ship->GetActorRotation().Yaw;
+
+	if(yaw > 88 && yaw < 92)
 	{
+		if (!bPlaySeqOnce)
+		{
+			bPlaySeqOnce = true;
+			rm->StageProgressChecker();
+		}
 		return;
 	}
 
 	if (componentName == 'f')
 	{
-		
+
 	}
 	else if (componentName == 'b')
 	{
@@ -208,11 +218,11 @@ void ASpaceShipJoystick::RotateFunction(char componentName)
 	}
 	else if (componentName == 'l')
 	{
-		ship->AddActorLocalRotation(FRotator(0, 0.1f, 0));
+		ship->AddActorLocalRotation(FRotator(0, 0.2f, 0));
 	}
 	else if (componentName == 'r')
 	{
-		ship->AddActorLocalRotation(FRotator(0, -0.1f, 0));
+		ship->AddActorLocalRotation(FRotator(0, -0.2f, 0));
 	}
 }
 

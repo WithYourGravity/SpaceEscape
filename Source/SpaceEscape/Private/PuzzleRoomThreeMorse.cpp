@@ -32,7 +32,7 @@ void APuzzleRoomThreeMorse::BeginPlay()
 
 	// 게임 종료후 이니셜 입력 기능위해 룸매니저 캐싱
 	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
-	rm->gameClearDele.AddUFunction(this, FName("ForEndingRanking"));
+	rm->endingDele.AddUFunction(this, FName("ForEndingRanking"));
 
 	// 모스 버튼 찾아서 캐싱
 	for (TActorIterator<APuzzleRoomThreeMorseButton> it(GetWorld()); it; ++it)
@@ -130,6 +130,7 @@ char APuzzleRoomThreeMorse::Translater(FString code)
 	return morse[code];
 }
 
+// 랭킹 입력위해 출력창 비우는 함수
 void APuzzleRoomThreeMorse::ForEndingRanking()
 {
 	screenWidget->TextBlock_Small->SetText(FText::FromString(""));

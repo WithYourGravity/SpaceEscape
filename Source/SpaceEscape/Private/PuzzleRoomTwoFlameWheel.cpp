@@ -6,6 +6,7 @@
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
 #include "PuzzleRoomTwoFlame.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -30,6 +31,16 @@ APuzzleRoomTwoFlameWheel::APuzzleRoomTwoFlameWheel()
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
 	grabComp->SetupAttachment(meshComp);
 	grabComp->grabType = EGrabType::LEVER;
+
+	soundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("soundComp"));
+	soundComp->SetupAttachment(RootComponent);
+	soundComp->SetAutoActivate(false);
+
+	ConstructorHelpers::FObjectFinder<USoundWave>tempSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/WheelSound.WheelSound'"));
+	if (tempSound.Succeeded())
+	{
+		soundComp->SetSound(tempSound.Object);
+	}
 
 	Tags.Add(FName("Sense"));
 	meshComp->ComponentTags.Add(FName("Sense.R2"));
@@ -71,6 +82,7 @@ void APuzzleRoomTwoFlameWheel::WhenPlayerUnGrab()
 {
 	bIsGrabed = false;
 	bRecordOnce = false;
+	bsoundPlayOnce = false;
 }
 
 void APuzzleRoomTwoFlameWheel::ControlByPlayerHand()
@@ -119,6 +131,13 @@ void APuzzleRoomTwoFlameWheel::ControlByPlayerHand()
 	selectedFlame->CloseValve(degree);
 
 	startVector = (handLocation - GetActorLocation()).GetSafeNormal();
+
+	// degree값에 따라 사운드 재생
+	if (FMath::Abs(degree) > 1.5 && !bsoundPlayOnce)
+	{
+		bsoundPlayOnce = true;
+		soundComp->Play();
+	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("degree is %f"), degree);
 	//UE_LOG(LogTemp, Warning, TEXT("currentLaserRoll is %f"), currentLaserRoll);

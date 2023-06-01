@@ -6,6 +6,7 @@
 #include "Battery.h"
 #include "GrabComponent.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 APuzzleRoomOneBattery::APuzzleRoomOneBattery()
 {
@@ -26,6 +27,12 @@ APuzzleRoomOneBattery::APuzzleRoomOneBattery()
 	}
 	cableMeshComp->SetRelativeScale3D(FVector(0.5f));
 	cableMeshComp->SetRelativeLocation(FVector(-26.f, -5.f, 21.f));
+
+	ConstructorHelpers::FObjectFinder<USoundBase>tempSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/BatteryChargingSound.BatteryChargingSound'"));
+	if (tempSound.Succeeded())
+	{
+		batterySound = tempSound.Object;
+	}
 }
 
 void APuzzleRoomOneBattery::BeginPlay()
@@ -43,10 +50,13 @@ void APuzzleRoomOneBattery::BeginOverlap(UPrimitiveComponent* OverlappedComponen
 	if (battery)
 	{
 		battery->grabComp->TryRelease();
-		battery->SetActorLocationAndRotation(targerPosition->GetComponentLocation(), FRotator::ZeroRotator);
+		battery->SetActorLocationAndRotation(targerPosition->GetComponentLocation() + FVector(0, 0, -22.5), FRotator::ZeroRotator);
 		battery->meshComp->SetSimulatePhysics(false);
 		battery->meshComp->SetCollisionProfileName(FName("NoCollision"));
 		boxComp->SetCollisionProfileName(FName("NoCollision"));
 		ReportClear();
+
+		// 배터리 사운드 재생
+		UGameplayStatics::PlaySound2D(this, batterySound);
 	}
 }
