@@ -32,10 +32,14 @@ APuzzleRoomTwoFlameWheel::APuzzleRoomTwoFlameWheel()
 	grabComp->SetupAttachment(meshComp);
 	grabComp->grabType = EGrabType::LEVER;
 
+	soundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("soundComp"));
+	soundComp->SetupAttachment(RootComponent);
+	soundComp->SetAutoActivate(false);
+
 	ConstructorHelpers::FObjectFinder<USoundWave>tempSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/WheelSound.WheelSound'"));
 	if (tempSound.Succeeded())
 	{
-		wheelSound = tempSound.Object;
+		soundComp->SetSound(tempSound.Object);
 	}
 
 	Tags.Add(FName("Sense"));
@@ -132,7 +136,7 @@ void APuzzleRoomTwoFlameWheel::ControlByPlayerHand()
 	if (degree > 1.5 && !bsoundPlayOnce)
 	{
 		bsoundPlayOnce = true;
-		UGameplayStatics::PlaySoundAtLocation(this, wheelSound, GetActorLocation(), FRotator::ZeroRotator);
+		soundComp->Play();
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("degree is %f"), degree);

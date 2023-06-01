@@ -29,6 +29,8 @@ public:
 	class UStaticMeshComponent* meshComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UGrabComponent* grabComp;
+	UPROPERTY(EditDefaultsOnly)
+	class UAudioComponent* soundComp;
 
 	UFUNCTION()
 	void WhenPlayerGrab();
@@ -47,8 +49,6 @@ private:
 	TArray<class AActor*> flameArray;
 	UPROPERTY()
 	class APuzzleRoomTwoFlame* selectedFlame;
-	UPROPERTY()
-	class USoundBase* wheelSound;
 
 	bool bIsGrabed;
 	bool bRecordOnce;

@@ -100,6 +100,6 @@ void APuzzleRoomTwoFlame::CloseValve(float degree)
 		bIsClosed = true;
 	}
 	flameComp->SetRelativeScale3D(FMath::Lerp(FVector(1.f), FVector(0), degreeToClose));
-	soundComp->SetVolumeMultiplier(FMath::Lerp(1, 0, degreeToClose));
+	soundComp->SetVolumeMultiplier(FMath::Lerp(1.f, 0.f, degreeToClose));
 }
 
