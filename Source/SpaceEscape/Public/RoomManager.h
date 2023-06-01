@@ -64,7 +64,7 @@ public:
 	void SenseOff();
 	void GetInteractionObjectToArray();
 
-private:
+public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UActorComponent> smComp;
 	UPROPERTY()

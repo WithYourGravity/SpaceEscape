@@ -38,6 +38,12 @@ AWallPad::AWallPad()
 	boxComp->SetRelativeLocation(FVector(15.f, 0, 0));
 	boxComp->SetCollisionProfileName(FName("PuzzleButtonPreset"));
 
+	ConstructorHelpers::FObjectFinder<USoundBase>tempSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/BatteryChargingSoundReverse.BatteryChargingSoundReverse'"));
+    if (tempSound.Succeeded())
+    {
+		gravityOffSound = tempSound.Object;
+    }
+
 	Tags.Add(FName("Sense"));
 }
 
@@ -67,6 +73,8 @@ void AWallPad::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other
 		gravityWidget->GravityActivate();
 		bActiveOnce = true;
 		ReportClear();
+
+		UGameplayStatics::PlaySound2D(this, gravityOffSound);
 	}
 }
 

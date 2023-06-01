@@ -37,5 +37,7 @@ private:
 	class ARoomManager* rm;
 	UPROPERTY()
 	class UPuzzleRoomTwoWallPadWidget* gravityWidget;
+	UPROPERTY()
+	class USoundBase* gravityOffSound;
 	bool bActiveOnce;
 };

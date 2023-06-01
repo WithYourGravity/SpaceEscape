@@ -49,7 +49,8 @@ void APuzzleRoomThreeMorse::BeginPlay()
 	}
 
 	// 스크린 출력문자 초기화
-	setScreenText(screenString);
+	setScreenText("");
+	screenWidget->TextBlock_Small->SetText(FText::FromString("Enter Your Destination"));
 }
 
 // 모스버튼 신호를 받아서 임시문자열에 추가하는 함수

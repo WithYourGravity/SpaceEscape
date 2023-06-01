@@ -20,12 +20,12 @@ ARoomManager::ARoomManager()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	/*
-	ConstructorHelpers::FObjectFinder<ULevelSequence>tempSeq(TEXT("/Script/LevelSequence.LevelSequence'/Game/Yeni/LevelSequences/Seq_AfterShipRotated.Seq_AfterShipRotated'"));
+	const ConstructorHelpers::FObjectFinder<ULevelSequence>tempSeq(TEXT("/Script/LevelSequence.LevelSequence'/Game/Yeni/LevelSequences/Seq_AfterShipRotated.Seq_AfterShipRotated'"));
     if (tempSeq.Succeeded())
     {
 		sequenceAsset = tempSeq.Object;
     }
-	*/
+    */
 }
 
 // Called when the game starts or when spawned
