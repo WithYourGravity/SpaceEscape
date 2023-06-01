@@ -236,7 +236,7 @@ public:
 private:
 	int32 HP;
 	
-	FTimerHandle dieTimer;
+	//FTimerHandle dieTimer;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP")
@@ -301,4 +301,7 @@ public:
 	float breathMaxTime = 40.0f;
 
 	void PlayBreathingSound();
+
+	UFUNCTION()
+	void StopBreathingSound();
 };
