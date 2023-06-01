@@ -8,6 +8,7 @@
 #include "MovieSceneSequencePlayer.h"
 #include "LevelSequenceActor.h"
 #include "PuzzleBase.h"
+#include "SpaceEscapeGameModeBase.h"
 #include "SpaceShip.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
@@ -41,6 +42,7 @@ void ARoomManager::BeginPlay()
 
 	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
 	ship = Cast<ASpaceShip>(UGameplayStatics::GetActorOfClass(this, ASpaceShip::StaticClass()));
+	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	// sense
 	GetInteractionObjectToArray();
@@ -107,6 +109,9 @@ void ARoomManager::StageProgressChecker()
 	// 엔딩 처리 필요
 	if (playingStage == 4)
 	{
+		// 플레이타임 정지
+		gm->StopPlayTime();
+
 		// 플레이어 손 콜리전 끄고 잡은거 다 놓게
 		player->leftIndexFingerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		player->rightIndexFingerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);

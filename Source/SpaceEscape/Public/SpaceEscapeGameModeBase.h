@@ -27,4 +27,5 @@ public:
 
 	void CountPlayTime();
 	void StopPlayTime();
+	void StartPlayTime();
 };

@@ -42,6 +42,8 @@ private:
 	class ASpaceShip* ship;
 	UPROPERTY()
 	class AEscapePlayer* player;
+	UPROPERTY()
+	class ASpaceEscapeGameModeBase* gm;
 
 public:
 	UFUNCTION()

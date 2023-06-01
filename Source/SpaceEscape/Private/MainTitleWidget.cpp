@@ -41,7 +41,7 @@ void UMainTitleWidget::GameStart()
 
 	//  시퀀스 끝나면 플레이어 시작위치로, 플레이타임 시작
 	player->SetActorLocation(FVector(-6100, -2430, 80));
-
+	gm->StartPlayTime();
 	// 스테이지 1로 만들기
 	rm->MoveOnNextStage();
 }
