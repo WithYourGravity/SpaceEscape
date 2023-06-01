@@ -213,8 +213,8 @@ void UEnemyFSM::AttackPlayer()
 	FVector startPos = me->GetActorLocation() + me->GetActorForwardVector() * 60.0f;
 	FVector endPos = startPos + me->GetActorForwardVector() * 30.0f;
 
-	FHitResult HitInfo;
-	bool bHit = GetWorld()->SweepSingleByObjectType(HitInfo, startPos, endPos, FQuat::Identity, ECC_Pawn, FCollisionShape::MakeCapsule(30.0f, 78.0f), params);
+	FHitResult hitInfo;
+	bool bHit = GetWorld()->SweepSingleByObjectType(hitInfo, startPos, endPos, FQuat::Identity, ECC_Pawn, FCollisionShape::MakeCapsule(30.0f, 78.0f), params);
 
 	//DrawDebugCapsule(GetWorld(), startPos, 78.0f, 30.0f, FQuat::Identity, FColor::Red, false, 2.0f, 0, 1);
 	//DrawDebugCapsule(GetWorld(), endPos, 78.0f, 30.0f, FQuat::Identity, FColor::Red, false, 2.0f, 0, 1);

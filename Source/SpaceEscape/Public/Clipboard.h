@@ -32,10 +32,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
 	class UGrabComponent* grabComp;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//TArray<FVector2D> collisionUVs;
-	
-
 	UPROPERTY(EditDefaultsOnly, Category = "Clipboard")
 	class UMaterialInstance* pageMaterialInst;
 
