@@ -37,28 +37,6 @@ void AEnemyManager::Tick(float DeltaTime)
 
 }
 
-//void AEnemyManager::CreateEnemy()
-//{
-//	if (enemyCount >= 10)
-//	{
-//		return;
-//	}
-//
-//	// 랜덤 위치
-//	int index = FMath::RandRange(0, spawnPoints.Num() - 1);
-//	// 적 생성 및 배치
-//	auto spawnEnemy = GetWorld()->SpawnActor<AResearcherEnemy>(enemyFactory, spawnPoints[index]->GetActorLocation(), FRotator(0));
-//
-//	// 다시 랜덤시간에 CreateEnemy 함수 호출되도록 타이머 설정
-//	float createTime = FMath::RandRange(minTime, maxTime);
-//	GetWorld()->GetTimerManager().SetTimer(spawnTimer, this, &AEnemyManager::CreateEnemy, createTime);
-//
-//	if (spawnEnemy)
-//	{
-//		enemyCount++;
-//	}
-//}
-
 void AEnemyManager::CreateEnemyRoomOne()
 {
 	auto spawnEnemy = GetWorld()->SpawnActor<AResearcherEnemy>(enemyCreatureFactory, roomOneSpawnPoints[0]->GetActorLocation(), FRotator(0));

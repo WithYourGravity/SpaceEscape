@@ -149,11 +149,11 @@ void AMarker::DetectHitBoard()
 			}
 		}
 
-		ADrawableFloor* floor = Cast<ADrawableFloor>(hitInfo.GetActor());
+		/*ADrawableFloor* floor = Cast<ADrawableFloor>(hitInfo.GetActor());
 		if (floor)
 		{
 			floor->OnPaintVisualTraceLine(this, hitInfo);
-		}
+		}*/
 	}
 	else
 	{

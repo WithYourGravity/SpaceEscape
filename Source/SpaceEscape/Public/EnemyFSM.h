@@ -126,6 +126,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HiddenAttackPlayerEffect();
 
+	UFUNCTION(BlueprintCallable)
+	void PlayAttackSound();
+
 private:
 	// 대기 상태
 	void TickIdle();

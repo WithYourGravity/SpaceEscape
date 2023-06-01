@@ -121,23 +121,11 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 		if (moveState == EEnemyMoveSubState::CRAWL)
 		{
 			sectionName += FString(TEXT("Crawl"));
-
-			if (me->damageSpineSoundCue)
-			{
-				me->audioComp->SetSound(me->damageSpineSoundCue);
-				me->audioComp->Play();
-			}
 		}
 		else if (damagePart == EEnemyHitPart::CHEST)
 		{
 			//int32 index = FMath::RandRange(0, 1);
 			sectionName += FString::Printf(TEXT("Chest%d"), 1);
-
-			if (me->damageSpineSoundCue)
-			{
-				me->audioComp->SetSound(me->damageSpineSoundCue);
-				me->audioComp->Play();
-			}
 		}
 		else if (damagePart == EEnemyHitPart::HEAD)
 		{
@@ -146,12 +134,6 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 		else if (damagePart == EEnemyHitPart::LEFTARM)
 		{
 			sectionName += FString(TEXT("LeftArm"));
-
-			if (me->damageShoulderSoundCue)
-			{
-				me->audioComp->SetSound(me->damageShoulderSoundCue);
-				me->audioComp->Play();
-			}
 		}
 		else if (damagePart == EEnemyHitPart::LEFTLEG)
 		{
@@ -164,22 +146,10 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			{
 				moveState = EEnemyMoveSubState::INJUREDWALKRIGHT;
 			}
-
-			if (me->damageLegSoundCue)
-			{
-				me->audioComp->SetSound(me->damageLegSoundCue);
-				me->audioComp->Play();
-			}
 		}
 		else if (damagePart == EEnemyHitPart::RIGHTARM)
 		{
 			sectionName += FString(TEXT("RightArm"));
-
-			if (me->damageShoulderSoundCue)
-			{
-				me->audioComp->SetSound(me->damageShoulderSoundCue);
-				me->audioComp->Play();
-			}
 		}
 		else if (damagePart == EEnemyHitPart::RIGHTLEG)
 		{
@@ -192,12 +162,11 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 			{
 				moveState = EEnemyMoveSubState::INJUREDWALKLEFT;
 			}
-
-			if (me->damageLegSoundCue)
-			{
-				me->audioComp->SetSound(me->damageLegSoundCue);
-				me->audioComp->Play();
-			}
+		}
+		if (me->damageSoundCue)
+		{
+			me->audioComp->SetSound(me->damageSoundCue);
+			me->audioComp->Play();
 		}
 		anim->PlayDamageAnim(*sectionName);
 	}
@@ -258,16 +227,17 @@ void UEnemyFSM::AttackPlayer()
 	ShowAttackPlayerEffect();
 	target->SubtractHP(power);
 	target->infoUI->PrintCurrentHPPercent();
-	
-	if (me->moveSoundCue && me->audioComp->IsValidLowLevelFast())
-	{
-		me->audioComp->SetSound(me->attackSoundCue);
-		me->audioComp->Play();
-	}
 
 	if (target->GetHP() == 0)
 	{
 		target->Die();
+	}
+	else
+	{
+		if (target->playerAttackSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, target->playerAttackSound, target->GetActorLocation(), target->GetActorRotation());
+		}
 	}
 }
 
@@ -285,6 +255,15 @@ void UEnemyFSM::HiddenAttackPlayerEffect()
 	if (target)
 	{
 		target->damageWidgetComp->SetVisibility(false);
+	}
+}
+
+void UEnemyFSM::PlayAttackSound()
+{
+	if (me->moveSoundCue && me->audioComp->IsValidLowLevelFast())
+	{
+		me->audioComp->SetSound(me->attackSoundCue);
+		me->audioComp->Play();
 	}
 }
 
@@ -499,7 +478,7 @@ void UEnemyFSM::SetState(EEnemyState next)
 		return;
 	}
 
-	me->audioComp->Stop();
+	//me->audioComp->Stop();
 
 	if (next == EEnemyState::MOVE)
 	{

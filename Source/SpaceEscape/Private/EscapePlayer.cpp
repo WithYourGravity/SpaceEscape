@@ -24,6 +24,7 @@
 #include "Components/SpotLightComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/WidgetInteractionComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -150,6 +151,8 @@ AEscapePlayer::AEscapePlayer()
 	gunOverlapComp = CreateDefaultSubobject<UBoxComponent>(TEXT("gunOverlapComp"));
 	gunOverlapComp->SetupAttachment(gunStorageComp);
 	gunOverlapComp->SetBoxExtent(FVector(35, 100, 40));
+
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 }
 
 // Called when the game starts or when spawned
@@ -613,6 +616,11 @@ void AEscapePlayer::DropMagazine()
 
 void AEscapePlayer::Die()
 {
+	if (playerDieSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, playerDieSound, GetActorLocation(), GetActorRotation());
+	}
+
 	ASpaceEscapeGameModeBase* gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
 	gm->StopPlayTime();
 

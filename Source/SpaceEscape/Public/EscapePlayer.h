@@ -286,4 +286,11 @@ public:
 	void ActiveRightWidgetInteraction();
 	void DeactivateLeftWidgetInteraction();
 	void DeactivateRightWidgetInteraction();
+
+
+// Sound
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundBase* playerAttackSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundBase* playerDieSound;
 };

@@ -43,7 +43,7 @@ AResearcherEnemy::AResearcherEnemy()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	// Sound
-	ConstructorHelpers::FObjectFinder<USoundCue> tempAttackSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieAttackCue.ZombieAttackCue'"));
+	/*ConstructorHelpers::FObjectFinder<USoundCue> tempAttackSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieAttackCue.ZombieAttackCue'"));
 	if (tempAttackSoundCue.Succeeded())
 	{
 		attackSoundCue = tempAttackSoundCue.Object;
@@ -62,13 +62,13 @@ AResearcherEnemy::AResearcherEnemy()
 	if (tempDamageSpineSoundCue.Succeeded())
 	{
 		damageSpineSoundCue = tempDamageSpineSoundCue.Object;
-	}
-	ConstructorHelpers::FObjectFinder<USoundCue> tempMoveSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieMoveCue.ZombieMoveCue'"));
+	}*/
+	/*ConstructorHelpers::FObjectFinder<USoundCue> tempMoveSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieMoveCue.ZombieMoveCue'"));
 	if (tempMoveSoundCue.Succeeded())
 	{
 		moveSoundCue = tempMoveSoundCue.Object;
-	}
-	ConstructorHelpers::FObjectFinder<USoundCue> tempDieSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieDieCue.ZombieDieCue'"));
+	}*/
+	/*ConstructorHelpers::FObjectFinder<USoundCue> tempDieSoundCue(TEXT("/Script/Engine.SoundCue'/Game/YSY/Assets/Sound/ZombieDieCue.ZombieDieCue'"));
 	if (tempDieSoundCue.Succeeded())
 	{
 		dieSoundCue = tempDieSoundCue.Object;
@@ -77,7 +77,7 @@ AResearcherEnemy::AResearcherEnemy()
 	if (tempKnockSoundCue.Succeeded())
 	{
 		knockSoundCue = tempKnockSoundCue.Object;
-	}
+	}*/
 
 	audioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("audioComp"));
 	audioComp->bAutoActivate = false;
