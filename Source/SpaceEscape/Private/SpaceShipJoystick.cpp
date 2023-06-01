@@ -99,9 +99,6 @@ ASpaceShipJoystick::ASpaceShipJoystick()
 	{
 		hapticFeedback = tempHaptic.Object;
 	}
-	
-	Tags.Add(FName("Sense"));
-	stickMeshComp->ComponentTags.Add(FName("Sense.R4"));
 }
 
 // Called when the game starts or when spawned

@@ -14,6 +14,7 @@ APuzzleRoomThreeMorseLever::APuzzleRoomThreeMorseLever()
 
 	Tags.Add(FName("Sense"));
 	leverComp->ComponentTags.Add(FName("Sense.R3"));
+	leverComp->ComponentTags.Add(FName("Sense.R4"));
 }
 
 void APuzzleRoomThreeMorseLever::LeverTriggered()

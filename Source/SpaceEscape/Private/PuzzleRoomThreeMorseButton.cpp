@@ -15,6 +15,7 @@ APuzzleRoomThreeMorseButton::APuzzleRoomThreeMorseButton()
 
 	Tags.Add(FName("Sense"));
 	buttonComp->ComponentTags.Add(FName("Sense.R3"));
+	buttonComp->ComponentTags.Add(FName("Sense.R4"));
 }
 
 void APuzzleRoomThreeMorseButton::ButtonTriggered()

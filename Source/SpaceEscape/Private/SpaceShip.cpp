@@ -8,6 +8,7 @@
 #include "PuzzleRoomThreeJoystick.h"
 #include "RoomManager.h"
 #include "SpaceShipJoystick.h"
+#include "Components/BillboardComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -30,8 +31,8 @@ ASpaceShip::ASpaceShip()
 
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
 	boxComp->SetupAttachment(RootComponent);
-	boxComp->SetBoxExtent(FVector(600.f, 300.f, 300.f));
-	boxComp->SetRelativeLocation(FVector(300.f, 100.f, 200.f));
+	boxComp->SetBoxExtent(FVector(600.f, 600.f, 300.f));
+	boxComp->SetRelativeLocation(FVector(300.f, 200.f, 200.f));
 	boxComp->SetRelativeRotation(FRotator(0, -30.f, 0));
 
 	forLocComp = CreateDefaultSubobject<USphereComponent>(TEXT("forLocComp"));
@@ -94,6 +95,17 @@ ASpaceShip::ASpaceShip()
 	{
 		rankingActorComp->SetChildActorClass(tempRanking.Class);
 	}
+
+	billboardComp = CreateDefaultSubobject<UBillboardComponent>(TEXT("billboardComp"));
+	billboardComp->SetupAttachment(boxComp);
+	billboardComp->SetRelativeLocation(FVector(0, 0, -100));
+	billboardComp->SetVisibility(false);
+	billboardComp->SetHiddenInGame(false);
+	ConstructorHelpers::FObjectFinder<UTexture2D>tempBillIMG(TEXT("/Script/Engine.Texture2D'/Game/LTG/Assets/Images/x-mark.x-mark'"));
+    if (tempBillIMG.Succeeded())
+    {
+		billboardComp->SetSprite(tempBillIMG.Object);
+    }
 }
 
 // Called when the game starts or when spawned
@@ -126,6 +138,9 @@ void ASpaceShip::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	if (pl)
 	{
 		bReadyToBoarding = true;
+
+		//ºôº¸µå ÄÑ±â
+		billboardComp->SetVisibility(true);
 	}
 }
 
@@ -137,6 +152,9 @@ void ASpaceShip::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	if (pl)
 	{
 		bReadyToBoarding = false;
+
+		// ºôº¸µå ²ô±â
+		billboardComp->SetVisibility(false);
 	}
 }
 
@@ -192,6 +210,7 @@ void ASpaceShip::BoardingShip()
 		player->SetActorLocation(GetActorLocation() + FVector(0, -400.f, 100.f));
 		player->Turn(FVector2D(-50, 0));
 		bIsBoarding = false;
+		billboardComp->SetVisibility(true);
 	}
 	else
 	{
@@ -207,6 +226,7 @@ void ASpaceShip::BoardingShip()
 		player->SetActorLocation(forLocComp->GetComponentLocation());
 		player->Turn(FVector2D(50, 0));
 		bIsBoarding = true;
+		billboardComp->SetVisibility(false);
 	}
 }
 
