@@ -293,4 +293,12 @@ public:
 	class USoundBase* playerAttackSound;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	class USoundBase* playerDieSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundBase* playerBreathSound;
+
+	FTimerHandle breathTimer;
+	float breathMinTime = 20.0f;
+	float breathMaxTime = 40.0f;
+
+	void PlayBreathingSound();
 };

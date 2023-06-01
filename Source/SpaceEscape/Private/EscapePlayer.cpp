@@ -206,6 +206,9 @@ void AEscapePlayer::BeginPlay()
 	gunOverlapComp->OnComponentEndOverlap.AddDynamic(this, &AEscapePlayer::EndGunStorageOverlap);
 
 	roomManager = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
+
+	float playTime = FMath::RandRange(breathMinTime, breathMaxTime);
+	GetWorld()->GetTimerManager().SetTimer(breathTimer, this, &AEscapePlayer::PlayBreathingSound, playTime);
 }
 
 // Called every frame
@@ -734,5 +737,16 @@ void AEscapePlayer::DeactivateLeftWidgetInteraction()
 void AEscapePlayer::DeactivateRightWidgetInteraction()
 {
 	rightWidgetInteractionComp->Deactivate();
+}
+
+void AEscapePlayer::PlayBreathingSound()
+{
+	if (playerBreathSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, playerBreathSound, GetActorLocation(), GetActorRotation());
+	}
+
+	float playTime = FMath::RandRange(breathMinTime, breathMaxTime);
+	GetWorld()->GetTimerManager().SetTimer(breathTimer, this, &AEscapePlayer::PlayBreathingSound, playTime);
 }
 

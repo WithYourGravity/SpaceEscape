@@ -147,7 +147,6 @@ void AMagazine::OnDropped()
 			{
 				gun->gunAmmoImage[i]->SetColorAndOpacity(FLinearColor(0.015f, 0.25f, 0.904f));
 			}
-			
 		}
 		else
 		{
