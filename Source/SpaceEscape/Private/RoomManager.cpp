@@ -4,8 +4,13 @@
 #include "RoomManager.h"
 #include "EngineUtils.h"
 #include "EscapePlayer.h"
+#include "LevelSequencePlayer.h"
+#include "MovieSceneSequencePlayer.h"
+#include "LevelSequenceActor.h"
 #include "PuzzleBase.h"
+#include "SpaceShip.h"
 #include "Camera/CameraComponent.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -13,7 +18,13 @@ ARoomManager::ARoomManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
+	/*
+	ConstructorHelpers::FObjectFinder<ULevelSequence>tempSeq(TEXT("/Script/LevelSequence.LevelSequence'/Game/Yeni/LevelSequences/Seq_AfterShipRotated.Seq_AfterShipRotated'"));
+    if (tempSeq.Succeeded())
+    {
+		sequenceAsset = tempSeq.Object;
+    }
+	*/
 }
 
 // Called when the game starts or when spawned
@@ -29,8 +40,16 @@ void ARoomManager::BeginPlay()
 	}
 
 	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
+	ship = Cast<ASpaceShip>(UGameplayStatics::GetActorOfClass(this, ASpaceShip::StaticClass()));
 
+	// sense
 	GetInteractionObjectToArray();
+
+	// sequence
+	FMovieSceneSequencePlaybackSettings seqSetting;
+	seqSetting.bDisableMovementInput = true;
+	sequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(this, sequenceAsset, seqSetting, sequenceActor);
+	sequencePlayer->OnFinished.AddDynamic(this, &ARoomManager::SequenceFinished);
 }
 
 // Called every frame
@@ -49,7 +68,6 @@ void ARoomManager::AddSolvedPuzzleCount()
 	{
 		MoveOnNextStage();
 	}
-
 	UE_LOG(LogTemp, Warning, TEXT("solved pulzze count is : %d"), solvedPuzzleCount);
 	UE_LOG(LogTemp, Warning, TEXT("current stage is : %f"), playingStage);
 }
@@ -60,30 +78,63 @@ void ARoomManager::MoveOnNextStage()
 	SenseOff();
 	playingStage += 0.5f;
 	solvedPuzzleCount = 0;
+
 	if (stageClearDele.IsBound())
 	{
 		stageClearDele.Broadcast();
 	}
 
-	// 엔딩 처리 필요
-	if (gameClearDele.IsBound() && playingStage == 4)
+	if (gameClearDele.IsBound() && playingStage == 3.5)
 	{
-		// 나중에 우주선에서 돌리고 뭔가 하면 실행되게 하면 될듯! 지금은 일단
 		gameClearDele.Broadcast();
 		UE_LOG(LogTemp, Warning, TEXT("gameClearDele Excuted"));
-		// 시퀀스 재생
-		// 우주선 우주밖으로 이동
-		// 랭킹계산
-
 	}
+
+	if (spawnEnemyDele.IsBound() && (playingStage == 1 || playingStage == 2.5))
+	{
+		spawnEnemyDele.Broadcast();
+		UE_LOG(LogTemp, Warning, TEXT("spawnEnemyDele Excuted"));
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("solved pulzze count is : %d"), solvedPuzzleCount);
+	UE_LOG(LogTemp, Warning, TEXT("current stage is : %f"), playingStage);
 }
 
 void ARoomManager::StageProgressChecker()
 {
 	playingStage += 0.5f;
 
+	// 엔딩 처리 필요
+	if (playingStage == 4)
+	{
+		// 플레이어 손 콜리전 끄고 잡은거 다 놓게
+		player->leftIndexFingerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		player->rightIndexFingerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		player->UnTryGrabLeft();
+		player->UnTryGrabRight();
+
+		// 시퀀스 재생
+		sequencePlayer->Play();
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("ARoomManager::StageProgressChecker"));
 	UE_LOG(LogTemp, Warning, TEXT("current stage is : %f"), playingStage);
+}
+
+void ARoomManager::SequenceFinished()
+{
+	// 우주선 우주밖으로 이동
+	ship->SetActorLocation(FVector(-3300, 18000, 1000));
+	ship->SetActorRotation(FRotator(0, 90, 0));
+	player->SetActorLocation(ship->forLocComp->GetComponentLocation());
+
+	// 랭킹 위젯 켜기
+	endingDele.Broadcast();
+
+	// 플레이어 손 콜리전 복구
+	player->leftIndexFingerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	player->rightIndexFingerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	player->ActiveRightWidgetInteraction();
 }
 
 // 현재 stage를 반환하는 함수

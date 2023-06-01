@@ -43,4 +43,8 @@ public:
 private:
 	UPROPERTY()
 	class AEscapePlayer* player;
+	UPROPERTY()
+	class ARoomManager* rm;
+	UPROPERTY()
+	class ASpaceEscapeGameModeBase* gm;
 };

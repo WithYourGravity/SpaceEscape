@@ -4,6 +4,8 @@
 #include "MainTitleWidget.h"
 
 #include "EscapePlayer.h"
+#include "RoomManager.h"
+#include "SpaceEscapeGameModeBase.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
@@ -24,6 +26,9 @@ void UMainTitleWidget::NativeConstruct()
 		player->ActiveRightWidgetInteraction();
 		player->DeactivateLeftWidgetInteraction();
 	}
+
+	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
+	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 void UMainTitleWidget::GameStart()
@@ -35,7 +40,10 @@ void UMainTitleWidget::GameStart()
 	// 시퀀스 재생
 
 	//  시퀀스 끝나면 플레이어 시작위치로, 플레이타임 시작
+	player->SetActorLocation(FVector(-6100, -2430, 80));
 
+	// 스테이지 1로 만들기
+	rm->MoveOnNextStage();
 }
 
 void UMainTitleWidget::GameExit()

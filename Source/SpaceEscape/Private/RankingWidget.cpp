@@ -29,7 +29,7 @@ void URankingWidget::NativeConstruct()
 // 현재 레벨을 재오픈해서 메인위젯으로 이동하는 함수
 void URankingWidget::GoToMain()
 {
-	UGameplayStatics::OpenLevel(this, FName("FixMapStructure"));
+	UGameplayStatics::OpenLevel(this, FName("FixLastRoom_Yeni"));
 }
 
 // 랭킹에 입력중이었던 이름을 전체삭제하는 함수

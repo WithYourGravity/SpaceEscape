@@ -133,7 +133,7 @@ void APuzzleRoomTwoFlameWheel::ControlByPlayerHand()
 	startVector = (handLocation - GetActorLocation()).GetSafeNormal();
 
 	// degree값에 따라 사운드 재생
-	if (degree > 1.5 && !bsoundPlayOnce)
+	if (FMath::Abs(degree) > 1.5 && !bsoundPlayOnce)
 	{
 		bsoundPlayOnce = true;
 		soundComp->Play();

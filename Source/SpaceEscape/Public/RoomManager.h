@@ -8,6 +8,8 @@
 
 DECLARE_MULTICAST_DELEGATE(FStageClearDele);
 DECLARE_MULTICAST_DELEGATE(FGameClearDele);
+DECLARE_MULTICAST_DELEGATE(FEndingDele);
+DECLARE_MULTICAST_DELEGATE(FSpawnEnemyDele);
 
 UCLASS()
 class SPACEESCAPE_API ARoomManager : public AActor
@@ -28,7 +30,7 @@ public:
 
 private:
 	// 현재 플레이 중인 단계
-	float playingStage = 1;
+	float playingStage = 0.5;
 	// 현재 단계에서 완료한 퍼즐 개수
 	int solvedPuzzleCount = 0;
 	// 각 단계별 완료해야하는 퍼즐 개수가 담긴 맵
@@ -36,22 +38,31 @@ private:
 	// 현재 단계에서 문을 열수 있는지
 	bool bCanOpenDoor;
 
+	UPROPERTY()
+	class ASpaceShip* ship;
+	UPROPERTY()
+	class AEscapePlayer* player;
+
 public:
 	UFUNCTION()
 	void AddSolvedPuzzleCount();
+	UFUNCTION()
+	void SequenceFinished();
 	void MoveOnNextStage();
 	void StageProgressChecker();
 	float GetCurrentPlayingStage();
 	int GetSolvedPuzzleCount();
 	FStageClearDele stageClearDele;
 	FGameClearDele gameClearDele;
+	FEndingDele endingDele;
+	FSpawnEnemyDele spawnEnemyDele;
 
 	// sense 관련
-	UPROPERTY()
-	class AEscapePlayer* player;
 	void SenseOn();
 	void SenseOff();
 	void GetInteractionObjectToArray();
+
+private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UActorComponent> smComp;
 	UPROPERTY()
@@ -64,4 +75,12 @@ public:
 	TArray<UStaticMeshComponent*> arrSenseR4Comp;
 	UPROPERTY()
 	TArray<UStaticMeshComponent*> arrSenseAlwaysComp;
+
+	// sequence play 관련
+	UPROPERTY()
+	class ULevelSequencePlayer* sequencePlayer;
+	UPROPERTY(EditAnywhere)
+	class ULevelSequence* sequenceAsset;
+	UPROPERTY()
+	class ALevelSequenceActor* sequenceActor;
 };

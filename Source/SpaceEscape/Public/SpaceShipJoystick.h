@@ -62,9 +62,11 @@ private:
 	class UMotionControllerComponent* playerHand;
 	UPROPERTY()
 	class ASpaceShip* ship;
+	UPROPERTY()
+	class ARoomManager* rm;
 
 	FTimerHandle stickHandle;
 	char otherCompNameForTimer;
 	bool bIsGrabed;
-
+	bool bPlaySeqOnce;
 };

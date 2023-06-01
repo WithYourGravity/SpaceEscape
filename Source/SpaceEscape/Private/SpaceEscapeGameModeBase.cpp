@@ -13,6 +13,8 @@ void ASpaceEscapeGameModeBase::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(countTimer, this, &ASpaceEscapeGameModeBase::CountPlayTime, 1.0f, true, 0);
 
 	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+
 }
 
 void ASpaceEscapeGameModeBase::CountPlayTime()
