@@ -24,9 +24,8 @@ public:
 private:
 	float pushedTime;
 	FTimerHandle addTimeHandle;
-	/*
-	 소리넣고 엔딩시퀀스 부드럽게 연결하면 됨
+
 	UPROPERTY(EditDefaultsOnly)
 	class USoundBase* buttonSound;
-	*/
+
 };

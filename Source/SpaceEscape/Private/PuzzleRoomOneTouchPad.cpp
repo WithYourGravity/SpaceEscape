@@ -234,7 +234,7 @@ void APuzzleRoomOneTouchPad::TouchPadOverlap(UPrimitiveComponent* OverlappedComp
 	compName.AppendChar(OverlappedComponent->GetName()[OverlappedComponent->GetName().Len() - 1]);
 	TouchPadInput(compName);
 
-	UE_LOG(LogTemp, Warning, TEXT("compName is : %s"), *compName);
+	//UE_LOG(LogTemp, Warning, TEXT("compName is : %s"), *compName);
 
 	// 오버랩된 물체가 플레이어라면 진동울리게 처리
 	auto player = Cast<AEscapePlayer>(OtherActor);

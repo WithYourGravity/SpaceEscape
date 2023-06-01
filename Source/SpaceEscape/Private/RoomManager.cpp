@@ -49,15 +49,16 @@ void ARoomManager::AddSolvedPuzzleCount()
 	{
 		MoveOnNextStage();
 	}
+
 	UE_LOG(LogTemp, Warning, TEXT("solved pulzze count is : %d"), solvedPuzzleCount);
-	UE_LOG(LogTemp, Warning, TEXT("current stage is : %d"), playingStage);
+	UE_LOG(LogTemp, Warning, TEXT("current stage is : %f"), playingStage);
 }
 
 // 다음 스테이지로 넘어가며 퍼즐카운트 초기화 해주는 함수
 void ARoomManager::MoveOnNextStage()
 {
 	SenseOff();
-	playingStage++;
+	playingStage += 0.5f;
 	solvedPuzzleCount = 0;
 	if (stageClearDele.IsBound())
 	{
@@ -77,8 +78,16 @@ void ARoomManager::MoveOnNextStage()
 	}
 }
 
+void ARoomManager::StageProgressChecker()
+{
+	playingStage += 0.5f;
+
+	UE_LOG(LogTemp, Warning, TEXT("ARoomManager::StageProgressChecker"));
+	UE_LOG(LogTemp, Warning, TEXT("current stage is : %f"), playingStage);
+}
+
 // 현재 stage를 반환하는 함수
-int ARoomManager::GetCurrentPlayingStage()
+float ARoomManager::GetCurrentPlayingStage()
 {
 	return playingStage;
 }
@@ -99,7 +108,7 @@ void ARoomManager::SenseOn()
 		sm->CustomDepthStencilValue = 1;
 	}
 
-	switch (playingStage)
+	switch ((int)playingStage)
 	{
 	case 1 :
 		for (UStaticMeshComponent* sm : arrSenseR1Comp)
@@ -143,7 +152,7 @@ void ARoomManager::SenseOff()
 		sm->CustomDepthStencilValue = 0;
 	}
 
-	switch (playingStage)
+	switch ((int)playingStage)
 	{
 	case 1:
 		for (UStaticMeshComponent* sm : arrSenseR1Comp)

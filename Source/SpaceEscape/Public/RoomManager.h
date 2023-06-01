@@ -28,11 +28,11 @@ public:
 
 private:
 	// 현재 플레이 중인 단계
-	int playingStage = 1;
+	float playingStage = 1;
 	// 현재 단계에서 완료한 퍼즐 개수
 	int solvedPuzzleCount = 0;
 	// 각 단계별 완료해야하는 퍼즐 개수가 담긴 맵
-	TMap<int, int> totalPuzzlePerStage = {{1, 2}, {2, 2}, {3, 2}};
+	TMap<float, int> totalPuzzlePerStage = {{1, 2}, {2, 2}, {3, 2}};
 	// 현재 단계에서 문을 열수 있는지
 	bool bCanOpenDoor;
 
@@ -40,7 +40,8 @@ public:
 	UFUNCTION()
 	void AddSolvedPuzzleCount();
 	void MoveOnNextStage();
-	int GetCurrentPlayingStage();
+	void StageProgressChecker();
+	float GetCurrentPlayingStage();
 	int GetSolvedPuzzleCount();
 	FStageClearDele stageClearDele;
 	FGameClearDele gameClearDele;
