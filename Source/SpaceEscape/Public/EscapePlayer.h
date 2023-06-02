@@ -83,6 +83,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "VRCamera")
 	class UCameraComponent* vrCamera;
 
+	UPROPERTY(VisibleAnywhere, Category = "Light")
+	class USpotLightComponent* spotLight;
+
 	// Controller
 	UPROPERTY(VisibleAnywhere, Category = "MotionController")
 	class UMotionControllerComponent* leftHand;
@@ -233,7 +236,7 @@ public:
 private:
 	int32 HP;
 	
-	FTimerHandle dieTimer;
+	//FTimerHandle dieTimer;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP")
@@ -283,4 +286,22 @@ public:
 	void ActiveRightWidgetInteraction();
 	void DeactivateLeftWidgetInteraction();
 	void DeactivateRightWidgetInteraction();
+
+
+// Sound
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundBase* playerAttackSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundBase* playerDieSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundBase* playerBreathSound;
+
+	FTimerHandle breathTimer;
+	float breathMinTime = 20.0f;
+	float breathMaxTime = 40.0f;
+
+	void PlayBreathingSound();
+
+	UFUNCTION()
+	void StopBreathingSound();
 };

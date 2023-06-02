@@ -7,6 +7,7 @@
 #include "Gun.h"
 #include "MotionControllerComponent.h"
 #include "Components/AudioComponent.h"
+#include "Components/Image.h"
 #include "Sound/SoundCue.h"
 
 // Sets default values
@@ -141,6 +142,11 @@ void AMagazine::OnDropped()
 			gun->bDoReloading = false;
 			AttachToComponent(gun->gunMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MagazineSocket"));
 			magazineMeshComp->SetCollisionProfileName(FName("NoCollision"));
+
+			for (int32 i = maxBulletCount - 1; i >= maxBulletCount -  currentBulletCount; i--)
+			{
+				gun->gunAmmoImage[i]->SetColorAndOpacity(FLinearColor(0.015f, 0.25f, 0.904f));
+			}
 		}
 		else
 		{

@@ -56,6 +56,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Magazine")
 	class UBoxComponent* magazineBoxComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	class UWidgetComponent* gunAmmoRightWidgetComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	class UWidgetComponent* gunAmmoLeftWidgetComp;
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	class UGunAmmoWidget* gunAmmoRightUI;
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	class UGunAmmoOthersideWidget* gunAmmoLeftUI;
+
 	UPROPERTY(EditAnywhere, Category = "Fire")
 	TSubclassOf<class ABullet> bulletFactory;
 	
@@ -86,7 +95,10 @@ public:
 	class UAudioComponent* fireAudioComp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	class UAudioComponent* reloadAudioComp;
-	
+
+	// GunAmmo
+	TArray<class UImage*> gunAmmoImage; 
+
 	UFUNCTION()
 	void OnGrabbed();
 	UFUNCTION()

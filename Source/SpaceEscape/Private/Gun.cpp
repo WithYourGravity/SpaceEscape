@@ -12,10 +12,13 @@
 #include "Crosshair.h"
 #include "Magazine.h"
 #include "Bullet.h"
+#include "GunAmmoOthersideWidget.h"
+#include "GunAmmoWidget.h"
 #include "MotionControllerComponent.h"
 #include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
+#include "Components/Image.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Haptics/HapticFeedbackEffect_Base.h"
 #include "Components/WidgetComponent.h"
@@ -79,6 +82,18 @@ AGun::AGun()
 	magazineBoxComp->SetRelativeLocation(FVector(-5.0f, 0.0f, -16.0f));
 	magazineBoxComp->SetBoxExtent(FVector(10, 6, 7));
 
+	gunAmmoRightWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("gunAmmoRightWidgetComp"));
+	gunAmmoRightWidgetComp->SetupAttachment(RootComponent);
+	gunAmmoRightWidgetComp->SetRelativeLocation(FVector(-3.2f, 5.0f, -9.5f));
+	gunAmmoRightWidgetComp->SetRelativeRotation(FRotator(0, 90, 0));
+	gunAmmoRightWidgetComp->SetRelativeScale3D(FVector(0.06f, 0.05f, 0.06f));
+
+	gunAmmoLeftWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("gunAmmoLeftWidgetComp"));
+	gunAmmoLeftWidgetComp->SetupAttachment(RootComponent);
+	gunAmmoLeftWidgetComp->SetRelativeLocation(FVector(-3.2f, -5.0f, -9.5f));
+	gunAmmoLeftWidgetComp->SetRelativeRotation(FRotator(0, -90, 0));
+	gunAmmoLeftWidgetComp->SetRelativeScale3D(FVector(0.06f, 0.05f, 0.06f));
+
 	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base> tempHapticEffect(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
 	if (tempHapticEffect.Succeeded())
 	{
@@ -133,6 +148,30 @@ void AGun::BeginPlay()
 
 	initGunSlideCompLocation = slideGrabComp->GetRelativeLocation();
 	initGunSlideMeshLocation = gunSlideMeshComp->GetRelativeLocation();
+
+	gunAmmoRightUI = Cast<UGunAmmoWidget>(gunAmmoRightWidgetComp->GetUserWidgetObject());
+	gunAmmoLeftUI = Cast<UGunAmmoOthersideWidget>(gunAmmoLeftWidgetComp->GetUserWidgetObject());
+	
+	gunAmmoImage.Add(gunAmmoRightUI->img_ammo1);
+	gunAmmoImage.Add(gunAmmoRightUI->img_ammo2);
+	gunAmmoImage.Add(gunAmmoRightUI->img_ammo3);
+	gunAmmoImage.Add(gunAmmoRightUI->img_ammo4);
+	gunAmmoImage.Add(gunAmmoRightUI->img_ammo5);
+	gunAmmoImage.Add(gunAmmoRightUI->img_ammo6);
+	gunAmmoImage.Add(gunAmmoRightUI->img_ammo7);
+	gunAmmoImage.Add(gunAmmoRightUI->img_ammo8);
+	gunAmmoImage.Add(gunAmmoRightUI->img_ammo9);
+	gunAmmoImage.Add(gunAmmoRightUI->img_ammo10);
+	gunAmmoImage.Add(gunAmmoLeftUI->img_ammo1o);
+	gunAmmoImage.Add(gunAmmoLeftUI->img_ammo2o);
+	gunAmmoImage.Add(gunAmmoLeftUI->img_ammo3o);
+	gunAmmoImage.Add(gunAmmoLeftUI->img_ammo4o);
+	gunAmmoImage.Add(gunAmmoLeftUI->img_ammo5o);
+	gunAmmoImage.Add(gunAmmoLeftUI->img_ammo6o);
+	gunAmmoImage.Add(gunAmmoLeftUI->img_ammo7o);
+	gunAmmoImage.Add(gunAmmoLeftUI->img_ammo8o);
+	gunAmmoImage.Add(gunAmmoLeftUI->img_ammo9o);
+	gunAmmoImage.Add(gunAmmoLeftUI->img_ammo10o);
 }
 
 // Called every frame
@@ -294,6 +333,8 @@ void AGun::Fire(float fireAlpha)
 				fireAudioComp->SetSound(fireSoundCue);
 				fireAudioComp->Play();
 			}
+
+			gunAmmoImage[magazine->maxBulletCount - magazine->GetCurrentBulletCount() - 1]->SetColorAndOpacity(FLinearColor::White);
 		}
 	}
 }
@@ -302,6 +343,11 @@ void AGun::DropMagazine()
 {
 	if (magazine)
 	{
+		for (int32 i = magazine->maxBulletCount - 1; i >= magazine->maxBulletCount - magazine->GetCurrentBulletCount(); i--)
+		{
+			gunAmmoImage[i]->SetColorAndOpacity(FLinearColor::White);
+		}
+
 		GetWorld()->GetTimerManager().SetTimer(magazineTimer, FTimerDelegate::CreateLambda([this]()->void
 		{
 			currentTime += GetWorld()->DeltaTimeSeconds;

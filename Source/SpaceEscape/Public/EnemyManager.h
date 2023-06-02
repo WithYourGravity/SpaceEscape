@@ -29,7 +29,7 @@ public:
 	float minTime = 1.0f;
 	// 랜덤 시간 간격 최대값
 	UPROPERTY(EditAnywhere, Category = "SpawnSettings")
-	float maxTime = 5.0f;
+	float maxTime = 2.0f;
 	// 스폰할 위치 정보 배열
 	UPROPERTY(EditAnywhere, Category = "SpawnSettings")
 	TArray<class AActor*> roomOneSpawnPoints;
@@ -44,11 +44,13 @@ public:
 	TSubclassOf<class AResearcherEnemy> enemyAndroidFactory;
 
 	FTimerHandle spawnTimer;
-	FTimerHandle spawnTimer2;
 	FTimerHandle alienSpawnTimer;
 	FTimerHandle androidSpawnTimer;
 
 	int32 enemyCount = 0;
+
+	UPROPERTY()
+	class ARoomManager* roomManager;
 
 	// 적 생성 함수
 	void CreateEnemyRoomOne();
@@ -59,4 +61,7 @@ public:
 
 	// 스폰할 위치 동적으로 찾아 할당
 	void FindSpawnPoints();
+
+	UFUNCTION()
+	void SpawnEnemy();
 };

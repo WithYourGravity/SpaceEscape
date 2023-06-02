@@ -39,7 +39,7 @@ public:
 	class AGun* gun;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun")
-	int32 maxBulletCount = 25;
+	int32 maxBulletCount = 20;
 
 	// Sound
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")

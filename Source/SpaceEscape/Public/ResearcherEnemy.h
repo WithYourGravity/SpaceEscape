@@ -36,18 +36,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	class USoundCue* attackSoundCue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
-	class USoundCue* damageLegSoundCue;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
-	class USoundCue* damageShoulderSoundCue;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
-	class USoundCue* damageSpineSoundCue;
+	class USoundCue* damageSoundCue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	class USoundCue* moveSoundCue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	class USoundCue* dieSoundCue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	class USoundCue* knockSoundCue;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	class UAudioComponent* audioComp;
 };

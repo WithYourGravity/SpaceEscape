@@ -21,8 +21,10 @@
 #include "SpaceShip.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/SpotLightComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/WidgetInteractionComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -38,6 +40,9 @@ AEscapePlayer::AEscapePlayer()
 	vrCamera->SetupAttachment(RootComponent);
 	vrCamera->bUsePawnControlRotation = false;
 	vrCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
+
+	spotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("spotLight"));
+	spotLight->SetupAttachment(vrCamera);
 
 	// MotionController
 	leftHand = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftHand"));
@@ -118,7 +123,7 @@ AEscapePlayer::AEscapePlayer()
 	infoWidgetComp->SetRelativeScale3D(FVector(0.0035f));
 
 	dieWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("dieWidgetComp"));
-	dieWidgetComp->SetupAttachment(RootComponent);
+	dieWidgetComp->SetupAttachment(vrCamera);
 	dieWidgetComp->SetRelativeLocation(FVector(260.0f, 0.0f, 0.0f));
 	dieWidgetComp->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
 	dieWidgetComp->SetRelativeScale3D(FVector(0.5f));
@@ -146,6 +151,8 @@ AEscapePlayer::AEscapePlayer()
 	gunOverlapComp = CreateDefaultSubobject<UBoxComponent>(TEXT("gunOverlapComp"));
 	gunOverlapComp->SetupAttachment(gunStorageComp);
 	gunOverlapComp->SetBoxExtent(FVector(35, 100, 40));
+
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 }
 
 // Called when the game starts or when spawned
@@ -199,6 +206,11 @@ void AEscapePlayer::BeginPlay()
 	gunOverlapComp->OnComponentEndOverlap.AddDynamic(this, &AEscapePlayer::EndGunStorageOverlap);
 
 	roomManager = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
+
+	float playTime = FMath::RandRange(breathMinTime, breathMaxTime);
+	GetWorld()->GetTimerManager().SetTimer(breathTimer, this, &AEscapePlayer::PlayBreathingSound, playTime);
+
+	roomManager->endingDele.AddUFunction(this, FName("StopBreathingSound"));
 }
 
 // Called every frame
@@ -518,9 +530,7 @@ void AEscapePlayer::UnTryGrabRight()
 	}
 }
 
-UGrabComponent* AEscapePlayer::
-
-GetGrabComponentNearMotionController(UMotionControllerComponent* motionController)
+UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionControllerComponent* motionController)
 {
 	// Áß½ÉÁ¡
 	FVector center = motionController->GetComponentLocation();
@@ -609,6 +619,13 @@ void AEscapePlayer::DropMagazine()
 
 void AEscapePlayer::Die()
 {
+	StopBreathingSound();
+
+	if (playerDieSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, playerDieSound, GetActorLocation(), GetActorRotation());
+	}
+
 	ASpaceEscapeGameModeBase* gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
 	gm->StopPlayTime();
 
@@ -618,9 +635,11 @@ void AEscapePlayer::Die()
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	vrCamera->PostProcessSettings.ColorSaturation = FVector4::Zero();
+
 	dieWidgetComp->SetVisibility(true);
 
-	FRotator endRot = GetActorRotation().Add(0.0f, 0.0f, 90.0f);
+	/*FRotator endRot = GetActorRotation().Add(0.0f, 0.0f, 90.0f);
 	
 	GetWorld()->GetTimerManager().SetTimer(dieTimer, FTimerDelegate::CreateLambda([this, endRot]()->void
 		{
@@ -635,7 +654,7 @@ void AEscapePlayer::Die()
 				SetActorRotation(endRot);
 				GetWorld()->GetTimerManager().ClearTimer(dieTimer);
 			}
-		}), 0.02f, true);
+		}), 0.02f, true);*/
 }
 
 void AEscapePlayer::OnGunStorageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -722,5 +741,21 @@ void AEscapePlayer::DeactivateLeftWidgetInteraction()
 void AEscapePlayer::DeactivateRightWidgetInteraction()
 {
 	rightWidgetInteractionComp->Deactivate();
+}
+
+void AEscapePlayer::PlayBreathingSound()
+{
+	if (playerBreathSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, playerBreathSound, GetActorLocation(), GetActorRotation());
+	}
+
+	float playTime = FMath::RandRange(breathMinTime, breathMaxTime);
+	GetWorld()->GetTimerManager().SetTimer(breathTimer, this, &AEscapePlayer::PlayBreathingSound, playTime);
+}
+
+void AEscapePlayer::StopBreathingSound()
+{
+	GetWorld()->GetTimerManager().ClearTimer(breathTimer);
 }
 
