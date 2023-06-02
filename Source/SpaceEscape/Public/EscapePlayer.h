@@ -315,6 +315,8 @@ public:
 	UFUNCTION()
 	void StopBreathingSound();
 
+	UPROPERTY()
+	class ASpaceEscapeGameModeBase* gm;
 
 	void CallCheat1();
 	void CallCheat2();
