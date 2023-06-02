@@ -17,7 +17,7 @@ AStageProgressChecker::AStageProgressChecker()
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
 	SetRootComponent(boxComp);
 	boxComp->SetBoxExtent(FVector(32.f));
-	boxComp->SetRelativeScale3D(FVector(6, 1, 3));
+	boxComp->SetRelativeScale3D(FVector(6, 0.01f, 3));
 	boxComp->SetCollisionProfileName(FName("OverlapAllDynamic"));
 }
 
