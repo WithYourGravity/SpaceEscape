@@ -731,21 +731,25 @@ void AEscapePlayer::ReleaseUIInputRight()
 void AEscapePlayer::ActiveLeftWidgetInteraction()
 {
 	leftWidgetInteractionComp->Activate(true);
+	leftWidgetInteractionComp->bShowDebug = true;
 }
 
 void AEscapePlayer::ActiveRightWidgetInteraction()
 {
 	rightWidgetInteractionComp->Activate(true);
+	rightWidgetInteractionComp->bShowDebug = true;
 }
 
 void AEscapePlayer::DeactivateLeftWidgetInteraction()
 {
 	leftWidgetInteractionComp->Deactivate();
+	leftWidgetInteractionComp->bShowDebug = false;
 }
 
 void AEscapePlayer::DeactivateRightWidgetInteraction()
 {
 	rightWidgetInteractionComp->Deactivate();
+	rightWidgetInteractionComp->bShowDebug = false;
 }
 
 void AEscapePlayer::PlayBreathingSound()
