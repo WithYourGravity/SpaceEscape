@@ -71,6 +71,9 @@ void APuzzleRoomThreeMorse::addToTempString(float second)
 // 임시 문자열을 번역해서 스크린에 출력할 문자열에 추가하는 함수
 void APuzzleRoomThreeMorse::Enter()
 {
+	// 안내문 지우고
+	screenWidget->TextBlock_Small->SetText(FText::FromString(""));
+
 	// 임시문자열이 비어있거나 맵에 없는 키라면 임시문자열비우고 리턴
 	if (tempString.IsEmpty() || !morse.Contains(tempString))
 	{
