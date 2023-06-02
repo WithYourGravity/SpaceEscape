@@ -47,26 +47,44 @@ void ASpaceEscapeGameModeBase::StartPlayTime()
 // 스테이지를 입력하면 바로 그 스테이지부터 시작하게 해주는 함수
 void ASpaceEscapeGameModeBase::SetStage(int stage)
 {
-	UGameplayStatics::OpenLevel(this, FName("FinalMap"));
-	rm->MoveOnNextStage();
-	StartPlayTime();
-
 	switch (stage)
 	{
+	case 0:
+		UGameplayStatics::OpenLevel(this, FName("FinalMap"));
+		break;
 	case 1 :
+		if (rm->GetCurrentPlayingStage() != 0.5f)
+		{
+			return;
+		}
+		rm->MoveOnNextStage();
 		player->SetActorLocation(FVector(-6100, -2430, 80));
+		player->DeactivateRightWidgetInteraction();
+		StartPlayTime();
 		break;
 	case 2:
+		if (rm->GetCurrentPlayingStage() != 0.5f)
+		{
+			return;
+		}
 		rm->MoveOnNextStage();
 		rm->MoveOnNextStage();
-		player->SetActorLocationAndRotation(FVector(-3500, -3520, 130), FRotator(0, -90, 0));
+		player->SetActorLocation(FVector(-3500, -3520, 130));
+		player->DeactivateRightWidgetInteraction();
+		StartPlayTime();
 		break;
 	case 3:
+		if (rm->GetCurrentPlayingStage() != 0.5f)
+		{
+			return;
+		}
 		rm->MoveOnNextStage();
 		rm->MoveOnNextStage();
 		rm->MoveOnNextStage();
 		rm->MoveOnNextStage();
-		player->SetActorLocationAndRotation(FVector(-3415, -600, 1350), FRotator(0, 90, 0));
+		player->SetActorLocation(FVector(-3415, -600, 1350));
+		player->DeactivateRightWidgetInteraction();
+		StartPlayTime();
 		break;
 	}
 }

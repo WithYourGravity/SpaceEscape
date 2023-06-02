@@ -791,7 +791,7 @@ void AEscapePlayer::CallCheat3()
 
 void AEscapePlayer::CallCheat4()
 {
-
+	gm->SetStage(0);
 }
 
 void AEscapePlayer::CallHelp()
