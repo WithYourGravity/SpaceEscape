@@ -14,5 +14,6 @@ class SPACEESCAPE_API UGameStartWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	
+
+	//Useless Class
 };
