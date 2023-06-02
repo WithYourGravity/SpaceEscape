@@ -34,8 +34,9 @@ AWallPad::AWallPad()
 
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
 	boxComp->SetupAttachment(RootComponent);
-	boxComp->SetBoxExtent(FVector(16.f, 32.f, 16.f));
-	boxComp->SetRelativeLocation(FVector(15.f, 0, 0));
+	boxComp->SetRelativeScale3D(FVector(0.15f));
+	boxComp->SetBoxExtent(FVector(16.f, 32.f, 8.f));
+	boxComp->SetRelativeLocation(FVector(-17.5f, 10.5f, 0));
 	boxComp->SetCollisionProfileName(FName("PuzzleButtonPreset"));
 
 	ConstructorHelpers::FObjectFinder<USoundBase>tempSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/BatteryChargingSoundReverse.BatteryChargingSoundReverse'"));

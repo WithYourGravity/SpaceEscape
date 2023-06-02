@@ -64,6 +64,7 @@ ADrawableBoard::ADrawableBoard()
 
 	Tags.Add(FName("Sense"));
 	boardMeshComp->ComponentTags.Add(FName("Sense.R2"));
+	pageMeshComp->ComponentTags.Add(FName("Sense.R2"));
 }
 
 // Called when the game starts or when spawned
@@ -96,8 +97,8 @@ void ADrawableBoard::OnPaintVisualTraceLine(AActor* brush, const FHitResult& hit
 	FVector2D collisionUV;
 	UGameplayStatics::FindCollisionUV(hitInfo, 0, collisionUV);
 
-	FString s = FString::Printf(TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, s, true, FVector2D(1.5f));
+	//FString s = FString::Printf(TEXT("%f, %f"), collisionUV.X, collisionUV.Y);
+	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, s, true, FVector2D(1.5f));
 
 	if (marker)
 	{

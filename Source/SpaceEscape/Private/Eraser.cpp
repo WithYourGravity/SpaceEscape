@@ -3,6 +3,7 @@
 
 #include "Eraser.h"
 #include "Clipboard.h"
+#include "DrawableBoard.h"
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
 #include "Components/BoxComponent.h"
@@ -84,7 +85,7 @@ void AEraser::DetectHitBoard()
 	params.bTraceComplex = true;
 	params.bReturnFaceIndex = true;
 
-	DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1, 0, -1);
+	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1, 0, -1);
 
 	bool bHit = GetWorld()->LineTraceSingleByProfile(hitInfo, start, end, FName("BoardPreset"), params);
 
@@ -109,6 +110,28 @@ void AEraser::DetectHitBoard()
 			if (eraserDir >= 0.0f && handDir >= 0.0f)
 			{
 				board->OnPaintVisualTraceLine(this, hitInfo);
+			}
+		}
+
+		ADrawableBoard* drawableBoard = Cast<ADrawableBoard>(hitInfo.GetActor());
+		if (drawableBoard)
+		{
+			float markerDir = FVector::DotProduct(drawableBoard->GetActorUpVector(), end - drawableBoard->GetActorLocation());
+
+			FVector handLocation;
+			if (grabComp->GetHeldByHand() == EControllerHand::Right)
+			{
+				handLocation = player->rightHandMesh->GetComponentLocation();
+			}
+			else
+			{
+				handLocation = player->leftHandMesh->GetComponentLocation();
+			}
+			float handDir = FVector::DotProduct(drawableBoard->GetActorUpVector(), handLocation - drawableBoard->GetActorLocation());
+
+			if (markerDir >= 0.0f && handDir >= 0.0f)
+			{
+				drawableBoard->OnPaintVisualTraceLine(this, hitInfo);
 			}
 		}
 	}
