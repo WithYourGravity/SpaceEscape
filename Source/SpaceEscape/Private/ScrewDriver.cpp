@@ -34,6 +34,9 @@ AScrewDriver::AScrewDriver()
 	grabComp->grabType = EGrabType::FREE;
 	arrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComp"));
 	arrowComp->SetupAttachment(RootComponent);
+
+	Tags.Add(FName("Sense"));
+	meshComp->ComponentTags.Add(FName("Sense.R1"));
 }
 
 // Called when the game starts or when spawned
