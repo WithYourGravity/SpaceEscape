@@ -292,6 +292,11 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_WidgetLeft, ETriggerEvent::Completed, this, &AEscapePlayer::ReleaseUIInputLeft);
 		InputSystem->BindAction(IA_WidgetRight, ETriggerEvent::Started, this, &AEscapePlayer::SelectUIInputRight);
 		InputSystem->BindAction(IA_WidgetRight, ETriggerEvent::Completed, this, &AEscapePlayer::ReleaseUIInputRight);
+		InputSystem->BindAction(IA_Cheat1, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat1);
+		InputSystem->BindAction(IA_Cheat2, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat2);
+		InputSystem->BindAction(IA_Cheat3, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat3);
+		InputSystem->BindAction(IA_Cheat4, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat4);
+		InputSystem->BindAction(IA_Help, ETriggerEvent::Started, this, &AEscapePlayer::CallHelp);
 	}
 }
 
@@ -766,5 +771,30 @@ void AEscapePlayer::PlayBreathingSound()
 void AEscapePlayer::StopBreathingSound()
 {
 	GetWorld()->GetTimerManager().ClearTimer(breathTimer);
+}
+
+void AEscapePlayer::CallCheat1()
+{
+
+}
+
+void AEscapePlayer::CallCheat2()
+{
+
+}
+
+void AEscapePlayer::CallCheat3()
+{
+
+}
+
+void AEscapePlayer::CallCheat4()
+{
+
+}
+
+void AEscapePlayer::CallHelp()
+{
+
 }
 

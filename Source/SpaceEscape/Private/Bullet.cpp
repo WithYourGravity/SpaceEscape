@@ -66,7 +66,6 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 	if (OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulse(movementComp->Velocity * 1.0f);
-		Destroy();
 	}
 
 	auto enemy = Cast<AResearcherEnemy>(OtherActor);
@@ -112,11 +111,11 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 				{
 					enemyFSM->OnDamageProcess(bulletPower, EEnemyHitPart::RIGHTLEG);
 				}
-
-				Destroy();
 			}
 		}
 	}
+
+	Destroy();
 }
 
 void ABullet::OnStop(const FHitResult& ImpactResult)

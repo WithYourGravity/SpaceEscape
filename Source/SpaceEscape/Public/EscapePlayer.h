@@ -72,6 +72,16 @@ public:
 	class UInputAction* IA_WidgetLeft;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_WidgetRight;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Cheat1;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Cheat2;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Cheat3;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Cheat4;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Help;
 
 	// 이동처리 함수
 	void Move(const FInputActionValue& values);
@@ -304,4 +314,11 @@ public:
 
 	UFUNCTION()
 	void StopBreathingSound();
+
+
+	void CallCheat1();
+	void CallCheat2();
+	void CallCheat3();
+	void CallCheat4();
+	void CallHelp();
 };

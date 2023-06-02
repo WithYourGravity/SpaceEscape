@@ -75,7 +75,7 @@ AGun::AGun()
 
 	muzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("muzzleLocation"));
 	muzzleLocation->SetupAttachment(gunMeshComp);
-	muzzleLocation->SetRelativeLocation(FVector(70.0f, 0.0f, 25.0f));
+	muzzleLocation->SetRelativeLocation(FVector(80.0f, 0.0f, 25.0f));
 
 	magazineBoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("magazineBoxComp"));
 	magazineBoxComp->SetupAttachment(gunMeshComp);
