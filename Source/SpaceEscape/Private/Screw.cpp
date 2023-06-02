@@ -33,6 +33,9 @@ AScrew::AScrew()
 	//grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComp"));
 	//grabComp->SetupAttachment(RootComponent);
 	//grabComp->grabType = EGrabType::FREE;
+
+	Tags.Add(FName("Sense"));
+	meshComp->ComponentTags.Add(FName("Sense.R1"));
 }
 
 void AScrew::BeginPlay()

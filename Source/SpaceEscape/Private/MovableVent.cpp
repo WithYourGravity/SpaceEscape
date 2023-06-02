@@ -24,6 +24,9 @@ AMovableVent::AMovableVent()
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComp"));
 	grabComp->SetupAttachment(RootComponent);
 	grabComp->grabType = EGrabType::FREE;
+
+	Tags.Add(FName("Sense"));
+	meshComp->ComponentTags.Add(FName("Sense.R1"));
 }
 
 // Called when the game starts or when spawned
