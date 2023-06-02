@@ -150,7 +150,7 @@ AEscapePlayer::AEscapePlayer()
 
 	gunOverlapComp = CreateDefaultSubobject<UBoxComponent>(TEXT("gunOverlapComp"));
 	gunOverlapComp->SetupAttachment(gunStorageComp);
-	gunOverlapComp->SetBoxExtent(FVector(35, 100, 40));
+	gunOverlapComp->SetBoxExtent(FVector(35, 50, 40));
 
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 }
@@ -638,6 +638,11 @@ void AEscapePlayer::Die()
 	vrCamera->PostProcessSettings.ColorSaturation = FVector4::Zero();
 
 	dieWidgetComp->SetVisibility(true);
+
+	GetWorld()->GetTimerManager().SetTimer(dieTimer, FTimerDelegate::CreateLambda([this]()->void
+	{
+			UGameplayStatics::OpenLevel(this, FName("FinalMap"));
+	}), 5.0f, false);
 
 	/*FRotator endRot = GetActorRotation().Add(0.0f, 0.0f, 90.0f);
 	

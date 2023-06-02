@@ -127,6 +127,8 @@ AGun::AGun()
 
 	Tags.Add(FName("Sense"));
 	gunMeshComp->ComponentTags.Add(FName("Sense.Always"));
+	gunSlideMeshComp->ComponentTags.Add(FName("Sense.Always"));
+	gunTriggerMeshComp->ComponentTags.Add(FName("Sense.Always"));
 }
 
 // Called when the game starts or when spawned

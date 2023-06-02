@@ -236,7 +236,7 @@ public:
 private:
 	int32 HP;
 	
-	//FTimerHandle dieTimer;
+	FTimerHandle dieTimer;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP")
