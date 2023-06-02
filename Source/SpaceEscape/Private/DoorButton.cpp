@@ -8,6 +8,7 @@
 #include "EscapePlayer.h"
 #include "Components/BoxComponent.h"
 #include "RoomManager.h"
+#include "EngineUtils.h"
 
 // Sets default values
 ADoorButton::ADoorButton()
@@ -46,7 +47,13 @@ void ADoorButton::Tick(float DeltaTime)
 
 void ADoorButton::CheckClearStage()
 {
-	bCanButtonClicked = true;
+	//stage clear 되면 문 버튼의 색이 바뀌도록 (Blue)
+	for(TActorIterator<AActor> btn(GetWorld()); btn; ++btn)
+	{
+		bCanButtonClicked = true;
+		buttonMesh->SetVectorParameterValueOnMaterials(FName("doorStateColor"), FVector4(0, 0.573f, 0.49f, 1));
+	}
+
 }
 
 void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -57,6 +64,7 @@ void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	//UE_LOG(LogTemp, Warning, TEXT("ADoorButton::OnHandOverlap : %s"), *OtherActor->GetName())
 	if(bCanButtonClicked == true)
 	{
+
 		if (player && OtherComp->GetName().Contains("right"))
 		{
 			ReportOpen();
@@ -71,22 +79,26 @@ void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 }
 
 void ADoorButton::ReportOpen()
-{	
+{
+
 	openDoorDele.Broadcast();
 	
+	//레벨의 모든 버튼에 적용해보자	
 	if(bOpened == false)//한번 열렸다.
 	{
 		bOpened = true;
 		//UE_LOG(LogTemp, Warning, TEXT("ReportOpen() : Opened Onced"))
-		//문 열릴 때 색 바뀌기
-		buttonMesh->SetVectorParameterValueOnMaterials(FName("doorStateColor"), FVector4(0.505f, 0.015f, 0.00974f, 1));
 	}
 	else
 	{
 		bOpened = false;
-		bCanButtonClicked = false;
 		//UE_LOG(LogTemp, Warning, TEXT("ReportOpen() : Not to be Opened"))
-		buttonMesh->SetVectorParameterValueOnMaterials(FName("doorStateColor"), FVector4(0, 0.573f, 0.49f, 1));
+		for (TActorIterator<AActor> it(GetWorld()); it; ++it)
+		{
+			bCanButtonClicked = false;
+		
+		}
 	}
+
 }
 

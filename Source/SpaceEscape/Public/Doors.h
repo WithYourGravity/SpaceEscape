@@ -67,6 +67,7 @@ public:
 	//문 최초 위치
 	FVector initLoc;
 
+	//다른 방향의 문 구별하기
 	UPROPERTY(EditAnywhere, Category = "Door Settings")
 	bool isdoorDir;
 };
