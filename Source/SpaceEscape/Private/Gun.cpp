@@ -84,15 +84,15 @@ AGun::AGun()
 
 	gunAmmoRightWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("gunAmmoRightWidgetComp"));
 	gunAmmoRightWidgetComp->SetupAttachment(RootComponent);
-	gunAmmoRightWidgetComp->SetRelativeLocation(FVector(-2.7f, 5.0f, -8.0f));
+	gunAmmoRightWidgetComp->SetRelativeLocation(FVector(-3.2f, 5.0f, -9.5f));
 	gunAmmoRightWidgetComp->SetRelativeRotation(FRotator(0, 90, 0));
-	gunAmmoRightWidgetComp->SetRelativeScale3D(FVector(0.05f));
+	gunAmmoRightWidgetComp->SetRelativeScale3D(FVector(0.06f, 0.05f, 0.06f));
 
 	gunAmmoLeftWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("gunAmmoLeftWidgetComp"));
 	gunAmmoLeftWidgetComp->SetupAttachment(RootComponent);
-	gunAmmoLeftWidgetComp->SetRelativeLocation(FVector(-2.7f, -5.0f, -8.0f));
+	gunAmmoLeftWidgetComp->SetRelativeLocation(FVector(-3.2f, -5.0f, -9.5f));
 	gunAmmoLeftWidgetComp->SetRelativeRotation(FRotator(0, -90, 0));
-	gunAmmoLeftWidgetComp->SetRelativeScale3D(FVector(0.05f));
+	gunAmmoLeftWidgetComp->SetRelativeScale3D(FVector(0.06f, 0.05f, 0.06f));
 
 	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base> tempHapticEffect(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
 	if (tempHapticEffect.Succeeded())

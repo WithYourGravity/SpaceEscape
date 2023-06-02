@@ -3,6 +3,7 @@
 
 #include "Marker.h"
 #include "Clipboard.h"
+#include "DrawableBoard.h"
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -156,6 +157,28 @@ void AMarker::DetectHitBoard()
 			if (markerDir >= 0.0f && handDir >= 0.0f)
 			{
 				board->OnPaintVisualTraceLine(this, hitInfo);
+			}
+		}
+
+		ADrawableBoard* drawableBoard = Cast<ADrawableBoard>(hitInfo.GetActor());
+		if (drawableBoard)
+		{
+			float markerDir = FVector::DotProduct(drawableBoard->GetActorUpVector(), end - drawableBoard->GetActorLocation());
+
+			FVector handLocation;
+			if (grabComp->GetHeldByHand() == EControllerHand::Right)
+			{
+				handLocation = player->rightHandMesh->GetComponentLocation();
+			}
+			else
+			{
+				handLocation = player->leftHandMesh->GetComponentLocation();
+			}
+			float handDir = FVector::DotProduct(drawableBoard->GetActorUpVector(), handLocation - drawableBoard->GetActorLocation());
+
+			if (markerDir >= 0.0f && handDir >= 0.0f)
+			{
+				drawableBoard->OnPaintVisualTraceLine(this, hitInfo);
 			}
 		}
 	}
