@@ -23,7 +23,6 @@ void AEnemyManager::BeginPlay()
 	float createTime = FMath::RandRange(minTime, maxTime);
 	
 	//GetWorld()->GetTimerManager().SetTimer(spawnTimer, this, &AEnemyManager::CreateEnemyRoomOne, createTime);
-	//GetWorld()->GetTimerManager().SetTimer(spawnTimer2, this, &AEnemyManager::CreateEnemyRoomTwo, createTime);
 
 	roomManager = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
 	roomManager->spawnEnemyDele.AddUFunction(this, FName("SpawnEnemy"));

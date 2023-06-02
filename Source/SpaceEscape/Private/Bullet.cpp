@@ -94,7 +94,7 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 				}
 				else if (hitPartName.Contains("Head"))
 				{
-					enemyFSM->OnDamageProcess(enemyFSM->maxHP, EEnemyHitPart::HEAD);
+					enemyFSM->OnDamageProcess(bulletPower * 2, EEnemyHitPart::HEAD);
 				}
 				else if (hitPartName.Contains("LeftArm"))
 				{

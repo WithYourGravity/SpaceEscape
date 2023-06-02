@@ -67,6 +67,7 @@ AClipboard::AClipboard()
 
 	Tags.Add(FName("Sense"));
 	boardMeshComp->ComponentTags.Add(FName("Sense.R2"));
+	pageMeshComp->ComponentTags.Add(FName("Sense.R2"));
 }
 
 // Called when the game starts or when spawned
