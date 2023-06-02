@@ -52,7 +52,7 @@ public:
 
 	//나사 시작 위치
 	FVector startLoc;
-	//나사가 나올만큼 다 나왔는가
+	//나사 1개가 나올만큼 다 나왔는가
 	bool isEnoughRotated;
 	void bEnoughCameOut();
 
@@ -70,8 +70,12 @@ public:
 	//나사가 다 나왔다면 바닥에 떨어진다
 	void CameOutScrew();
 
-	//나사가 모두 떨어졌다면 vent 중력을 생성한다
-	void FallingVent();
+	//나사 4개가 다 나왔는지 체크한다
+	void CheckAllCameOut();
+
+	//나사가 다 떨어진 상태인가
+	bool bAllFallenScrews;
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 	class UHapticFeedbackEffect_Base* hapticFeedback;

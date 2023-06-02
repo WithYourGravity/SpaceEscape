@@ -61,6 +61,7 @@ void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 {
 	//Open한다면 플레이어와 닿았는가
 	AEscapePlayer* player = Cast<AEscapePlayer>(OtherActor);
+	if(!player) return;
 	//UE_LOG(LogTemp, Warning, TEXT("ADoorButton::OnHandOverlap : %s"), *OtherActor->GetName())
 	if(bCanButtonClicked == true)
 	{

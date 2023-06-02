@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "MovableCover.h"
 #include "MovableVent.generated.h"
 
 UCLASS()
-class SPACEESCAPE_API AMovableVent : public AActor
+class SPACEESCAPE_API AMovableVent : public AMovableCover
 {
 	GENERATED_BODY()
 	
@@ -23,18 +23,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
-	class UBoxComponent* boxComp;
-	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
-	class UStaticMeshComponent* meshComp;
-	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
-	class UGrabComponent* grabComp;
+	//로봇 지나가는 통로가 있는 Vent
 
-	UPROPERTY()
-	class AScrew* screw;
-
-	//void FallingVent();
-
-
+	virtual void FallingCover() override;
 
 };
