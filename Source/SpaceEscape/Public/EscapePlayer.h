@@ -207,7 +207,9 @@ public:
 	class UGrabComponent* heldComponentLeft;
 
 	// Object Grab 여부
+	UPROPERTY(BlueprintReadOnly, Category = "Grab")
 	bool bIsGrabbedRight = false;
+	UPROPERTY(BlueprintReadOnly, Category = "Grab")
 	bool bIsGrabbedLeft = false;
 	
 	// 잡기 시도 기능
@@ -219,6 +221,11 @@ public:
 
 	// MotionController 근처 잡을 수 있는 Object 찾는 함수
 	class UGrabComponent* GetGrabComponentNearMotionController(class UMotionControllerComponent* motionController);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void R_TraceFingerData();
+	UFUNCTION(BlueprintImplementableEvent)
+	void L_TraceFingerData();
 
 
 // Fire

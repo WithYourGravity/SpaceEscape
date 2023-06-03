@@ -463,6 +463,8 @@ void AEscapePlayer::TryGrabLeft()
 		{
 			heldComponentLeft = grabComp;
 
+			L_TraceFingerData();
+
 			if (heldComponentLeft == heldComponentRight)
 			{
 				heldComponentRight = nullptr;
@@ -490,6 +492,8 @@ void AEscapePlayer::TryGrabRight()
 		if (grabComp->TryGrab(rightHand))
 		{
 			heldComponentRight = grabComp;
+
+			R_TraceFingerData();
 
 			if (heldComponentRight == heldComponentLeft)
 			{
