@@ -152,7 +152,7 @@ AEscapePlayer::AEscapePlayer()
 	gunOverlapComp->SetupAttachment(gunStorageComp);
 	gunOverlapComp->SetBoxExtent(FVector(35, 50, 40));
 
-	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 }
 
 // Called when the game starts or when spawned
