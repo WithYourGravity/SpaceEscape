@@ -7,7 +7,7 @@
 #include "EscapePlayer.h"
 #include "Components/BoxComponent.h"
 #include "RoomManager.h"
-#include "EngineUtils.h"
+#include "DoorManager.h"
 
 // Sets default values
 ADoorButton::ADoorButton()
@@ -30,14 +30,15 @@ void ADoorButton::BeginPlay()
 	Super::BeginPlay();
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADoors::StaticClass(),outDoorActors);
-	
-	ARoomManager* rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
-	rm->stageClearDele.AddUFunction(this, FName("CheckClearStage"));
-	boxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoorButton::OnHandOverlap);
-	//UE_LOG(LogTemp, Warning, TEXT("DoorButton::Is Opening State ? : %d"), bOpened)
 
-	/*문 찾기, 버튼은 iterator로 찾을까함*/
-	UGameplayStatics::GetAllActorsOfClass(this, ADoors::StaticClass(), doors);
+	/*Room Manager*/
+	ARoomManager* rManager = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
+	rManager->stageClearDele.AddUFunction(this, FName("CheckClearStage"));
+	boxComp->OnComponentBeginOverlap.AddDynamic(this, &ADoorButton::OnHandOverlap);
+
+	/*Door Manager*/
+	dManager = Cast<ADoorManager>(UGameplayStatics::GetActorOfClass(this, ADoorManager::StaticClass()));
+	//UE_LOG(LogTemp, Warning, TEXT("DoorButton::Is Opening State ? : %d"), bOpened)
 }
 
 // Called every frame
@@ -50,93 +51,50 @@ void ADoorButton::Tick(float DeltaTime)
 void ADoorButton::CheckClearStage()
 {
 	bCanButtonClicked = true;
-	//stage clear 되면 문 버튼의 색이 바뀌도록 (Blue)
-	for(TActorIterator<AActor> btn(GetWorld()); btn; ++btn)
-	{
-		buttonMesh->SetVectorParameterValueOnMaterials(FName("doorStateColor"), FVector4(0, 0.573f, 0.49f, 1));
-	}
 }
 
-void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//Open한다면 플레이어와 닿았는가
 	AEscapePlayer* player = Cast<AEscapePlayer>(OtherActor);
 	if(!player) return;
 	//UE_LOG(LogTemp, Warning, TEXT("ADoorButton::OnHandOverlap : %s"), *OtherActor->GetName())
-	
+
+	if(!dManager) return;
 	if(bCanButtonClicked == true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("OpenAllDoors : bOpened firstly false?: %d"), bOpened)
-		if (OtherComp->GetName().Contains("right"))
+		if(dManager->bOpened == false)
 		{
-			//ReportOpen();
-			bOpenDoor();
-			player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
-		}	
+			dManager->OpenAllDoors();
+			if (OtherComp->GetName().Contains("right"))
+			{
+				player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+			}
+			else
+			{
+				player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+			}
+		}
 		else
 		{
-			//ReportOpen();
-			bOpenDoor();
-			player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+			dManager->CloseAllDoors();
+			if (OtherComp->GetName().Contains("right"))
+			{
+				player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+			}
+			else
+			{
+				player->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+			}
 		}
+		UE_LOG(LogTemp, Warning, TEXT("DoorButton::OnHandOverlap"))
 	}	
 }
 
-void ADoorButton::bOpenDoor()
-{
-	bOpened == false ? OpenAllDoors() : CloseAllDoors();
-}
-
-void ADoorButton::OpenAllDoors()
-{
-	if(bOpened == false)
-	{
-		for (AActor* door : doors)
-		{
-			auto d = Cast<ADoors>(door);
-			d->Open();
-			
-		}
-		for (TActorIterator<AActor> it(GetWorld()); it; ++it)
-		{
-			buttonMesh->SetVectorParameterValueOnMaterials(FName("doorStateColor"), FVector4(0, 0.573f, 0.49f, 1));
-			//bOpened = true;
-		}
-		UE_LOG(LogTemp, Warning, TEXT("OpenAllDoors : bOpened : %d"), bOpened)
-	}
-	bOpened = true;
-}
-
-void ADoorButton::CloseAllDoors()
-{
-	UE_LOG(LogTemp, Warning, TEXT("CloseAllDoors : bOpened became true?: %d"), bOpened)
-	if (bOpened == true)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("CloseAllDoors : bOpened sibal: %d"), bOpened)
-		
-		for (AActor* door : doors)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("CloseAllDoors : iterate sibalsaeKKi: %d"), bOpened)
-			auto d = Cast<ADoors>(door);
-			d->Close();
-		}
-		for (TActorIterator<AActor> it(GetWorld()); it; ++it)
-		{
-			buttonMesh->SetVectorParameterValueOnMaterials(FName("doorStateColor"), FVector4(0.505f, 0.015f, 0.00974f, 1));
-			//bOpened = false;
-		}
-	}
-	bOpened = false;
-	bCanButtonClicked = false;
-	UE_LOG(LogTemp, Warning, TEXT("OpenAllDoors : bOpened changed false?: %d"), bOpened)
-}
-/*
 void ADoorButton::ReportOpen()
 {
 	openDoorDele.Broadcast();
 	
-	//레벨의 모든 버튼에 적용해보자	
 	if(bOpened == false)//한번 열렸다.
 	{
 		bOpened = true;
@@ -146,11 +104,5 @@ void ADoorButton::ReportOpen()
 	{
 		bOpened = false;
 		bCanButtonClicked = false;
-		//UE_LOG(LogTemp, Warning, TEXT("ReportOpen() : Not to be Opened"))
-		//for (TActorIterator<AActor> it(GetWorld()); it; ++it)
-		//{
-		//}
 	}
-
 }
-*/

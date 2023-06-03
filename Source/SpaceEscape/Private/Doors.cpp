@@ -76,11 +76,6 @@ void ADoors::Open()
 	
 	curveTimeline.PlayFromStart();
 	//bIsOpenOverlaping = false;
-	for (TActorIterator<ADoorButton> it(GetWorld()); it; ++it)
-	{
-		ADoorButton* db = *it;
-		db->bOpened = true;
-	}
 	UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
 }
 
@@ -92,11 +87,6 @@ void ADoors::Close()
 	endPoint = initLoc;
 	curveTimeline.PlayFromStart();
 	//bIsOpenOverlaping = true;
-	for (TActorIterator<ADoorButton> it(GetWorld()); it; ++it)
-	{
-		ADoorButton* db = *it;
-		db->bOpened = false;
-	}
 	UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))	
 }
 
