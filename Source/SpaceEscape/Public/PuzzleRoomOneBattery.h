@@ -35,5 +35,9 @@ public:
 	void WhenScrewFinished();
 
 private:
+
+	UPROPERTY()
+	class AMovableBattCover* myCover;
+
 	bool bIsScrewFinished;
 };
