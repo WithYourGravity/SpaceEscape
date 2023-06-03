@@ -150,8 +150,6 @@ private:
 	int32 HP;
 
 	UPROPERTY()
-	class ADoors* door;
-	UPROPERTY()
 	class ARoomManager* roomManager;
 	UPROPERTY()
 	class AEnemyDoorOverlap* doorOverlap;

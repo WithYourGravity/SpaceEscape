@@ -4,7 +4,6 @@
 #include "EnemyFSM.h"
 #include "AIController.h"
 #include "DamageWidget.h"
-#include "Doors.h"
 #include "EnemyDoorOverlap.h"
 #include "EscapePlayer.h"
 #include "NavigationSystem.h"
@@ -43,8 +42,6 @@ void UEnemyFSM::BeginPlay()
 	ai = Cast<AAIController>(me->GetController());
 
 	HP = maxHP;
-
-	door = Cast<ADoors>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoors::StaticClass()));
 
 	roomManager = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ARoomManager::StaticClass()));
 
@@ -364,7 +361,7 @@ void UEnemyFSM::TickMove()
 
 	
 	// 문이 열렸을 때 제자리에 오래 있는 상태이면 enemy들끼리 STUCK
-	if (door && !door->bIsOpenOverlaping)
+	if (roomManager->GetCurrentPlayingStage() == 1.5 || roomManager->GetCurrentPlayingStage() == 2.5)
 	{
 		currentTime += GetWorld()->DeltaTimeSeconds;
 		if (currentTime <= 0.1f)
