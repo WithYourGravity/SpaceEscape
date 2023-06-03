@@ -76,5 +76,4 @@ private:
 
 	UPROPERTY()
 	class UHapticFeedbackEffect_Base* grabHapticEffect;
-
 };
