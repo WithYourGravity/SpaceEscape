@@ -287,7 +287,7 @@ void UEnemyFSM::TickIdle()
 
 void UEnemyFSM::TickMove()
 {
-	if (roomManager->GetCurrentPlayingStage() == 1 && door && door->bIsOpenOverlaping)
+	if (roomManager->GetCurrentPlayingStage() == 1)
 	{
 		FVector destination = doorOverlap->GetActorLocation();
 
