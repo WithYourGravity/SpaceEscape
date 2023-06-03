@@ -47,8 +47,8 @@ public:
 
 	//문 여는 충돌감지 진행중인가
 	bool bIsOpenOverlaping = true;
-	UFUNCTION()
-	void ChangeDoorOverlaping();
+	//UFUNCTION()
+	//void ChangeDoorOverlaping();
 
 	/*문의 부드러운 이동*/
 	UFUNCTION()
