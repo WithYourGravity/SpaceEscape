@@ -46,6 +46,11 @@ void APuzzleRoomOneBattery::BeginPlay()
 void APuzzleRoomOneBattery::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!bIsScrewFinished)
+	{
+		return;
+	}
+
 	auto battery = Cast<ABattery>(OtherActor);
 	if (battery)
 	{
@@ -59,4 +64,9 @@ void APuzzleRoomOneBattery::BeginOverlap(UPrimitiveComponent* OverlappedComponen
 		// 배터리 사운드 재생
 		UGameplayStatics::PlaySound2D(this, batterySound);
 	}
+}
+
+void APuzzleRoomOneBattery::WhenScrewFinished()
+{
+	bIsScrewFinished = true;
 }

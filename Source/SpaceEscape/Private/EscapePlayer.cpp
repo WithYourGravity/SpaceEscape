@@ -211,6 +211,8 @@ void AEscapePlayer::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(breathTimer, this, &AEscapePlayer::PlayBreathingSound, playTime);
 
 	roomManager->endingDele.AddUFunction(this, FName("StopBreathingSound"));
+
+	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 // Called every frame
@@ -292,6 +294,11 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_WidgetLeft, ETriggerEvent::Completed, this, &AEscapePlayer::ReleaseUIInputLeft);
 		InputSystem->BindAction(IA_WidgetRight, ETriggerEvent::Started, this, &AEscapePlayer::SelectUIInputRight);
 		InputSystem->BindAction(IA_WidgetRight, ETriggerEvent::Completed, this, &AEscapePlayer::ReleaseUIInputRight);
+		InputSystem->BindAction(IA_Cheat1, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat1);
+		InputSystem->BindAction(IA_Cheat2, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat2);
+		InputSystem->BindAction(IA_Cheat3, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat3);
+		InputSystem->BindAction(IA_Cheat4, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat4);
+		InputSystem->BindAction(IA_Help, ETriggerEvent::Started, this, &AEscapePlayer::CallHelp);
 	}
 }
 
@@ -626,7 +633,6 @@ void AEscapePlayer::Die()
 		UGameplayStatics::PlaySoundAtLocation(this, playerDieSound, GetActorLocation(), GetActorRotation());
 	}
 
-	ASpaceEscapeGameModeBase* gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
 	gm->StopPlayTime();
 
 	FInputModeUIOnly inputMode;
@@ -731,21 +737,25 @@ void AEscapePlayer::ReleaseUIInputRight()
 void AEscapePlayer::ActiveLeftWidgetInteraction()
 {
 	leftWidgetInteractionComp->Activate(true);
+	leftWidgetInteractionComp->bShowDebug = true;
 }
 
 void AEscapePlayer::ActiveRightWidgetInteraction()
 {
 	rightWidgetInteractionComp->Activate(true);
+	rightWidgetInteractionComp->bShowDebug = true;
 }
 
 void AEscapePlayer::DeactivateLeftWidgetInteraction()
 {
 	leftWidgetInteractionComp->Deactivate();
+	leftWidgetInteractionComp->bShowDebug = false;
 }
 
 void AEscapePlayer::DeactivateRightWidgetInteraction()
 {
 	rightWidgetInteractionComp->Deactivate();
+	rightWidgetInteractionComp->bShowDebug = false;
 }
 
 void AEscapePlayer::PlayBreathingSound()
@@ -762,5 +772,30 @@ void AEscapePlayer::PlayBreathingSound()
 void AEscapePlayer::StopBreathingSound()
 {
 	GetWorld()->GetTimerManager().ClearTimer(breathTimer);
+}
+
+void AEscapePlayer::CallCheat1()
+{
+	gm->SetStage(1);
+}
+
+void AEscapePlayer::CallCheat2()
+{
+	gm->SetStage(2);
+}
+
+void AEscapePlayer::CallCheat3()
+{
+	gm->SetStage(3);
+}
+
+void AEscapePlayer::CallCheat4()
+{
+	gm->SetStage(0);
+}
+
+void AEscapePlayer::CallHelp()
+{
+
 }
 

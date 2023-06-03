@@ -24,8 +24,11 @@ public:
 
 	UPROPERTY()
 	class AEscapePlayer* player;
+	UPROPERTY()
+	class ARoomManager* rm;
 
 	void CountPlayTime();
 	void StopPlayTime();
 	void StartPlayTime();
+	void SetStage(int stage);
 };
