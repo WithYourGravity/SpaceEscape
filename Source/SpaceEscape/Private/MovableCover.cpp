@@ -29,7 +29,7 @@ void AMovableCover::BeginPlay()
 {
 	Super::BeginPlay();
 
-	screw = Cast<AScrew>(UGameplayStatics::GetActorOfClass(GetWorld(), AScrew::StaticClass()));
+	UGameplayStatics::GetAllActorsOfClass(this, AScrew::StaticClass(), screw);
 }
 
 // Called every frame
@@ -41,13 +41,17 @@ void AMovableCover::Tick(float DeltaTime)
 
 void AMovableCover::FallingCover()
 {
-	UE_LOG(LogTemp, Warning, TEXT("AMovableCover::FallingCover bAllFallenScrews : %d"), screw->bAllFallenScrews);
-	if(screw->bAllFallenScrews == true)
-	{
+	 for(AActor* fallenScrews : screw)
+	 {
+		 auto ss = Cast<AScrew>(fallenScrews);
+
+	 }
+	//if()
+	//{
 		boxComp->SetSimulatePhysics(true);
 		//나사가 다 빠졌을 때 Grab할 수 있다.
 		grabComp->grabType = EGrabType::FREE;
-	}
+	//}
 
 }
 

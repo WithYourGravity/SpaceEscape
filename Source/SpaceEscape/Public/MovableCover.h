@@ -31,7 +31,7 @@ public:
 	class UGrabComponent* grabComp;
 
 	UPROPERTY()
-	class AScrew* screw;
+	TArray<AActor*> screw;
 
 	virtual void FallingCover();
 
