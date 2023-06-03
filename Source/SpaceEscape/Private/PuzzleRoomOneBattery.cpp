@@ -7,6 +7,7 @@
 #include "GrabComponent.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "MovableBattCover.h"
 
 APuzzleRoomOneBattery::APuzzleRoomOneBattery()
 {
@@ -40,6 +41,11 @@ void APuzzleRoomOneBattery::BeginPlay()
 	Super::BeginPlay();
 
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomOneBattery::BeginOverlap);
+	myCover = Cast<AMovableBattCover>(UGameplayStatics::GetActorOfClass(this, AMovableBattCover::StaticClass()));
+	if (myCover)
+	{
+		myCover->allowBatt.BindUFunction(this, FName("WhenScrewFinished"));
+	}
 }
 
 // 배터리가 범위안으로 들어오면 장착가능하게 하는 함수
@@ -68,5 +74,6 @@ void APuzzleRoomOneBattery::BeginOverlap(UPrimitiveComponent* OverlappedComponen
 
 void APuzzleRoomOneBattery::WhenScrewFinished()
 {
+	UE_LOG(LogTemp, Warning, TEXT("APuzzleRoomOneBattery::WhenScrewFinished"));
 	bIsScrewFinished = true;
 }
