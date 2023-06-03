@@ -81,7 +81,7 @@ void ARoomManager::MoveOnNextStage()
 	playingStage += 0.5f;
 	solvedPuzzleCount = 0;
 
-	if (stageClearDele.IsBound())
+	if (stageClearDele.IsBound() && (playingStage == 1.5 || playingStage == 2.5))
 	{
 		stageClearDele.Broadcast();
 	}
