@@ -106,17 +106,15 @@ void AScrew::MoveScrew()
 void AScrew::CameOutScrew()
 {
 	//다 나왔다면 바닥에 떨어질 것
-	//4개 다 빠져나왔는지 어떻게 판정할것인가
-
-	cameOutScrewCount = 0;
+	//cameOutScrewCount = 0;
 	//다 나왔다면 바닥에 떨어질 것
 	if (isEnoughRotated == true)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("CameOutScrew::isEnoughRotated = %d"), isEnoughRotated)
 		boxComp->SetSimulatePhysics(true);
-		cameOutScrewCount++;
+		//cameOutScrewCount++;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count : %d"), cameOutScrewCount)
+	//UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count : %d"), cameOutScrewCount)
 
 }
 
