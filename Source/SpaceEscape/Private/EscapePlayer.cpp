@@ -133,6 +133,10 @@ AEscapePlayer::AEscapePlayer()
 	damageWidgetComp->SetupAttachment(vrCamera);
 	damageWidgetComp->SetVisibility(false);
 
+	helpWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("helpWidgetComp"));
+	helpWidgetComp->SetupAttachment(vrCamera);
+	helpWidgetComp->SetVisibility(false);
+
 	// Teleport
 	teleportCircle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("teleportCircle"));
 	teleportCircle->SetupAttachment(RootComponent);
@@ -298,7 +302,8 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_Cheat2, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat2);
 		InputSystem->BindAction(IA_Cheat3, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat3);
 		InputSystem->BindAction(IA_Cheat4, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat4);
-		InputSystem->BindAction(IA_Help, ETriggerEvent::Started, this, &AEscapePlayer::CallHelp);
+		InputSystem->BindAction(IA_Help, ETriggerEvent::Started, this, &AEscapePlayer::ShowHelp);
+		InputSystem->BindAction(IA_Help, ETriggerEvent::Completed, this, &AEscapePlayer::HiddenHelp);
 	}
 }
 
@@ -798,8 +803,13 @@ void AEscapePlayer::CallCheat4()
 
 }
 
-void AEscapePlayer::CallHelp()
+void AEscapePlayer::ShowHelp()
 {
+	helpWidgetComp->SetVisibility(true);
+}
 
+void AEscapePlayer::HiddenHelp()
+{
+	helpWidgetComp->SetVisibility(false);
 }
 

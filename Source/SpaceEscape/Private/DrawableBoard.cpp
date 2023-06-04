@@ -19,7 +19,7 @@ ADrawableBoard::ADrawableBoard()
 	SetRootComponent(boardMeshComp);
 	boardMeshComp->SetSimulatePhysics(true);
 	boardMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempBoardMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/BoardNPencil/interactive.interactive'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempBoardMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/BoardNPencil/WhiteBoard/interactive1.interactive1'"));
 	if (tempBoardMesh.Succeeded())
 	{
 		boardMeshComp->SetStaticMesh(tempBoardMesh.Object);

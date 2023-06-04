@@ -142,6 +142,10 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	class UDamageWidget* damageUI;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	class UWidgetComponent* helpWidgetComp;
+
+
 // Teleport
 public:
 	// Teleport Circle Niagara
@@ -329,5 +333,6 @@ public:
 	void CallCheat2();
 	void CallCheat3();
 	void CallCheat4();
-	void CallHelp();
+	void ShowHelp();
+	void HiddenHelp();
 };
