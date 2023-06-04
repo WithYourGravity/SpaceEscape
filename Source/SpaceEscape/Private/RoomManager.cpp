@@ -19,7 +19,7 @@ ARoomManager::ARoomManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	/*
+	/* 
 	const ConstructorHelpers::FObjectFinder<ULevelSequence>tempSeq(TEXT("/Script/LevelSequence.LevelSequence'/Game/Yeni/LevelSequences/Seq_AfterShipRotated.Seq_AfterShipRotated'"));
     if (tempSeq.Succeeded())
     {
@@ -66,12 +66,17 @@ void ARoomManager::AddSolvedPuzzleCount()
 {
 	solvedPuzzleCount++;
 
+	if (!totalPuzzlePerStage.Contains(playingStage))
+	{
+		UE_LOG(LogTemp, Error, TEXT("ARoomManager::AddSolvedPuzzleCount : Invalid Stage!!"));
+		return;
+	}
+
 	if (solvedPuzzleCount == totalPuzzlePerStage[playingStage])
 	{
 		MoveOnNextStage();
+		UE_LOG(LogTemp, Warning, TEXT("ARoomManager::AddSolvedPuzzleCount : MoveOnNextStage"));
 	}
-	UE_LOG(LogTemp, Warning, TEXT("solved pulzze count is : %d"), solvedPuzzleCount);
-	UE_LOG(LogTemp, Warning, TEXT("current stage is : %f"), playingStage);
 }
 
 // 다음 스테이지로 넘어가며 퍼즐카운트 초기화 해주는 함수
@@ -89,17 +94,16 @@ void ARoomManager::MoveOnNextStage()
 	if (gameClearDele.IsBound() && playingStage == 3.5)
 	{
 		gameClearDele.Broadcast();
-		UE_LOG(LogTemp, Warning, TEXT("gameClearDele Excuted"));
+		UE_LOG(LogTemp, Warning, TEXT("gameClearDele Broadcasted"));
 	}
 
 	if (spawnEnemyDele.IsBound() && (playingStage == 1 || playingStage == 2.5))
 	{
 		spawnEnemyDele.Broadcast();
-		UE_LOG(LogTemp, Warning, TEXT("spawnEnemyDele Excuted"));
+		UE_LOG(LogTemp, Warning, TEXT("spawnEnemyDele Broadcasted"));
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("solved pulzze count is : %d"), solvedPuzzleCount);
-	UE_LOG(LogTemp, Warning, TEXT("current stage is : %f"), playingStage);
+	UE_LOG(LogTemp, Warning, TEXT("ARoomManager::MoveOnNextStage : Current Stage : %f"), playingStage);
 }
 
 void ARoomManager::StageProgressChecker()
@@ -122,8 +126,7 @@ void ARoomManager::StageProgressChecker()
 		sequencePlayer->Play();
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("ARoomManager::StageProgressChecker"));
-	UE_LOG(LogTemp, Warning, TEXT("current stage is : %f"), playingStage);
+	UE_LOG(LogTemp, Warning, TEXT("ARoomManager::StageProgressChecker : current stage is : %f"), playingStage);
 }
 
 void ARoomManager::SequenceFinished()
@@ -135,6 +138,7 @@ void ARoomManager::SequenceFinished()
 
 	// 랭킹 위젯 켜기
 	endingDele.Broadcast();
+	UE_LOG(LogTemp, Warning, TEXT("ARoomManager::SequenceFinished : endingDele Broadcasted"));
 
 	// 플레이어 손 콜리전 복구
 	player->leftIndexFingerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -148,6 +152,7 @@ float ARoomManager::GetCurrentPlayingStage()
 	return playingStage;
 }
 
+// 1번방 배터리 장착되면 터치패드 동작하게 할 용도로 만든 함수
 int ARoomManager::GetSolvedPuzzleCount()
 {
 	return solvedPuzzleCount;
@@ -310,6 +315,5 @@ void ARoomManager::GetInteractionObjectToArray()
 				arrSenseAlwaysComp.Add(sm);
 			}
 		}
-		compArray.Empty();
 	}
 }
