@@ -83,7 +83,7 @@ void AButtonBase::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	buttonComp->SetRelativeLocation(endLoc);
 	
 	// 손 콜리전 검출해서 왼손 오른손 진동처리 가능
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *OtherComp->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("%s"), *OtherComp->GetName());
 
 	// 손과 오버랩되면 진동 울리게 처리
 	auto player = Cast<AEscapePlayer>(OtherActor);

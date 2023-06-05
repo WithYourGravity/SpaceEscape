@@ -122,5 +122,7 @@ public:
 	class USoundBase* successSound;
 	UPROPERTY()
 	class USoundBase* failSound;
+	UPROPERTY()
+	class USoundBase* moveSound;
 
 };

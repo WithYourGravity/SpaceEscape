@@ -48,6 +48,12 @@ APuzzleRoomThreePathFinding::APuzzleRoomThreePathFinding()
 	{
 		failSound = tempFailSound.Object;
 	}
+
+	ConstructorHelpers::FObjectFinder<USoundBase>tempMoveSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/pathFindBlock.pathFindBlock'"));
+	if (tempMoveSound.Succeeded())
+	{
+		moveSound = tempMoveSound.Object;
+	}
 }
 
 void APuzzleRoomThreePathFinding::BeginPlay()
@@ -447,6 +453,9 @@ void APuzzleRoomThreePathFinding::PathLight()
 		{
 			groundBoxArray[AnswerPathArray[answerPathIndex]]->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myRed);
 
+			// 이동 사운드 재생
+			UGameplayStatics::PlaySound2D(this, moveSound, 0.6f);
+
 			// 도착점에 도착했다면 타이머 클리어하고 다음을 위해 인덱스 초기화
 			if (answerPathIndex == AnswerPathArray.Num() - 1)
 			{
@@ -458,7 +467,7 @@ void APuzzleRoomThreePathFinding::PathLight()
 				{
 					// 퍼즐완료 효과
 					FTimerHandle endingEffectHandle;
-					GetWorldTimerManager().SetTimer(endingEffectHandle, this, &APuzzleRoomThreePathFinding::EndingEffect, 2.f, false);
+					GetWorldTimerManager().SetTimer(endingEffectHandle, this, &APuzzleRoomThreePathFinding::EndingEffect, 1.f, false);
 				}
 				else
 				{
@@ -482,7 +491,6 @@ void APuzzleRoomThreePathFinding::PathLight()
 			}
 
 		}, 0.2f, true);
-
 }
 
 // 플레이 가능한 블록인지 확인하고 playing노드를 해당 노드로 변경
@@ -544,6 +552,8 @@ void APuzzleRoomThreePathFinding::MovePlayingNode(EMoveDir direction)
 	PlayedPathArray.Add(playingNodeIndex);
 	// playing 노드 색 바꿔주기
 	groundBoxArray[playingNodeIndex]->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myWhite);
+	// 이동 사운드 재생
+	UGameplayStatics::PlaySound2D(this, moveSound, 0.6f);
 
 	if (playingNodeIndex == endPointIndex)
 	{
@@ -568,21 +578,11 @@ void APuzzleRoomThreePathFinding::EndingEffect()
 		blocks->SetVectorParameterValueOnMaterials(FName("BaseColor"), (FVector)myWhite);
 	}
 
-	// 블럭 움직임이 끝나면 움직이게끔 타이머로 1초마다 확인
-	GetWorldTimerManager().SetTimer(resetHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			if (!bIsMoving)
-			{
-				// 성공사운드 재생
-				UGameplayStatics::PlaySound2D(this, successSound);
+	// 성공사운드 재생
+	UGameplayStatics::PlaySound2D(this, successSound);
 
-				lerpTime = 0;
-				bEndingMoveTrigger = true;
-				//UE_LOG(LogTemp, Warning, TEXT("timer call once?"));
-
-				GetWorldTimerManager().ClearTimer(resetHandle);
-			}
-		}), 1, true);
+	lerpTime = 0;
+	bEndingMoveTrigger = true;
 }
 
 void APuzzleRoomThreePathFinding::EndingMovingAtTick(float deltatime)
