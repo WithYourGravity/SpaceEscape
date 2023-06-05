@@ -2,7 +2,8 @@
 
 
 #include "MovableBattCover.h"
-#include "Screw.h"
+#include "GrabComponent.h"
+#include "Components/BoxComponent.h"
 
 // 배터리 커버
 AMovableBattCover::AMovableBattCover()
@@ -35,10 +36,7 @@ AMovableBattCover::AMovableBattCover()
 void AMovableBattCover::BeginPlay()
 {
 	Super::BeginPlay();
-	allowBatt.Execute();
 
-	//screw 4개 담길 배열
-	
 }
 
 // Called every frame
@@ -51,10 +49,12 @@ void AMovableBattCover::Tick(float DeltaTime)
 void AMovableBattCover::FallingCover()
 {
 	Super::FallingCover();
-	//screw 4개 다 뽑히면 배터리에 델리게이트 보내기
-	//if (screw->bAllFallenScrews == true)
-	//{		
-		//allowBatt.Execute();
-		UE_LOG(LogTemp, Warning, TEXT("AMovable Battery Cover FallingCover()"))
-	//}
+	cameOutScrewCount = 0;
+	//나사가 다 빠졌을 때 Grab할 수 있다.
+	boxComp->SetSimulatePhysics(true);
+	grabComp->bSimulateOnDrop = true;
+	grabComp->grabType = EGrabType::FREE;
+	allowBatt.Execute();
+	UE_LOG(LogTemp, Warning, TEXT("AMovable Battery Cover FallingCover()"))
+
 }

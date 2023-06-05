@@ -112,6 +112,7 @@ void AScrew::CameOutScrew()
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("CameOutScrew::isEnoughRotated = %d"), isEnoughRotated)
 		boxComp->SetSimulatePhysics(true);
+		
 		AMovableVent* mv = Cast<AMovableVent>(UGameplayStatics::GetActorOfClass(GetWorld(), AMovableVent::StaticClass()));
 		AMovableBattCover* mbc = Cast<AMovableBattCover>(UGameplayStatics::GetActorOfClass(GetWorld(), AMovableBattCover::StaticClass()));
 		if(isVentScrew)

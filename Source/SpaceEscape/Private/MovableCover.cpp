@@ -4,8 +4,6 @@
 #include "MovableCover.h"
 #include "Components/BoxComponent.h"
 #include "GrabComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Screw.h"
 
 // Moveable Covers Parents
 AMovableCover::AMovableCover()
@@ -29,7 +27,6 @@ void AMovableCover::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
 }
 
 // Called every frame
@@ -41,14 +38,7 @@ void AMovableCover::Tick(float DeltaTime)
 
 void AMovableCover::FallingCover()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Cover :: cameOutScrewCount : %d"), cameOutScrewCount)
-	cameOutScrewCount = 0;
-	//나사가 다 빠졌을 때 Grab할 수 있다.
-	boxComp->SetSimulatePhysics(true);
-
-	grabComp->bSimulateOnDrop = true;
-	grabComp->grabType = EGrabType::FREE;
-
+	
 }
 
 
