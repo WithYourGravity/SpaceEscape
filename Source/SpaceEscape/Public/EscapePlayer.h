@@ -239,7 +239,7 @@ private:
 	void DropMagazine();
 
 public:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	class AGun* grabbedGun;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")

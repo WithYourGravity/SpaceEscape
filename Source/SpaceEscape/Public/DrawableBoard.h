@@ -24,14 +24,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
-	UPROPERTY(EditDefaultsOnly, Category = "Clipboard")
+	UPROPERTY(EditDefaultsOnly, Category = "Board")
 	class UStaticMeshComponent* boardMeshComp;
-	UPROPERTY(EditDefaultsOnly, Category = "Clipboard")
-	class UStaticMeshComponent* pageMeshComp;
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	class UGrabComponent* grabComp;
+	//UPROPERTY(EditDefaultsOnly, Category = "Grab")
+	//class UGrabComponent* grabComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Clipboard")
+	UPROPERTY(EditDefaultsOnly, Category = "Board")
 	class UMaterialInstance* pageMaterialInst;
 
 	void OnPaintVisualTraceLine(class AActor* brush, const FHitResult& hitInfo);

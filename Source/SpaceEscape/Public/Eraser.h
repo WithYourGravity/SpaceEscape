@@ -23,9 +23,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Eraser")
-	//class UBoxComponent* boxComp;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Eraser")
 	class UStaticMeshComponent* meshComp;
 
@@ -36,7 +33,8 @@ public:
 	FLinearColor brushColor = FLinearColor::White;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eraser")
-	float brushSize = 0.15f;
+	float brushSize = 0.05f;
+	//float brushSize = 0.15f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eraser")
 	float brushStrength = 1.0f;

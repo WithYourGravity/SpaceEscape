@@ -18,7 +18,7 @@ ADrawableBoard::ADrawableBoard()
 	boardMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("boardMeshComp"));
 	SetRootComponent(boardMeshComp);
 	boardMeshComp->SetSimulatePhysics(true);
-	boardMeshComp->SetCollisionProfileName(FName("PuzzleObjectPreset"));
+	boardMeshComp->SetCollisionProfileName(FName("BoardPreset"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempBoardMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/BoardNPencil/WhiteBoard/interactive1.interactive1'"));
 	if (tempBoardMesh.Succeeded())
 	{
@@ -26,24 +26,15 @@ ADrawableBoard::ADrawableBoard()
 		//boardMeshComp->SetRelativeScale3D(FVector(0.5f));
 	}
 
-	pageMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("pageMeshComp"));
-	pageMeshComp->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempPageMesh(TEXT("/Script/Engine.StaticMesh'/Game/YSY/Assets/BoardNPencil/ClipBoard_page.ClipBoard_page'"));
-	if (tempPageMesh.Succeeded())
-	{
-		pageMeshComp->SetStaticMesh(tempPageMesh.Object);
-		pageMeshComp->SetCollisionProfileName(FName("BoardPreset"));
-	}
-
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> tempMat(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/YSY/Assets/BoardNPencil/MI_Page.MI_Page'"));
 	if (tempMat.Succeeded())
 	{
-		pageMeshComp->SetMaterial(0, tempMat.Object);
+		boardMeshComp->SetMaterial(0, tempMat.Object);
 	}
 
-	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
-	grabComp->SetupAttachment(RootComponent);
-	grabComp->grabType = EGrabType::FREE;
+	//grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("grabComp"));
+	//grabComp->SetupAttachment(RootComponent);
+	//grabComp->grabType = EGrabType::FREE;
 
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> tempPageMaterialInst(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/YSY/Assets/BoardNPencil/MI_Page.MI_Page'"));
 	if (tempPageMaterialInst.Succeeded())
@@ -64,7 +55,6 @@ ADrawableBoard::ADrawableBoard()
 
 	Tags.Add(FName("Sense"));
 	boardMeshComp->ComponentTags.Add(FName("Sense.R2"));
-	pageMeshComp->ComponentTags.Add(FName("Sense.R2"));
 }
 
 // Called when the game starts or when spawned
@@ -72,7 +62,7 @@ void ADrawableBoard::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UMaterialInstanceDynamic* pageDynamicMaterial = pageMeshComp->CreateDynamicMaterialInstance(0, pageMaterialInst);
+	UMaterialInstanceDynamic* pageDynamicMaterial = boardMeshComp->CreateDynamicMaterialInstance(0, pageMaterialInst);
 
 	renderToTexture = UKismetRenderingLibrary::CreateRenderTarget2D(GetWorld(), renderTextureSizeX, renderTextureSizeY);
 

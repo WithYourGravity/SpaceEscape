@@ -126,15 +126,20 @@ AEscapePlayer::AEscapePlayer()
 	dieWidgetComp->SetupAttachment(vrCamera);
 	dieWidgetComp->SetRelativeLocation(FVector(260.0f, 0.0f, 0.0f));
 	dieWidgetComp->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
-	dieWidgetComp->SetRelativeScale3D(FVector(0.5f));
+	dieWidgetComp->SetRelativeScale3D(FVector(0.3f));
 	dieWidgetComp->SetVisibility(false);
 
 	damageWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("damageWidgetComp"));
 	damageWidgetComp->SetupAttachment(vrCamera);
+	damageWidgetComp->SetRelativeLocation(FVector(112.0f, 0.0f, 0.0f));
+	damageWidgetComp->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
 	damageWidgetComp->SetVisibility(false);
 
 	helpWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("helpWidgetComp"));
 	helpWidgetComp->SetupAttachment(vrCamera);
+	helpWidgetComp->SetRelativeLocation(FVector(250.0f, 0.0f, -20.0f));
+	helpWidgetComp->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+	helpWidgetComp->SetRelativeScale3D(FVector(0.1f));
 	helpWidgetComp->SetVisibility(false);
 
 	// Teleport
