@@ -7,7 +7,9 @@
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
 //#include "GrabComponent.h"
+#include "MovableBattCover.h"
 #include "MovableCover.h"
+#include "MovableVent.h"
 
 AScrew::AScrew()
 { 	
@@ -87,9 +89,9 @@ void AScrew::bRotating()
 
 void AScrew::bEnoughCameOut()
 {
-	//나사가 다 나온 거리인지 확인 : 4.6 이동하면 다 나온 것
+	//나사가 다 나온 거리인지 확인 : 4.4 이동하면 다 나온 것
 	screwDist = FVector::Dist(GetActorLocation(), startLoc);
-	screwDist >= 4.6f ? isEnoughRotated = true : isEnoughRotated = false;
+	screwDist >= 4.4f ? isEnoughRotated = true : isEnoughRotated = false;
 }
 
 void AScrew::MoveScrew()
@@ -106,32 +108,39 @@ void AScrew::MoveScrew()
 void AScrew::CameOutScrew()
 {
 	//다 나왔다면 바닥에 떨어질 것
-	//cameOutScrewCount = 0;
-	//다 나왔다면 바닥에 떨어질 것
 	if (isEnoughRotated == true)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("CameOutScrew::isEnoughRotated = %d"), isEnoughRotated)
 		boxComp->SetSimulatePhysics(true);
-		//cameOutScrewCount++;
+		AMovableVent* mv = Cast<AMovableVent>(UGameplayStatics::GetActorOfClass(GetWorld(), AMovableVent::StaticClass()));
+		AMovableBattCover* mbc = Cast<AMovableBattCover>(UGameplayStatics::GetActorOfClass(GetWorld(), AMovableBattCover::StaticClass()));
+		if(isVentScrew)
+		{
+			if (!bDoOnce)
+			{
+				bDoOnce = true;
+				mv->cameOutScrewCount++;
+				UE_LOG(LogTemp, Warning, TEXT("AScrew :: cameOutScrewCount : %d"), mv->cameOutScrewCount)
+				if (mv->cameOutScrewCount == 4)
+				{
+					mv->FallingCover();
+				}
+			}
+		}
+		else
+		{
+			if (!bDoOnce)
+			{
+				bDoOnce = true;
+				mbc->cameOutScrewCount++;
+				UE_LOG(LogTemp, Warning, TEXT("AScrew :: cameOutScrewCount : %d"), mbc->cameOutScrewCount)
+				if (mbc->cameOutScrewCount == 4)
+				{
+					mbc->FallingCover();
+				}
+			}
+		}
 	}
-	//UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count : %d"), cameOutScrewCount)
-
-}
-
-void AScrew::CheckAllCameOut()
-{
-	
-	AMovableCover* mc = Cast<AMovableCover>(UGameplayStatics::GetActorOfClass(GetWorld(), AMovableCover::StaticClass()));
-	mc->FallingCover();
-	UE_LOG(LogTemp, Warning, TEXT("bAllFallenScrews : %d"), bAllFallenScrews)
-	cameOutScrewCount = 0;
-
-	//나사 4개 다 풀렸을 때 Vent 떨어지라고 알려줄것
-	//if (cameOutScrewCount > 4)
-	//{
-		//bool로 cover가 떨어져도 되는 상태임을 알려줄 것
-		//UE_LOG(LogTemp, Warning, TEXT("Is cameOutScrew Counted? : %d"), cameOutScrewCount)
-	//}
 }
 
 void AScrew::AttachtoDriver(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

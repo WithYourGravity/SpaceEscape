@@ -29,11 +29,8 @@ public:
 	class UStaticMeshComponent* meshComp;
 	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
 	class UGrabComponent* grabComp;
-
-	UPROPERTY()
-	TArray<AActor*> screw;
-
+	
 	virtual void FallingCover();
 
-	
+	int32 cameOutScrewCount = 0;
 };
