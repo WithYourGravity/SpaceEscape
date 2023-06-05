@@ -142,6 +142,10 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	class UDamageWidget* damageUI;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	class UWidgetComponent* helpWidgetComp;
+
+
 // Teleport
 public:
 	// Teleport Circle Niagara
@@ -198,16 +202,18 @@ private:
 // Grab
 public:
 	// Grab 범위
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Grab")
 	float grabRange = 4;
 	// Grab Object 기억
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grab")
 	class UGrabComponent* heldComponentRight;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grab")
 	class UGrabComponent* heldComponentLeft;
 
 	// Object Grab 여부
+	UPROPERTY(BlueprintReadOnly, Category = "Grab")
 	bool bIsGrabbedRight = false;
+	UPROPERTY(BlueprintReadOnly, Category = "Grab")
 	bool bIsGrabbedLeft = false;
 	
 	// 잡기 시도 기능
@@ -220,6 +226,11 @@ public:
 	// MotionController 근처 잡을 수 있는 Object 찾는 함수
 	class UGrabComponent* GetGrabComponentNearMotionController(class UMotionControllerComponent* motionController);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void R_TraceFingerData();
+	UFUNCTION(BlueprintImplementableEvent)
+	void L_TraceFingerData();
+
 
 // Fire
 private:
@@ -228,7 +239,7 @@ private:
 	void DropMagazine();
 
 public:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	class AGun* grabbedGun;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
@@ -322,5 +333,6 @@ public:
 	void CallCheat2();
 	void CallCheat3();
 	void CallCheat4();
-	void CallHelp();
+	void ShowHelp();
+	void HiddenHelp();
 };

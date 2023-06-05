@@ -45,7 +45,8 @@ public:
 	FLinearColor brushColor = FLinearColor::Blue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marker")
-	float brushSize = 0.02f;
+	float brushSize = 0.008f;
+	//float brushSize = 0.02f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marker")
 	float brushStrength = 1.0f;

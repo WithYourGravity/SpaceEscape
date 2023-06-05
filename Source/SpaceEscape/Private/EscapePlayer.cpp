@@ -126,12 +126,21 @@ AEscapePlayer::AEscapePlayer()
 	dieWidgetComp->SetupAttachment(vrCamera);
 	dieWidgetComp->SetRelativeLocation(FVector(260.0f, 0.0f, 0.0f));
 	dieWidgetComp->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
-	dieWidgetComp->SetRelativeScale3D(FVector(0.5f));
+	dieWidgetComp->SetRelativeScale3D(FVector(0.3f));
 	dieWidgetComp->SetVisibility(false);
 
 	damageWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("damageWidgetComp"));
 	damageWidgetComp->SetupAttachment(vrCamera);
+	damageWidgetComp->SetRelativeLocation(FVector(112.0f, 0.0f, 0.0f));
+	damageWidgetComp->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
 	damageWidgetComp->SetVisibility(false);
+
+	helpWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("helpWidgetComp"));
+	helpWidgetComp->SetupAttachment(vrCamera);
+	helpWidgetComp->SetRelativeLocation(FVector(250.0f, 0.0f, -20.0f));
+	helpWidgetComp->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+	helpWidgetComp->SetRelativeScale3D(FVector(0.1f));
+	helpWidgetComp->SetVisibility(false);
 
 	// Teleport
 	teleportCircle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("teleportCircle"));
@@ -298,7 +307,8 @@ void AEscapePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		InputSystem->BindAction(IA_Cheat2, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat2);
 		InputSystem->BindAction(IA_Cheat3, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat3);
 		InputSystem->BindAction(IA_Cheat4, ETriggerEvent::Started, this, &AEscapePlayer::CallCheat4);
-		InputSystem->BindAction(IA_Help, ETriggerEvent::Started, this, &AEscapePlayer::CallHelp);
+		InputSystem->BindAction(IA_Help, ETriggerEvent::Started, this, &AEscapePlayer::ShowHelp);
+		InputSystem->BindAction(IA_Help, ETriggerEvent::Completed, this, &AEscapePlayer::HiddenHelp);
 	}
 }
 
@@ -463,6 +473,8 @@ void AEscapePlayer::TryGrabLeft()
 		{
 			heldComponentLeft = grabComp;
 
+			L_TraceFingerData();
+
 			if (heldComponentLeft == heldComponentRight)
 			{
 				heldComponentRight = nullptr;
@@ -490,6 +502,8 @@ void AEscapePlayer::TryGrabRight()
 		if (grabComp->TryGrab(rightHand))
 		{
 			heldComponentRight = grabComp;
+
+			R_TraceFingerData();
 
 			if (heldComponentRight == heldComponentLeft)
 			{
@@ -794,8 +808,13 @@ void AEscapePlayer::CallCheat4()
 	gm->SetStage(0);
 }
 
-void AEscapePlayer::CallHelp()
+void AEscapePlayer::ShowHelp()
 {
+	helpWidgetComp->SetVisibility(true);
+}
 
+void AEscapePlayer::HiddenHelp()
+{
+	helpWidgetComp->SetVisibility(false);
 }
 
