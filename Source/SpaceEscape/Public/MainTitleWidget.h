@@ -39,6 +39,7 @@ public:
 	UFUNCTION()
 	void CloseCredit();
 	void DeactivatePlayerInteraction();
+	void PlayClickSound();
 
 private:
 	UPROPERTY()
@@ -47,4 +48,6 @@ private:
 	class ARoomManager* rm;
 	UPROPERTY()
 	class ASpaceEscapeGameModeBase* gm;
+	UPROPERTY()
+	class USoundBase* clickSound;
 };

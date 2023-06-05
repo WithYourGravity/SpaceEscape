@@ -70,6 +70,9 @@ private:
 	class UHapticFeedbackEffect_Base* hapticFeedback;
 	UPROPERTY()
 	class UMotionControllerComponent* playerHand;
+	UPROPERTY()
+	class USoundBase* resetButtonSound;
+
 	FTimerHandle stickHandle;
 	char otherCompNameForTimer;
 	bool bIsGrabed;

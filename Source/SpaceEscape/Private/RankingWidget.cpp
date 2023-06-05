@@ -24,17 +24,21 @@ void URankingWidget::NativeConstruct()
 	timeBlockArray = { text_Time1, text_Time2, text_Time3, text_Time4, text_Time5, text_Time6, text_Time7, text_Time8, text_Time9 };
 
 	SetVisibility(ESlateVisibility::Hidden);
+
+	clickSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/UIClick.UIClick'")));
 }
 
 // 현재 레벨을 재오픈해서 메인위젯으로 이동하는 함수
 void URankingWidget::GoToMain()
 {
+	PlayClickSound();
 	UGameplayStatics::OpenLevel(this, FName("FinalMap"));
 }
 
 // 랭킹에 입력중이었던 이름을 전체삭제하는 함수
 void URankingWidget::DeleteName()
 {
+	PlayClickSound();
 	morse->EmptyScreenString();
 	morse->setScreenText(morse->GetScreenString());
 }
@@ -42,7 +46,13 @@ void URankingWidget::DeleteName()
 // 랭킹에 입력한 이름을 랭킹액터에 넘겨주고 랭킹을 보여주게 위젯스위치를 작동시키는 함수
 void URankingWidget::EnterName()
 {
+	PlayClickSound();
 	rankingActor->AddToRanking(morse->GetScreenString());
 	switcher->SetActiveWidgetIndex(0);
+}
+
+void URankingWidget::PlayClickSound()
+{
+	UGameplayStatics::PlaySound2D(this, clickSound);
 }
 

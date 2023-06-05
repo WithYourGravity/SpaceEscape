@@ -24,6 +24,7 @@ public:
 	void DeleteName();
 	UFUNCTION()
 	void EnterName();
+	void PlayClickSound();
 
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UTextBlock* text_Name1;
@@ -82,4 +83,6 @@ private:
 	class APuzzleRoomThreeMorse* morse;
 	UPROPERTY()
 	class ARanking* rankingActor;
+	UPROPERTY()
+	class USoundBase* clickSound;
 };

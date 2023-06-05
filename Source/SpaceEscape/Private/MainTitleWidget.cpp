@@ -29,6 +29,8 @@ void UMainTitleWidget::NativeConstruct()
 
 	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
 	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	clickSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/UIClick.UIClick'")));
 }
 
 void UMainTitleWidget::GameStart()
@@ -44,22 +46,26 @@ void UMainTitleWidget::GameStart()
 	gm->StartPlayTime();
 	// 스테이지 1로 만들기
 	rm->MoveOnNextStage();
+
+	PlayClickSound();
 }
 
 void UMainTitleWidget::GameExit()
 {
+	PlayClickSound();
 	DeactivatePlayerInteraction();
-
 	UKismetSystemLibrary::QuitGame(this, GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }
 
 void UMainTitleWidget::ShowCredit()
 {
+	PlayClickSound();
 	switcher->SetActiveWidgetIndex(1);
 }
 
 void UMainTitleWidget::CloseCredit()
 {
+	PlayClickSound();
 	switcher->SetActiveWidgetIndex(0);
 }
 
@@ -70,4 +76,9 @@ void UMainTitleWidget::DeactivatePlayerInteraction()
 		player->DeactivateLeftWidgetInteraction();
 		player->DeactivateRightWidgetInteraction();
 	}
+}
+
+void UMainTitleWidget::PlayClickSound()
+{
+	UGameplayStatics::PlaySound2D(this, clickSound);
 }

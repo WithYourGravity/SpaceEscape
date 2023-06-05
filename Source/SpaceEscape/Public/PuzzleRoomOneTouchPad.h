@@ -78,6 +78,8 @@ private:
 	class USoundBase* successSound;
 
 	FString answer;
+	FString answerRoomOne = "0714";
+	FString answerRoomTwo = "3654";
 	bool bCanTouch = true;
 	float touchDelay = 0.6;
 };
