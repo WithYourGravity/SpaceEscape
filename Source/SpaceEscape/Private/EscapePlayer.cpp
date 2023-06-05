@@ -662,6 +662,7 @@ void AEscapePlayer::Die()
 	GetWorld()->GetTimerManager().SetTimer(dieTimer, FTimerDelegate::CreateLambda([this]()->void
 	{
 			UGameplayStatics::OpenLevel(this, FName("FinalMap"));
+			GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameAndUI());
 	}), 5.0f, false);
 
 	/*FRotator endRot = GetActorRotation().Add(0.0f, 0.0f, 90.0f);

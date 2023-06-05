@@ -97,7 +97,7 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 		if (moveState == EEnemyMoveSubState::CRAWL)
 		{
 			sectionName += FString(TEXT("Crawl"));
-			me->SetActorLocation(me->GetActorLocation() + FVector(0, 0, 73));
+			//me->SetActorLocation(me->GetActorLocation() + FVector(0, 0, 73));
 		}
 		else
 		{
@@ -178,9 +178,9 @@ void UEnemyFSM::OnDamageProcess(int32 damageValue, EEnemyHitPart damagePart)
 	{
 		me->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 		me->GetCapsuleComponent()->SetCapsuleRadius(15.0f);
-		me->GetCapsuleComponent()->SetCapsuleHalfHeight(15.0f);
-		me->GetMesh()->SetRelativeLocation(FVector(0, 0, -15));
-		me->SetActorLocation(me->GetActorLocation() + FVector(0, 0, -73));
+		//me->GetCapsuleComponent()->SetCapsuleHalfHeight(15.0f);
+		//me->GetMesh()->SetRelativeLocation(FVector(0, 0, -15));
+		//me->SetActorLocation(me->GetActorLocation() + FVector(0, 0, -73));
 	}
 
 	ai->StopMovement();
@@ -225,7 +225,7 @@ void UEnemyFSM::AttackPlayer()
 	target->SubtractHP(power);
 	target->infoUI->PrintCurrentHPPercent();
 
-	if (target->GetHP() == 0)
+	if (target->GetHP() <= 0)
 	{
 		target->Die();
 	}

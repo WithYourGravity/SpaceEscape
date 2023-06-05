@@ -35,6 +35,11 @@ void UPlayerInfoWidget::PrintCurrentHPPercent()
 
 	float curHPPer = player->GetHP() / static_cast<float>(player->maxHP);
 
+	if (curHPPer <= 0)
+	{
+		curHPPer = 0.0f;
+	}
+
 	hpDMI->SetScalarParameterValue(FName("percent"), curHPPer);
 	curHPPercentImage->SetBrushFromMaterial(hpDMI);
 	curHP->SetText(FText::AsNumber(curHPPer * 100));
