@@ -68,7 +68,7 @@ void APuzzleRoomOneBattery::BeginOverlap(UPrimitiveComponent* OverlappedComponen
 		ReportClear();
 
 		// 배터리 사운드 재생
-		UGameplayStatics::PlaySound2D(this, batterySound);
+		UGameplayStatics::PlaySound2D(this, batterySound, 2.f);
 	}
 }
 

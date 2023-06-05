@@ -105,6 +105,12 @@ APuzzleRoomThreeJoystick::APuzzleRoomThreeJoystick()
 
 	Tags.Add(FName("Sense"));
 	stickMeshComp->ComponentTags.Add(FName("Sense.R3"));
+
+	ConstructorHelpers::FObjectFinder<USoundBase>tempSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/pathReset.pathReset'"));
+    if (tempSound.Succeeded())
+    {
+		resetButtonSound = tempSound.Object;
+    }
 }
 
 // Called when the game starts or when spawned
@@ -199,6 +205,9 @@ void APuzzleRoomThreeJoystick::ResetButtonOnOverlap(UPrimitiveComponent* Overlap
 		puzzlePathFinding->MovingTrigger();
 		FTimerHandle resetHandle;
 		GetWorldTimerManager().SetTimer(resetHandle, puzzlePathFinding, &APuzzleRoomThreePathFinding::ResetThisPuzzle, 2, false);
+
+		// 리셋버튼 소리 재생
+		UGameplayStatics::PlaySound2D(this, resetButtonSound);
 	}
 
 	// 한번 리셋하면 4초간 안되게끔

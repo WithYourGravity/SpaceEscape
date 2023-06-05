@@ -3,6 +3,7 @@
 
 #include "WallPad.h"
 
+#include "DoorManager.h"
 #include "EscapePlayer.h"
 #include "PuzzleRoomTwoWallPadWidget.h"
 #include "RoomManager.h"
@@ -76,6 +77,13 @@ void AWallPad::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other
 		ReportClear();
 
 		UGameplayStatics::PlaySound2D(this, gravityOffSound);
+
+		// 만약 문이 열려있다면 모든 문 닫히게 처리
+		auto dm = Cast<ADoorManager>(UGameplayStatics::GetActorOfClass(this, ADoorManager::StaticClass()));
+		if (dm && dm->bOpened)
+		{
+			dm->CloseAllDoors();
+		}
 	}
 }
 

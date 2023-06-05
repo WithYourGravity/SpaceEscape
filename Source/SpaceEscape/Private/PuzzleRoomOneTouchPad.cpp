@@ -149,7 +149,7 @@ void APuzzleRoomOneTouchPad::BeginPlay()
 	if (rmOnePanelWidget)
 	{
 		rmOnePanelWidget->deleteCurrentScreen();
-		answer = "0714";
+		answer = answerRoomOne;
 
 		rmOnePanelWidget->TextBlock_word->SetVisibility(ESlateVisibility::Hidden);
 	}
@@ -157,7 +157,7 @@ void APuzzleRoomOneTouchPad::BeginPlay()
 	{
 		rmTwoPanelWidget = Cast<UPuzzleRoomTwoTouchPadPanelWidget>(screenWidgetComp->GetWidget());
 		rmTwoPanelWidget->deleteCurrentScreen();
-		answer = "4514";
+		answer = answerRoomTwo;
 	}
 
 	// 중력 매니저 캐스팅

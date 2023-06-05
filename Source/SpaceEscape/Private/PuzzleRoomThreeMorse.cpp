@@ -10,6 +10,7 @@
 #include "EngineUtils.h"
 #include "PuzzleRoomThreeMorseLever.h"
 #include "RoomManager.h"
+#include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
 
 APuzzleRoomThreeMorse::APuzzleRoomThreeMorse()
@@ -50,7 +51,7 @@ void APuzzleRoomThreeMorse::BeginPlay()
 
 	// 스크린 출력문자 초기화
 	setScreenText("");
-	screenWidget->TextBlock_Small->SetText(FText::FromString(TEXT("목적지를 입력하세요")));
+	screenWidget->switcher->SetActiveWidgetIndex(1);
 }
 
 // 모스버튼 신호를 받아서 임시문자열에 추가하는 함수
@@ -72,7 +73,7 @@ void APuzzleRoomThreeMorse::addToTempString(float second)
 void APuzzleRoomThreeMorse::Enter()
 {
 	// 안내문 지우고
-	screenWidget->TextBlock_Small->SetText(FText::FromString(""));
+	screenWidget->switcher->SetActiveWidgetIndex(0);
 
 	// 임시문자열이 비어있거나 맵에 없는 키라면 임시문자열비우고 리턴
 	if (tempString.IsEmpty() || !morse.Contains(tempString))
@@ -101,13 +102,21 @@ void APuzzleRoomThreeMorse::CheckRightOrWrong()
 {
 	if (screenString == "EARTH" && !bAnswerOnce)
 	{
+		// 정답일 경우
 		bAnswerOnce = true;
-		screenWidget->TextBlock_Small->SetText(FText::FromString("Destination Confirmed"));
+		screenWidget->switcher->SetActiveWidgetIndex(2);
 		ReportClear();
 	}
 
-	setScreenText("");
+	if (!bAnswerOnce)
+	{
+		// 틀렸을 경우
+		screenWidget->switcher->SetActiveWidgetIndex(3);
+	}
+
+	// 풀고나서 이름 입력할 때 알아서 비워지게
 	screenString.Empty();
+	setScreenText(screenString);
 }
 
 // 스크린에 인자로 들어온 String값을 출력하는 함수
@@ -137,5 +146,6 @@ char APuzzleRoomThreeMorse::Translater(FString code)
 // 랭킹 입력위해 출력창 비우는 함수
 void APuzzleRoomThreeMorse::ForEndingRanking()
 {
-	screenWidget->TextBlock_Small->SetText(FText::FromString(""));
+	screenString.Empty();
+	setScreenText(screenString);
 }

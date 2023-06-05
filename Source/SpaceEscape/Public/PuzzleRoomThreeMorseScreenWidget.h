@@ -18,6 +18,5 @@ public:
 	UPROPERTY()
 	class UTextBlock* TextBlock_Morse;
 	UPROPERTY()
-	class UTextBlock* TextBlock_Small;
-
+	class UWidgetSwitcher* switcher;
 };

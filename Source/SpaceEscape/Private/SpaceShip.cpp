@@ -31,7 +31,7 @@ ASpaceShip::ASpaceShip()
 
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
 	boxComp->SetupAttachment(RootComponent);
-	boxComp->SetBoxExtent(FVector(600.f, 600.f, 300.f));
+	boxComp->SetBoxExtent(FVector(600.f, 400.f, 300.f));
 	boxComp->SetRelativeLocation(FVector(300.f, 200.f, 200.f));
 	boxComp->SetRelativeRotation(FRotator(0, -30.f, 0));
 
@@ -98,10 +98,10 @@ ASpaceShip::ASpaceShip()
 
 	billboardComp = CreateDefaultSubobject<UBillboardComponent>(TEXT("billboardComp"));
 	billboardComp->SetupAttachment(boxComp);
-	billboardComp->SetRelativeLocation(FVector(0, 0, -100));
+	billboardComp->SetRelativeLocation(FVector(40, -50, -100));
 	billboardComp->SetVisibility(false);
 	billboardComp->SetHiddenInGame(false);
-	ConstructorHelpers::FObjectFinder<UTexture2D>tempBillIMG(TEXT("/Script/Engine.Texture2D'/Game/LTG/Assets/Images/x-mark.x-mark'"));
+	ConstructorHelpers::FObjectFinder<UTexture2D>tempBillIMG(TEXT("/Script/Engine.Texture2D'/Game/Yeni/Images/OnBoarding1.OnBoarding1'"));
     if (tempBillIMG.Succeeded())
     {
 		billboardComp->SetSprite(tempBillIMG.Object);
