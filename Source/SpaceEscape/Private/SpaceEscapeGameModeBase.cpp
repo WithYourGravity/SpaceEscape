@@ -67,8 +67,10 @@ void ASpaceEscapeGameModeBase::SetStage(int stage)
 		{
 			return;
 		}
-		rm->MoveOnNextStage();
-		rm->MoveOnNextStage();
+		while (rm->GetCurrentPlayingStage() < 2)
+		{
+			rm->MoveOnNextStage();
+		}
 		player->SetActorLocation(FVector(-3500, -3520, 130));
 		player->DeactivateRightWidgetInteraction();
 		StartPlayTime();
@@ -78,10 +80,10 @@ void ASpaceEscapeGameModeBase::SetStage(int stage)
 		{
 			return;
 		}
-		rm->MoveOnNextStage();
-		rm->MoveOnNextStage();
-		rm->MoveOnNextStage();
-		rm->MoveOnNextStage();
+		while (rm->GetCurrentPlayingStage() < 3)
+		{
+			rm->MoveOnNextStage();
+		}
 		player->SetActorLocation(FVector(-3415, -600, 1350));
 		player->DeactivateRightWidgetInteraction();
 		StartPlayTime();
