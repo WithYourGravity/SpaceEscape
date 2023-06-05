@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "DoorButton.generated.h"
 
-//DECLARE_MULTICAST_DELEGATE(FOpenDoorDele)
+DECLARE_MULTICAST_DELEGATE(FOpenDoorDele)
 
 UCLASS()
 class SPACEESCAPE_API ADoorButton : public AActor
@@ -33,6 +33,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Door Button Settings")
 	TArray<class AActor*> outDoorActors;
 
+	UPROPERTY()
+	class ADoorManager* dManager;
 
 	//손이 버튼에 닿으면 문이 열린다
 	UFUNCTION()
@@ -41,17 +43,11 @@ public:
 
 	UFUNCTION()
 	void CheckClearStage();
-	//UFUNCTION()
-	//void ReportOpen();
+	UFUNCTION()
+	void ReportOpen();
 
-	void bOpenDoor();
-	void OpenAllDoors();
-	void CloseAllDoors();
-
-	UPROPERTY()
-	TArray<AActor*> doors;
 public:
-	//FOpenDoorDele openDoorDele;
+	FOpenDoorDele openDoorDele;
 	//델리게이트 받으면 버튼 활성화 되도록
 	bool bCanButtonClicked;
 	//문이 한번 열고 닫혔었는지

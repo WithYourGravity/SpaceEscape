@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "MovableCover.generated.h"
+#include "DoorManager.generated.h"
 
 UCLASS()
-class SPACEESCAPE_API AMovableCover : public AActor
+class SPACEESCAPE_API ADoorManager : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AMovableCover();
+	ADoorManager();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,17 +23,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
-	class UBoxComponent* boxComp;
-	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
-	class UStaticMeshComponent* meshComp;
-	UPROPERTY(EditDefaultsOnly, Category = "ScrewDriver")
-	class UGrabComponent* grabComp;
-
 	UPROPERTY()
-	TArray<AActor*> screw;
+	TArray<AActor*> doors;
+	UPROPERTY()
+	TArray<AActor*> doorBtns;
 
-	virtual void FallingCover();
+	class ARoomManager* rm;
+	bool bOpened;
 
-	
+
+	void OpenAllDoors();
+	void CloseAllDoors();
 };

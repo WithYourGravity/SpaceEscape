@@ -35,7 +35,10 @@ AMovableBattCover::AMovableBattCover()
 void AMovableBattCover::BeginPlay()
 {
 	Super::BeginPlay();
+	allowBatt.Execute();
 
+	//screw 4개 담길 배열
+	
 }
 
 // Called every frame
@@ -48,10 +51,10 @@ void AMovableBattCover::Tick(float DeltaTime)
 void AMovableBattCover::FallingCover()
 {
 	Super::FallingCover();
-	//배터리에 델리게이트 보내기
-	if (screw->bAllFallenScrews == true)
-	{		
-		allowBatt.Execute();
+	//screw 4개 다 뽑히면 배터리에 델리게이트 보내기
+	//if (screw->bAllFallenScrews == true)
+	//{		
+		//allowBatt.Execute();
 		UE_LOG(LogTemp, Warning, TEXT("AMovable Battery Cover FallingCover()"))
-	}
+	//}
 }

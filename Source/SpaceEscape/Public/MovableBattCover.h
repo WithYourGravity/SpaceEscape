@@ -35,8 +35,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Battery Cover")
 	class UStaticMeshComponent* handleMesh;
 
-	FAllowBattAttatch allowBatt;
+	TArray<AActor*> screws;
 
+	FAllowBattAttatch allowBatt;
 
 	virtual void FallingCover() override;
 };
