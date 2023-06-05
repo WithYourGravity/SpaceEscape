@@ -68,6 +68,7 @@ void ARoomManager::AddSolvedPuzzleCount()
 
 	if (!totalPuzzlePerStage.Contains(playingStage))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("ARoomManager::AddSolvedPuzzleCount : Current Stage : %f"), playingStage);
 		UE_LOG(LogTemp, Error, TEXT("ARoomManager::AddSolvedPuzzleCount : Invalid Stage!!"));
 		return;
 	}
@@ -132,8 +133,8 @@ void ARoomManager::StageProgressChecker()
 void ARoomManager::SequenceFinished()
 {
 	// 우주선 우주밖으로 이동
-	ship->SetActorLocation(FVector(-3300, 18000, 1000));
-	ship->SetActorRotation(FRotator(0, 90, 0));
+	ship->SetActorLocation(FVector(-3366.f, 16114.44f, 983.f));
+	ship->SetActorRotation(FRotator(0, 89.f, 0));
 	player->SetActorLocation(ship->forLocComp->GetComponentLocation());
 
 	// 랭킹 위젯 켜기
