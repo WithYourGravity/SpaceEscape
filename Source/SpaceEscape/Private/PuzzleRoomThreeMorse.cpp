@@ -55,7 +55,7 @@ void APuzzleRoomThreeMorse::BeginPlay()
 }
 
 // 모스버튼 신호를 받아서 임시문자열에 추가하는 함수
-void APuzzleRoomThreeMorse::addToTempString(float second)
+void APuzzleRoomThreeMorse::addToTempString(const float second)
 {
 	if (second >= 0.6f)
 	{
@@ -100,7 +100,7 @@ void APuzzleRoomThreeMorse::Enter()
 // 정답인지 틀렸는지 확인하는 함수
 void APuzzleRoomThreeMorse::CheckRightOrWrong()
 {
-	if (screenString == "EARTH" && !bAnswerOnce)
+	if (screenString == morseAnswer && !bAnswerOnce)
 	{
 		// 정답일 경우
 		bAnswerOnce = true;
@@ -120,7 +120,7 @@ void APuzzleRoomThreeMorse::CheckRightOrWrong()
 }
 
 // 스크린에 인자로 들어온 String값을 출력하는 함수
-void APuzzleRoomThreeMorse::setScreenText(FString string)
+void APuzzleRoomThreeMorse::setScreenText(const FString& string)
 {
 	screenWidget->TextBlock_Morse->SetText(FText::FromString(string));
 }
@@ -138,7 +138,7 @@ void APuzzleRoomThreeMorse::EmptyScreenString()
 }
 
 // 0와 1로 이뤄진 임시문자열을 영문자로 번역해서 뱉어내는 함수
-char APuzzleRoomThreeMorse::Translater(FString code)
+char APuzzleRoomThreeMorse::Translater(const FString& code)
 {
 	return morse[code];
 }

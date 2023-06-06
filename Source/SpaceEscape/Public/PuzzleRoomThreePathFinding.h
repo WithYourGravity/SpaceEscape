@@ -75,8 +75,6 @@ private:
 	FTimerHandle resetHandle;
 	FLinearColor myRed = FLinearColor(1, 0, 0, 1);
 	FLinearColor myGreen = FLinearColor(0, 1, 0.25, 1);
-	FLinearColor myBlue = FLinearColor(0.07, 0.095, 0.24, 1);
-	FLinearColor myYellow = FLinearColor(0.5, 0.5, 0, 1);
 	FLinearColor myWhite = FLinearColor(1, 1, 1, 1);
 
 	// 알고리즘 부분
