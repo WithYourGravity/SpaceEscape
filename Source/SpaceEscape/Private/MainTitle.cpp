@@ -23,6 +23,12 @@ AMainTitle::AMainTitle()
     {
 		widgetComp->SetWidgetClass(tempWidget.Class);
     }
+
+	ConstructorHelpers::FObjectFinder<USoundBase>tempClickSound(TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/UIClick.UIClick'"));
+	if (tempClickSound.Succeeded())
+	{
+		clickSound = tempClickSound.Object;
+	}
 }
 
 // Called when the game starts or when spawned

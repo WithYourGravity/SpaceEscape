@@ -27,4 +27,6 @@ public:
 	class USceneComponent* sceneComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UWidgetComponent* widgetComp;
+	UPROPERTY()
+	class USoundBase* clickSound;
 };

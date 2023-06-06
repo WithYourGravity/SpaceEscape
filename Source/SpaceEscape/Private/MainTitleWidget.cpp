@@ -9,6 +9,7 @@
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
+#include "MainTitle.h"
 
 void UMainTitleWidget::NativeConstruct()
 {
@@ -29,8 +30,8 @@ void UMainTitleWidget::NativeConstruct()
 
 	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
 	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
-
-	clickSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, TEXT("/Script/Engine.SoundWave'/Game/LTG/Assets/Sound/UIClick.UIClick'")));
+	titleActor = Cast<AMainTitle>(UGameplayStatics::GetActorOfClass(this, AMainTitle::StaticClass()));
+	clickSound = titleActor->clickSound;
 }
 
 void UMainTitleWidget::GameStart()
