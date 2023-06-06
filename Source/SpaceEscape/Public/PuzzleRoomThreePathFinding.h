@@ -73,8 +73,8 @@ private:
 	float blockMoveSpeed = 2;
 	
 	FTimerHandle resetHandle;
-	FLinearColor myRed = FLinearColor(0.25, 0.06, 0.07, 1);
-	FLinearColor myGreen = FLinearColor(0.1, 0.24, 0.1, 1);
+	FLinearColor myRed = FLinearColor(1, 0, 0, 1);
+	FLinearColor myGreen = FLinearColor(0, 1, 0.25, 1);
 	FLinearColor myBlue = FLinearColor(0.07, 0.095, 0.24, 1);
 	FLinearColor myYellow = FLinearColor(0.5, 0.5, 0, 1);
 	FLinearColor myWhite = FLinearColor(1, 1, 1, 1);
