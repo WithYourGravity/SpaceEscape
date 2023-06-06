@@ -33,5 +33,6 @@ private:
 
 	UPROPERTY()
 	class ARoomManager* rm;
+
 	bool bDoOnce;
 };

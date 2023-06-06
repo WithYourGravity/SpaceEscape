@@ -56,7 +56,7 @@ public:
 private:
 	UPROPERTY()
 	class AEscapePlayer* player;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY()
 	class UHapticFeedbackEffect_Base* hapticFeedback;
 	UPROPERTY()
 	class UMotionControllerComponent* playerHand;

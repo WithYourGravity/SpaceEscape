@@ -39,5 +39,6 @@ private:
 	class UPuzzleRoomTwoWallPadWidget* gravityWidget;
 	UPROPERTY()
 	class USoundBase* gravityOffSound;
+
 	bool bActiveOnce;
 };

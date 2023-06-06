@@ -75,9 +75,14 @@ void ALeverBase::LeverShouldBeZero()
 {
 	FRotator rot = leverComp->GetRelativeRotation();
 
+	if (rot.Roll == 0)
+	{
+		return;
+	}
+
 	if (rot.Roll > 5)
 	{
-		rot.Roll -= 2;
+		rot.Roll -= 3;
 		leverComp->SetRelativeRotation(rot);
 	}
 	else

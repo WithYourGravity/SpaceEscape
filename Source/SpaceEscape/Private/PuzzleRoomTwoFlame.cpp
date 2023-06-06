@@ -61,8 +61,8 @@ void APuzzleRoomTwoFlame::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// 해당 스테이지 진입시만 동작하게 처리 (나중에)
-	if (!bIsClosed)
+	// 해당 스테이지 진입시만 동작하게
+	if (!bIsClosed && rm->GetCurrentPlayingStage() == 2)
 	{
 		DoTrace();
 	}	

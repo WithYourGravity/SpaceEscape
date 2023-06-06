@@ -249,7 +249,7 @@ void ASpaceShip::SpawnControlableJoystick()
 	GetWorldTimerManager().SetTimer(stickDownHandle, FTimerDelegate::CreateLambda([&]()
 		{
 			controlableStick->SetActorLocation(FMath::Lerp(stickLoc, stickFinalLoc, stickTimer));
-			stickTimer += GetWorld()->GetDeltaSeconds() * 0.4f;
+			stickTimer += GetWorld()->GetDeltaSeconds() * 0.5f;
 			stickTimer = FMath::Clamp(stickTimer, 0.f, 1.f);
 			if (stickTimer == 1)
 			{
