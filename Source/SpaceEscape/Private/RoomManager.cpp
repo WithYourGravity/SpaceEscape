@@ -104,6 +104,11 @@ void ARoomManager::MoveOnNextStage()
 		UE_LOG(LogTemp, Warning, TEXT("spawnEnemyDele Broadcasted"));
 	}
 
+	if (forStoryDele.IsBound() && (playingStage == 2 || playingStage == 3))
+	{
+		forStoryDele.Broadcast();
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("ARoomManager::MoveOnNextStage : Current Stage : %f"), playingStage);
 }
 
