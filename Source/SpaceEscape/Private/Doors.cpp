@@ -27,7 +27,7 @@ ADoors::ADoors()
 	triggerboxComp->SetRelativeScale3D(FVector(5, 10, 1));*/
 
 	//문 효과음
-	ConstructorHelpers::FObjectFinder<USoundCue> drSound(TEXT("/Script/Engine.SoundWave'/Game/Yeni/Music/SoundEffect/SlidingDoor6.SlidingDoor6'"));
+	ConstructorHelpers::FObjectFinder<USoundCue> drSound(TEXT("/Script/Engine.SoundCue'/Game/Yeni/Music/DoorCue.DoorCue'"));
 	if (drSound.Succeeded())
 	{
 		doorSoundCue = drSound.Object;
@@ -35,6 +35,7 @@ ADoors::ADoors()
 	doorAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("doorAudioComp"));
 	doorAudioComp->SetupAttachment(RootComponent);
 	doorAudioComp->bAutoActivate = false;
+	doorAudioComp->SetSound(doorSoundCue);
 }
 
 void ADoors::BeginPlay()
@@ -83,7 +84,6 @@ void ADoors::Open()
 	curveTimeline.PlayFromStart();
 	if (doorSoundCue && doorAudioComp->IsValidLowLevelFast())
 	{
-		doorAudioComp->SetSound(doorSoundCue);
 		doorAudioComp->Play();
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
@@ -98,7 +98,6 @@ void ADoors::Close()
 
 	if (doorSoundCue && doorAudioComp->IsValidLowLevelFast())
 	{
-		doorAudioComp->SetSound(doorSoundCue);
 		doorAudioComp->Play();
 	}
 	UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))	

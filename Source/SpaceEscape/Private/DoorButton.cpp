@@ -25,7 +25,7 @@ ADoorButton::ADoorButton()
 
 	buttonMesh->SetVectorParameterValueOnMaterials(FName("doorStateColor"), FVector4(0.505f, 0.015f, 0.00974f, 1));
 
-	ConstructorHelpers::FObjectFinder<USoundCue> btnSound(TEXT("/Script/Engine.SoundWave'/Game/Yeni/Music/SoundEffect/BtnClickSound.BtnClickSound'"));
+	ConstructorHelpers::FObjectFinder<USoundCue> btnSound(TEXT("/Script/Engine.SoundCue'/Game/Yeni/Music/DoorBtnCue.DoorBtnCue'"));
 	if (btnSound.Succeeded())
 	{
 		btnSoundCue = btnSound.Object;
@@ -33,6 +33,7 @@ ADoorButton::ADoorButton()
 	btnAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("btnAudioComp"));
 	btnAudioComp->SetupAttachment(RootComponent);
 	btnAudioComp->bAutoActivate = false;
+	btnAudioComp->SetSound(btnSoundCue);
 }
 
 // Called when the game starts or when spawned
@@ -74,7 +75,6 @@ void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	//효과음 재생
 	if (btnSoundCue && btnAudioComp->IsValidLowLevelFast())
 	{
-		btnAudioComp->SetSound(btnSoundCue);
 		btnAudioComp->Play();
 	}
 
