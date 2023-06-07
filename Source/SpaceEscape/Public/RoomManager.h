@@ -10,6 +10,8 @@ DECLARE_MULTICAST_DELEGATE(FStageClearDele);
 DECLARE_MULTICAST_DELEGATE(FGameClearDele);
 DECLARE_MULTICAST_DELEGATE(FEndingDele);
 DECLARE_MULTICAST_DELEGATE(FSpawnEnemyDele);
+DECLARE_MULTICAST_DELEGATE(FForStoryDele);
+
 
 UCLASS()
 class SPACEESCAPE_API ARoomManager : public AActor
@@ -56,6 +58,7 @@ public:
 	FGameClearDele gameClearDele;
 	FEndingDele endingDele;
 	FSpawnEnemyDele spawnEnemyDele;
+	FForStoryDele forStoryDele;
 
 	// sense ฐüทร
 	void SenseOn();
