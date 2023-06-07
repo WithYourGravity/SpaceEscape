@@ -38,7 +38,7 @@ ASpaceShip::ASpaceShip()
 	forLocComp = CreateDefaultSubobject<USphereComponent>(TEXT("forLocComp"));
 	forLocComp->SetupAttachment(RootComponent);
 	forLocComp->SetCollisionProfileName(FName("NoCollision"));
-	forLocComp->SetRelativeLocation(FVector(280.f, 0, 220.f));
+	forLocComp->SetRelativeLocation(FVector(280.f, 0, 230.f));
 	forLocComp->SetSphereRadius(16.f);
 
 	forJoyLocComp = CreateDefaultSubobject<USphereComponent>(TEXT("forJoyLocComp"));
