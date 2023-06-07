@@ -233,8 +233,8 @@ void AEscapePlayer::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(breathTimer, this, &AEscapePlayer::PlayBreathingSound, playTime);
 
 	roomManager->endingDele.AddUFunction(this, FName("StopBreathingSound"));
-	roomManager->stageClearDele.AddUFunction(this, FName("ShowDialogue"));
-	roomManager->spawnEnemyDele.AddUFunction(this, FName("ShowDialogue"));
+	roomManager->forStoryDele.AddUFunction(this, FName("StartDialogue"));
+	roomManager->spawnEnemyDele.AddUFunction(this, FName("StartDialogue"));
 
 	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
 }
@@ -834,12 +834,12 @@ void AEscapePlayer::HiddenHelp()
 	helpWidgetComp->SetVisibility(false);
 }
 
-void AEscapePlayer::ShowDialogue()
+void AEscapePlayer::StartDialogue()
 {
 	FString dialogue;
 	if (roomManager->GetCurrentPlayingStage() == 1.0f)
 	{
-		dialogue = TEXT("외계인이 여길 어떻게 들어온거야 젠장 죽을뻔했네");
+		dialogue = TEXT("여기 들어오면서 ID 카드 떨어뜨린 것 같아");
 	}
 	else if (roomManager->GetCurrentPlayingStage() == 2.0f)
 	{
@@ -847,22 +847,25 @@ void AEscapePlayer::ShowDialogue()
 	}
 	else if (roomManager->GetCurrentPlayingStage() == 3.0f)
 	{
-		dialogue = TEXT("죽을 뻔했네");
+		dialogue = TEXT("죽을 뻔했네...");
 	}
 
 	dialogueUI->text_dialogue->SetText(FText::FromString(dialogue));
 
-	dialogueWidgetComp->SetVisibility(true);
+	ShowDialogue();
+}
 
+void AEscapePlayer::ShowDialogue()
+{
+	dialogueWidgetComp->SetVisibility(true);
 	HiddenDialogue();
 }
 
 void AEscapePlayer::HiddenDialogue()
 {
-	FTimerHandle dialogueTimer;
 	GetWorld()->GetTimerManager().SetTimer(dialogueTimer, FTimerDelegate::CreateLambda([this]()->void
-	{
-		dialogueWidgetComp->SetVisibility(false);
-	}), 5.0f, false);
+		{
+			dialogueWidgetComp->SetVisibility(false);
+			dialogueUI->text_dialogue->SetText(FText::FromString(""));
+		}), 5.0f, false);
 }
-

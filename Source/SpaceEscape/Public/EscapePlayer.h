@@ -150,6 +150,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	class UDialogueWidget* dialogueUI;
+	
 
 // Teleport
 public:
@@ -341,7 +342,10 @@ public:
 	void ShowHelp();
 	void HiddenHelp();
 
+	FTimerHandle dialogueTimer;
+
 	UFUNCTION()
+	void StartDialogue();
 	void ShowDialogue();
 	void HiddenDialogue();
 };

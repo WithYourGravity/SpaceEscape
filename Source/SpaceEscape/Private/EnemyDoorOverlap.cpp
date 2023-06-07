@@ -48,11 +48,14 @@ void AEnemyDoorOverlap::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		enemy->enemyFSM->bIsOverlapDoor = true;
 
-		// Show Dialogue
-		player->dialogueUI->text_dialogue->SetText(FText::FromString(TEXT("여기서 나가야해 당장")));
-		player->dialogueWidgetComp->SetVisibility(true);
+		if (!bIsOverlapDoor)
+		{
+			bIsOverlapDoor = true;
 
-		player->HiddenDialogue();
+			// Show Dialogue
+			player->dialogueUI->text_dialogue->SetText(FText::FromString(TEXT("여기서 나가야해 당장")));
+			player->ShowDialogue();
+		}
 	}
 }
 
