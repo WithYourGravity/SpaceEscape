@@ -47,8 +47,6 @@ public:
 
 	//문 여는 충돌감지 진행중인가
 	bool bIsOpenOverlaping = true;
-	//UFUNCTION()
-	//void ChangeDoorOverlaping();
 
 	/*문의 부드러운 이동*/
 	UFUNCTION()
@@ -70,5 +68,11 @@ public:
 	//다른 방향의 문 구별하기
 	UPROPERTY(EditAnywhere, Category = "Door Settings")
 	bool isdoorDir;
+
+	//문 움직이는 소리
+	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
+	class USoundCue* doorSoundCue;
+	UPROPERTY(EditDefaultsOnly, Category = "Door Settings")
+	class UAudioComponent* doorAudioComp;
 };
 

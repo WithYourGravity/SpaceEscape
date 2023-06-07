@@ -8,6 +8,8 @@
 #include "Components/BoxComponent.h"
 #include "RoomManager.h"
 #include "DoorManager.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 
 // Sets default values
 ADoorButton::ADoorButton()
@@ -22,6 +24,15 @@ ADoorButton::ADoorButton()
 	buttonMesh->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
 
 	buttonMesh->SetVectorParameterValueOnMaterials(FName("doorStateColor"), FVector4(0.505f, 0.015f, 0.00974f, 1));
+
+	ConstructorHelpers::FObjectFinder<USoundCue> btnSound(TEXT("/Script/Engine.SoundWave'/Game/Yeni/Music/SoundEffect/BtnClickSound.BtnClickSound'"));
+	if (btnSound.Succeeded())
+	{
+		btnSoundCue = btnSound.Object;
+	}
+	btnAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("btnAudioComp"));
+	btnAudioComp->SetupAttachment(RootComponent);
+	btnAudioComp->bAutoActivate = false;
 }
 
 // Called when the game starts or when spawned
@@ -59,6 +70,13 @@ void ADoorButton::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	AEscapePlayer* player = Cast<AEscapePlayer>(OtherActor);
 	if(!player) return;
 	//UE_LOG(LogTemp, Warning, TEXT("ADoorButton::OnHandOverlap : %s"), *OtherActor->GetName())
+
+	//효과음 재생
+	if (btnSoundCue && btnAudioComp->IsValidLowLevelFast())
+	{
+		btnAudioComp->SetSound(btnSoundCue);
+		btnAudioComp->Play();
+	}
 
 	if(!dManager) return;
 	if(bCanButtonClicked == true)

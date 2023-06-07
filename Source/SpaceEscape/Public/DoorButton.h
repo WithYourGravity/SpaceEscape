@@ -33,6 +33,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Door Button Settings")
 	TArray<class AActor*> outDoorActors;
 
+	//버튼 효과음
+	UPROPERTY(EditDefaultsOnly, Category = "Button Sound")
+	class USoundCue* btnSoundCue;
+	UPROPERTY(EditDefaultsOnly, Category = "Button Sound")
+	class UAudioComponent* btnAudioComp;
+
 	UPROPERTY()
 	class ADoorManager* dManager;
 
