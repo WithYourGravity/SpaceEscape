@@ -31,6 +31,8 @@ public:
 	class UGrabComponent* grabComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UAudioComponent* soundComp;
+	UPROPERTY(EditDefaultsOnly)
+	class USpotLightComponent* lightComp;
 
 	void ControlManager(FString input);
 	void MoveForward();

@@ -6,6 +6,7 @@
 #include "GrabComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
+#include "Components/SpotLightComponent.h"
 #include "Engine/TextureRenderTarget2D.h"
 
 // Sets default values
@@ -51,6 +52,12 @@ ARemoteControlObject::ARemoteControlObject()
 	{
 		soundComp->AttenuationSettings = tempAttenuation.Object;
 	}
+
+	lightComp = CreateDefaultSubobject<USpotLightComponent>(TEXT("lightComp"));
+	lightComp->SetupAttachment(RootComponent);
+	lightComp->SetIntensity(300.f);
+	lightComp->SetAttenuationRadius(300.f);
+	lightComp->SetOuterConeAngle(45.f);
 
 	Tags.Add(FName("Sense"));
 	meshComp->ComponentTags.Add(FName("Sense.R1"));
