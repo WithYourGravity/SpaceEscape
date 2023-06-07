@@ -104,6 +104,7 @@ void ARoomManager::MoveOnNextStage()
 		UE_LOG(LogTemp, Warning, TEXT("spawnEnemyDele Broadcasted"));
 	}
 
+	// 플레이어 독백 위한 델리게이트
 	if (forStoryDele.IsBound() && (playingStage == 2 || playingStage == 3))
 	{
 		forStoryDele.Broadcast();
@@ -115,6 +116,12 @@ void ARoomManager::MoveOnNextStage()
 void ARoomManager::StageProgressChecker()
 {
 	playingStage += 0.5f;
+
+	// 플레이어 독백 위한 델리게이트
+	if (forStoryDele.IsBound() && (playingStage == 2 || playingStage == 3))
+	{
+		forStoryDele.Broadcast();
+	}
 
 	// 엔딩 처리 필요
 	if (playingStage == 4)
