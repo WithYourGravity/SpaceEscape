@@ -173,6 +173,9 @@ AEscapePlayer::AEscapePlayer()
 	gunOverlapComp->SetupAttachment(gunStorageComp);
 	gunOverlapComp->SetBoxExtent(FVector(35, 50, 40));
 
+	debugLine = CreateDefaultSubobject<UNiagaraComponent>(TEXT("debugLine"));
+	debugLine->SetupAttachment(rightAim);
+
 	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 }
 
@@ -263,6 +266,11 @@ void AEscapePlayer::Tick(float DeltaTime)
 		{
 			UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(teleportCurveComp, FName("User.PointArray"), linePoints);
 		}
+	}
+
+	if (bIsActiveWidgetInteraction)
+	{
+		DrawWidgetDebugLine();
 	}
 
 	if (bIsClimbing)
@@ -767,25 +775,29 @@ void AEscapePlayer::ReleaseUIInputRight()
 void AEscapePlayer::ActiveLeftWidgetInteraction()
 {
 	leftWidgetInteractionComp->Activate(true);
-	leftWidgetInteractionComp->bShowDebug = true;
+	//leftWidgetInteractionComp->bShowDebug = true;
 }
 
 void AEscapePlayer::ActiveRightWidgetInteraction()
 {
 	rightWidgetInteractionComp->Activate(true);
-	rightWidgetInteractionComp->bShowDebug = true;
+	//rightWidgetInteractionComp->bShowDebug = true;
+
+	bIsActiveWidgetInteraction = true;
 }
 
 void AEscapePlayer::DeactivateLeftWidgetInteraction()
 {
 	leftWidgetInteractionComp->Deactivate();
-	leftWidgetInteractionComp->bShowDebug = false;
+	//leftWidgetInteractionComp->bShowDebug = false;
 }
 
 void AEscapePlayer::DeactivateRightWidgetInteraction()
 {
 	rightWidgetInteractionComp->Deactivate();
-	rightWidgetInteractionComp->bShowDebug = false;
+	//rightWidgetInteractionComp->bShowDebug = false;
+
+	bIsActiveWidgetInteraction = false;
 }
 
 void AEscapePlayer::PlayBreathingSound()
@@ -868,4 +880,22 @@ void AEscapePlayer::HiddenDialogue()
 			dialogueWidgetComp->SetVisibility(false);
 			dialogueUI->text_dialogue->SetText(FText::FromString(""));
 		}), 5.0f, false);
+}
+
+void AEscapePlayer::DrawWidgetDebugLine()
+{
+	FHitResult hitResult = rightWidgetInteractionComp->GetLastHitResult();
+	if (rightWidgetInteractionComp->IsOverInteractableWidget())
+	{
+		FVector hitLocation = hitResult.ImpactPoint;
+		FTransform hitTransform, hitRelativeTransform;
+		hitTransform.SetLocation(hitLocation);
+		hitRelativeTransform = hitTransform.GetRelativeTransform(debugLine->GetComponentTransform());
+
+		debugLine->SetVectorParameter(FName("User.LaserEnd"), hitRelativeTransform.GetLocation());
+	}
+	else
+	{
+		debugLine->SetVectorParameter(FName("User.LaserEnd"), FVector(0, 0, 0));
+	}
 }
