@@ -75,6 +75,10 @@ AMarker::AMarker()
 
 	Tags.Add(FName("Sense"));
 	rootCylinderMeshComp->ComponentTags.Add(FName("Sense.R2"));
+	cylinderMeshComp1->ComponentTags.Add(FName("Sense.R2"));
+	cylinderMeshComp2->ComponentTags.Add(FName("Sense.R2"));
+	cylinderMeshComp3->ComponentTags.Add(FName("Sense.R2"));
+	tipMeshComp->ComponentTags.Add(FName("Sense.R2"));
 }
 
 // Called when the game starts or when spawned

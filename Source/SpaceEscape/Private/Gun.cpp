@@ -293,7 +293,7 @@ void AGun::Fire(float fireAlpha)
 		return;
 	}
 
-	if (fireAlpha >= 0.9f)
+	if (fireAlpha >= 0.8f)
 	{
 		bFireCompleted = true;
 	

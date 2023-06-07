@@ -43,6 +43,8 @@ AEscapePlayer::AEscapePlayer()
 
 	spotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("spotLight"));
 	spotLight->SetupAttachment(vrCamera);
+	spotLight->SetRelativeLocation(FVector(0.0f, 0.0f, 30.0f));
+	spotLight->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 
 	// MotionController
 	leftHand = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftHand"));
