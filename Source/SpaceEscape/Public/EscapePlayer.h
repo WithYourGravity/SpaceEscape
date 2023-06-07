@@ -145,6 +145,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
 	class UWidgetComponent* helpWidgetComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	class UWidgetComponent* dialogueWidgetComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	class UDialogueWidget* dialogueUI;
+	
 
 // Teleport
 public:
@@ -335,4 +341,11 @@ public:
 	void CallCheat4();
 	void ShowHelp();
 	void HiddenHelp();
+
+	FTimerHandle dialogueTimer;
+
+	UFUNCTION()
+	void StartDialogue();
+	void ShowDialogue();
+	void HiddenDialogue();
 };

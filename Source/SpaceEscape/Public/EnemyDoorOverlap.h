@@ -26,6 +26,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Overlap")
 	class USphereComponent* sphereComp;
 
+	UPROPERTY()
+	class AEscapePlayer* player;
+
+	bool bIsOverlapDoor = false;
+
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
