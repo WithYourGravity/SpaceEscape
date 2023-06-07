@@ -5,7 +5,8 @@
 #include "Components/TimelineComponent.h"
 #include "DoorButton.h"
 #include "EngineUtils.h"
-#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 //#include "Components/BoxComponent.h"
 
 ADoors::ADoors()
@@ -24,6 +25,16 @@ ADoors::ADoors()
 	triggerboxComp->SetupAttachment(RootComponent);
 	triggerboxComp->SetRelativeLocation(FVector(0, 0, 0));
 	triggerboxComp->SetRelativeScale3D(FVector(5, 10, 1));*/
+
+	//문 효과음
+	ConstructorHelpers::FObjectFinder<USoundCue> drSound(TEXT("/Script/Engine.SoundWave'/Game/Yeni/Music/SoundEffect/SlidingDoor6.SlidingDoor6'"));
+	if (drSound.Succeeded())
+	{
+		doorSoundCue = drSound.Object;
+	}
+	doorAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("doorAudioComp"));
+	doorAudioComp->SetupAttachment(RootComponent);
+	doorAudioComp->bAutoActivate = false;
 }
 
 void ADoors::BeginPlay()
@@ -57,11 +68,6 @@ void ADoors::Tick(float DeltaTime)
 	curveTimeline.TickTimeline(DeltaTime);
 }
 
-//void ADoors::ChangeDoorOverlaping()
-//{	
-//	bIsOpenOverlaping == true ? Open() : Close();	
-//}
-
 void ADoors::Open()
 {
 	startPoint = GetActorLocation();
@@ -75,18 +81,26 @@ void ADoors::Open()
 	}
 	
 	curveTimeline.PlayFromStart();
-	//bIsOpenOverlaping = false;
+	if (doorSoundCue && doorAudioComp->IsValidLowLevelFast())
+	{
+		doorAudioComp->SetSound(doorSoundCue);
+		doorAudioComp->Play();
+	}
 	UE_LOG(LogTemp, Warning, TEXT("Overlapped : Open Door"))
 }
 
 void ADoors::Close()
 {
-	//if (bIsOpenOverlaping == true) return;
 	startPoint = GetActorLocation();
 	//startPoint = doorMesh->GetRelativeLocation();
 	endPoint = initLoc;
 	curveTimeline.PlayFromStart();
-	//bIsOpenOverlaping = true;
+
+	if (doorSoundCue && doorAudioComp->IsValidLowLevelFast())
+	{
+		doorAudioComp->SetSound(doorSoundCue);
+		doorAudioComp->Play();
+	}
 	UE_LOG(LogTemp, Warning, TEXT("EndOverlapped : Close Door"))	
 }
 
