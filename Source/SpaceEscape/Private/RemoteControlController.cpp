@@ -17,11 +17,11 @@ ARemoteControlController::ARemoteControlController()
 
 	tabletMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TabletMeshComp"));
 	SetRootComponent(tabletMeshComp);
-	tabletMeshComp->SetRelativeScale3D(FVector(0.15f));
+	tabletMeshComp->SetRelativeScale3D(FVector(1.5f));
 	tabletMeshComp->SetSimulatePhysics(true);
 	tabletMeshComp->SetGenerateOverlapEvents(false);
 	tabletMeshComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
-	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/sci-fi-tablet/source/Tablet/Tablet.Tablet'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/Yeni/Assets/ModularSciFiOffice/Meshes/Props/SM_Tablet_01.SM_Tablet_01'"));
     if (tempMesh.Succeeded())
     {
 		tabletMeshComp->SetStaticMesh(tempMesh.Object);
@@ -29,23 +29,23 @@ ARemoteControlController::ARemoteControlController()
 
 	buttonGoMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonGoMeshComp"));
 	buttonGoMeshComp->SetupAttachment(RootComponent);
-	buttonGoMeshComp->SetRelativeLocationAndRotation(FVector(-95.f, 50.f, 6.f), FRotator(0, 270, 0));
-	buttonGoMeshComp->SetRelativeScale3D(FVector(0.4f));
+	buttonGoMeshComp->SetRelativeLocationAndRotation(FVector(-25.f, 17.f, 1.f), FRotator(0, 270, 0));
+	buttonGoMeshComp->SetRelativeScale3D(FVector(0.05f));
 	buttonGoMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 	buttonBackMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonBackMeshComp"));
 	buttonBackMeshComp->SetupAttachment(RootComponent);
-	buttonBackMeshComp->SetRelativeLocationAndRotation(FVector(-30.f, 50.f, 6.f), FRotator(0, 90, 0));
-	buttonBackMeshComp->SetRelativeScale3D(FVector(0.4f));
+	buttonBackMeshComp->SetRelativeLocationAndRotation(FVector(-19.f, 17.f, 1.f), FRotator(0, 90, 0));
+	buttonBackMeshComp->SetRelativeScale3D(FVector(0.05f));
 	buttonBackMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 	buttonLeftMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonLeftMeshComp"));
 	buttonLeftMeshComp->SetupAttachment(RootComponent);
-	buttonLeftMeshComp->SetRelativeLocationAndRotation(FVector(30.f, 50.f, 6.f), FRotator(0, 180, 0));
-	buttonLeftMeshComp->SetRelativeScale3D(FVector(0.4f));
+	buttonLeftMeshComp->SetRelativeLocationAndRotation(FVector(-12.f, 17.f, 1.f), FRotator(0, 180, 0));
+	buttonLeftMeshComp->SetRelativeScale3D(FVector(0.05f));
 	buttonLeftMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 	buttonRightMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ButtonRightMeshComp"));
 	buttonRightMeshComp->SetupAttachment(RootComponent);
-	buttonRightMeshComp->SetRelativeLocation(FVector(95.f, 50.f, 6.f));
-	buttonRightMeshComp->SetRelativeScale3D(FVector(0.4f));
+	buttonRightMeshComp->SetRelativeLocation(FVector(-5.f, 17.f, 1.f));
+	buttonRightMeshComp->SetRelativeScale3D(FVector(0.05f));
 	buttonRightMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempButtonIMG(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/SM_TabletButton.SM_TabletButton'"));
@@ -80,7 +80,8 @@ ARemoteControlController::ARemoteControlController()
 
 	tabletScreenComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TabletScreenComp"));
 	tabletScreenComp->SetupAttachment(RootComponent);
-	tabletScreenComp->SetRelativeScale3D(FVector(0.56f, 0.29f, 1.f));
+	tabletScreenComp->SetRelativeScale3D(FVector(0.27f, 0.19f, 1.f));
+	tabletScreenComp->SetRelativeLocation(FVector(-15.f, 10.6f, 0.8f));
 	tabletScreenComp->SetCollisionProfileName(TEXT("NoCollision"));
 
 	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base>tempHaptic(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
