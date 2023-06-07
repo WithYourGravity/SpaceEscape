@@ -348,4 +348,12 @@ public:
 	void StartDialogue();
 	void ShowDialogue();
 	void HiddenDialogue();
+
+public:
+	bool bIsActiveWidgetInteraction = false;
+
+	UPROPERTY(VisibleAnywhere, Category = "WidgetInteraction")
+	class UNiagaraComponent* debugLine;
+
+	void DrawWidgetDebugLine();
 };
