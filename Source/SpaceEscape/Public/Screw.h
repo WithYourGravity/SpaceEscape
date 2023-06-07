@@ -69,9 +69,12 @@ public:
 	double screwDist;	
 	//나사가 다 나왔다면 바닥에 떨어진다
 	void CameOutScrew();
+	//cameoutscrew 체크를 한번만 하도록
+	bool bDoOnce;
 
-	//나사 4개가 다 나왔는지 체크한다
-	void CheckAllCameOut();
+	//벤트 나사인가 배터리 나사인가
+	UPROPERTY(EditAnywhere)
+	bool isVentScrew;
 
 	//나사가 다 떨어진 상태인가
 	bool bAllFallenScrews;
@@ -79,6 +82,4 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	class UHapticFeedbackEffect_Base* hapticFeedback;
-
-	int32 cameOutScrewCount = 0;
 };

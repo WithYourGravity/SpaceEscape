@@ -2,6 +2,8 @@
 
 
 #include "MovableVent.h"
+#include "GrabComponent.h"
+#include "Components/BoxComponent.h"
 
 // 로봇 지나가는 통로
 AMovableVent::AMovableVent()
@@ -14,7 +16,6 @@ AMovableVent::AMovableVent()
 	{
 		meshComp->SetStaticMesh(vMesh.Object);
 	}
-	
 }
 
 // Called when the game starts or when spawned
@@ -34,21 +35,10 @@ void AMovableVent::Tick(float DeltaTime)
 void AMovableVent::FallingCover()
 {
 	Super::FallingCover();
+	cameOutScrewCount = 0;
+	//나사가 다 빠졌을 때 Grab할 수 있다.
+	boxComp->SetSimulatePhysics(true);
+	grabComp->bSimulateOnDrop = true;
+	grabComp->grabType = EGrabType::FREE;
 }
-
-//void AMovableVent::FallingVent()
-//{
-//	if (cameOutScrewCount < 4 )
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("isEnoughRotated"))
-//		cameOutScrewCount++;
-//		UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count : %d"), cameOutScrewCount)
-//		boxComp->SetSimulatePhysics(false);
-//	}
-//	else
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("cameOutScrew Count222 : %d"), cameOutScrewCount)
-//		boxComp->SetSimulatePhysics(true);
-//	}
-//}
 

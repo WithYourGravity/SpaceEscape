@@ -4,8 +4,6 @@
 #include "MovableCover.h"
 #include "Components/BoxComponent.h"
 #include "GrabComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Screw.h"
 
 // Moveable Covers Parents
 AMovableCover::AMovableCover()
@@ -29,7 +27,6 @@ void AMovableCover::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UGameplayStatics::GetAllActorsOfClass(this, AScrew::StaticClass(), screw);
 }
 
 // Called every frame
@@ -41,18 +38,7 @@ void AMovableCover::Tick(float DeltaTime)
 
 void AMovableCover::FallingCover()
 {
-	 for(AActor* fallenScrews : screw)
-	 {
-		 auto ss = Cast<AScrew>(fallenScrews);
-
-	 }
-	//if()
-	//{
-		boxComp->SetSimulatePhysics(true);
-		//나사가 다 빠졌을 때 Grab할 수 있다.
-		grabComp->grabType = EGrabType::FREE;
-	//}
-
+	
 }
 
 
