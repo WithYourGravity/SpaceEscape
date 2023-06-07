@@ -1,9 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "EscapePlayer.h"
 #include "Crosshair.h"
 #include "DamageWidget.h"
+#include "DialogueWidget.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "EnhancedInputComponent.h"
@@ -22,6 +23,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/SpotLightComponent.h"
+#include "Components/TextBlock.h"
 #include "Components/WidgetComponent.h"
 #include "Components/WidgetInteractionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -139,10 +141,18 @@ AEscapePlayer::AEscapePlayer()
 
 	helpWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("helpWidgetComp"));
 	helpWidgetComp->SetupAttachment(vrCamera);
-	helpWidgetComp->SetRelativeLocation(FVector(250.0f, 0.0f, -20.0f));
+	helpWidgetComp->SetRelativeLocation(FVector(250.0f, 0.0f, -10.0f));
 	helpWidgetComp->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
 	helpWidgetComp->SetRelativeScale3D(FVector(0.1f));
 	helpWidgetComp->SetVisibility(false);
+
+	dialogueWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("dialogueWidgetComp"));
+	dialogueWidgetComp->SetupAttachment(vrCamera);
+	dialogueWidgetComp->SetRelativeLocation(FVector(260.0f, 0.0f, 0.0f));
+	dialogueWidgetComp->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+	dialogueWidgetComp->SetRelativeScale3D(FVector(0.3f));
+	dialogueWidgetComp->SetVisibility(false);
+
 
 	// Teleport
 	teleportCircle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("teleportCircle"));
@@ -171,7 +181,7 @@ void AEscapePlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// Enhanced Input »ç¿ëÃ³¸®
+	// Enhanced Input ì‚¬ìš©ì²˜ë¦¬
 	auto PC = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PC)
 	{
@@ -184,23 +194,23 @@ void AEscapePlayer::BeginPlay()
 		}
 	}
 
-	// HMD °¡ ¿¬°áµÇ¾î ÀÖ´Ù¸é
+	// HMD ê°€ ì—°ê²°ë˜ì–´ ìˆë‹¤ë©´
 	if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
 	{
-		// ±âº» tracking offset ¼³Á¤
+		// ê¸°ë³¸ tracking offset ì„¤ì •
 		UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Eye);
 	}
-	// HMD °¡ ¿¬°áµÇ¾î ÀÖÁö ¾Ê´Ù¸é
+	// HMD ê°€ ì—°ê²°ë˜ì–´ ìˆì§€ ì•Šë‹¤ë©´
 	else
 	{
-		// Hand ¸¦ Å×½ºÆ®ÇÒ ¼ö ÀÖ´Â À§Ä¡·Î ÀÌµ¿
+		// Hand ë¥¼ í…ŒìŠ¤íŠ¸í•  ìˆ˜ ìˆëŠ” ìœ„ì¹˜ë¡œ ì´ë™
 		rightHand->SetRelativeLocation(FVector(20, 20, 0));
 		rightAim->SetRelativeLocation(FVector(20, 20, 0));
-		// Ä«¸Ş¶óÀÇ UsePawnControlRotation È°¼ºÈ­
+		// ì¹´ë©”ë¼ì˜ UsePawnControlRotation í™œì„±í™”
 		vrCamera->bUsePawnControlRotation = true;
 	}
 
-	// moveMode °¡ TELEPORT ÀÌ¸é ÅÚ·¹Æ÷Æ® ±â´É ÃÊ±âÈ­
+	// moveMode ê°€ TELEPORT ì´ë©´ í…”ë ˆí¬íŠ¸ ê¸°ëŠ¥ ì´ˆê¸°í™”
 	if (moveMode == EMoveModeState::TELEPORT)
 	{
 		ResetTeleport();
@@ -212,6 +222,7 @@ void AEscapePlayer::BeginPlay()
 
 	infoUI = Cast<UPlayerInfoWidget>(infoWidgetComp->GetUserWidgetObject());
 	damageUI = Cast<UDamageWidget>(damageWidgetComp->GetUserWidgetObject());
+	dialogueUI = Cast<UDialogueWidget>(dialogueWidgetComp->GetUserWidgetObject());
 
 	gunOverlapComp->OnComponentBeginOverlap.AddDynamic(this, &AEscapePlayer::OnGunStorageOverlap);
 	gunOverlapComp->OnComponentEndOverlap.AddDynamic(this, &AEscapePlayer::EndGunStorageOverlap);
@@ -222,6 +233,8 @@ void AEscapePlayer::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(breathTimer, this, &AEscapePlayer::PlayBreathingSound, playTime);
 
 	roomManager->endingDele.AddUFunction(this, FName("StopBreathingSound"));
+	roomManager->stageClearDele.AddUFunction(this, FName("ShowDialogue"));
+	roomManager->spawnEnemyDele.AddUFunction(this, FName("ShowDialogue"));
 
 	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
 }
@@ -231,10 +244,10 @@ void AEscapePlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// HMD °¡ ¿¬°áµÇ¾î ÀÖÁö ¾ÊÀ¸¸é
+	// HMD ê°€ ì—°ê²°ë˜ì–´ ìˆì§€ ì•Šìœ¼ë©´
 	if (!UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
 	{
-		// ¼ÕÀÌ Ä«¸Ş¶ó ¹æÇâ°ú ÀÏÄ¡ÇÏµµ·Ï ÇÑ´Ù.
+		// ì†ì´ ì¹´ë©”ë¼ ë°©í–¥ê³¼ ì¼ì¹˜í•˜ë„ë¡ í•œë‹¤.
 		rightHand->SetRelativeRotation(vrCamera->GetRelativeRotation());
 		rightAim->SetRelativeRotation(vrCamera->GetRelativeRotation());
 	}
@@ -322,13 +335,13 @@ void AEscapePlayer::Move(const FInputActionValue& values)
 	}
 
 	FVector2D axis = values.Get<FVector2D>();
-	// HMD °¡ ¿¬°áµÇ¾î ÀÖÁö ¾Ê´Ù¸é
+	// HMD ê°€ ì—°ê²°ë˜ì–´ ìˆì§€ ì•Šë‹¤ë©´
 	if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled() == false)
 	{
 		AddMovementInput(GetActorForwardVector(), axis.X);
 		AddMovementInput(GetActorRightVector(), axis.Y);
 	}
-	// ¸¸¾à HMD °¡ ¿¬°áµÇ¾î ÀÖ´Ù¸é
+	// ë§Œì•½ HMD ê°€ ì—°ê²°ë˜ì–´ ìˆë‹¤ë©´
 	else
 	{
 		AddMovementInput(vrCamera->GetForwardVector(), axis.X);
@@ -361,23 +374,23 @@ void AEscapePlayer::TeleportEnd(const FInputActionValue& values)
 		return;
 	}
 
-	// ÅÚ·¹Æ÷Æ®°¡ ºÒ°¡´ÉÇÏ´Ù¸é
+	// í…”ë ˆí¬íŠ¸ê°€ ë¶ˆê°€ëŠ¥í•˜ë‹¤ë©´
 	if (!ResetTeleport())
 	{
-		// ´ÙÀ½ Ã³¸®¸¦ ÇÏÁö ¾Ê´Â´Ù.
+		// ë‹¤ìŒ ì²˜ë¦¬ë¥¼ í•˜ì§€ ì•ŠëŠ”ë‹¤.
 		return;
 	}
 
-	// ÅÚ·¹Æ÷Æ®°¡ °¡´ÉÇÏ´Ù¸é ÅÚ·¹Æ÷Æ® À§Ä¡·Î ÀÌµ¿
+	// í…”ë ˆí¬íŠ¸ê°€ ê°€ëŠ¥í•˜ë‹¤ë©´ í…”ë ˆí¬íŠ¸ ìœ„ì¹˜ë¡œ ì´ë™
 	SetActorLocation(teleportLocation + FVector::UpVector * GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 }
 
 bool AEscapePlayer::ResetTeleport()
 {
-	// teleportCircle ÀÌ È°¼ºÈ­µÇ¾î ÀÖÀ» ¶§¸¸ ÅÚ·¹Æ÷Æ® °¡´É
+	// teleportCircle ì´ í™œì„±í™”ë˜ì–´ ìˆì„ ë•Œë§Œ í…”ë ˆí¬íŠ¸ ê°€ëŠ¥
 	bool bCanTeleport = teleportCircle->GetVisibleFlag();
 
-	// teleportCircle ¾Èº¸ÀÌ°Ô ÇÏ±â
+	// teleportCircle ì•ˆë³´ì´ê²Œ í•˜ê¸°
 	teleportCircle->SetVisibility(false);
 	bTeleporting = false;
 	teleportCurveComp->SetVisibility(false);
@@ -387,17 +400,17 @@ bool AEscapePlayer::ResetTeleport()
 
 bool AEscapePlayer::CheckHitTeleport(FVector lastPos, FVector& curPos)
 {
-	// µÎ Á¡ »çÀÌ¿¡ Ãæµ¹Ã¼ ÀÖ´ÂÁö È®ÀÎ
+	// ë‘ ì  ì‚¬ì´ì— ì¶©ëŒì²´ ìˆëŠ”ì§€ í™•ì¸
 	FHitResult hitInfo;
 	bool bHit = HitTest(lastPos, curPos, hitInfo);
-	// ¸¸¾à ºÎµúÈù ´ë»óÀÌ ¹Ù´ÚÀÌ¶ó¸é
+	// ë§Œì•½ ë¶€ë”ªíŒ ëŒ€ìƒì´ ë°”ë‹¥ì´ë¼ë©´
 	if (bHit && hitInfo.GetActor()->GetActorNameOrLabel().Contains(TEXT("Floor")))
 	{
-		// endPos ¸¦ ºÎµúÈù °÷À¸·Î ¼öÁ¤
+		// endPos ë¥¼ ë¶€ë”ªíŒ ê³³ìœ¼ë¡œ ìˆ˜ì •
 		curPos = hitInfo.Location;
-		// teleportCircle È°¼ºÈ­
+		// teleportCircle í™œì„±í™”
 		teleportCircle->SetVisibility(true);
-		// teleportCircle À§Ä¡
+		// teleportCircle ìœ„ì¹˜
 		teleportCircle->SetWorldLocation(curPos);
 		teleportLocation = curPos;
 	}
@@ -411,7 +424,7 @@ bool AEscapePlayer::CheckHitTeleport(FVector lastPos, FVector& curPos)
 bool AEscapePlayer::HitTest(FVector lastPos, FVector curPos, FHitResult& hitInfo)
 {
 	FCollisionQueryParams params;
-	// ÀÚ±âÀÚ½Å ¹«½Ã
+	// ìê¸°ìì‹  ë¬´ì‹œ
 	params.AddIgnoredActor(this);
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, lastPos, curPos, ECC_Visibility, params);
@@ -421,36 +434,36 @@ bool AEscapePlayer::HitTest(FVector lastPos, FVector curPos, FHitResult& hitInfo
 
 void AEscapePlayer::DrawTeleportCurve()
 {
-	// linePoints ÃÊ±âÈ­
+	// linePoints ì´ˆê¸°í™”
 	linePoints.Empty();
 
-	// Åõ»çÃ¼ ´øÁö±â
+	// íˆ¬ì‚¬ì²´ ë˜ì§€ê¸°
 	FVector pos = leftAim->GetComponentLocation();
 	FVector dir = leftAim->GetForwardVector() * curvedPower;
 
-	// ½ÃÀÛÁ¡À» °¡Àå ¸ÕÀú ±â·Ï
+	// ì‹œì‘ì ì„ ê°€ì¥ ë¨¼ì € ê¸°ë¡
 	linePoints.Add(pos);
 
 	for (int32 i = 0; i < lineSmooth; i++)
 	{
-		// ÀÌÀü Á¡ ±â¾ï
+		// ì´ì „ ì  ê¸°ì–µ
 		FVector lastPos = pos;
 
-		// Åõ»çÃ¼ ÀÌµ¿
+		// íˆ¬ì‚¬ì²´ ì´ë™
 		// v = v0 + at
 		dir += FVector::UpVector * gravity * simulatedTime;
 		// P = P0 + vt
 		pos += dir * simulatedTime;
 
-		// Á¡°ú Á¡ »çÀÌ¿¡ ¹°Ã¼°¡ °¡·Î¸·°í ÀÖ´Ù¸é
+		// ì ê³¼ ì  ì‚¬ì´ì— ë¬¼ì²´ê°€ ê°€ë¡œë§‰ê³  ìˆë‹¤ë©´
 		if (CheckHitTeleport(lastPos, pos))
 		{
-			// ±× Á¡À» ¸¶Áö¸· Á¡À¸·Î ÇÑ´Ù.
+			// ê·¸ ì ì„ ë§ˆì§€ë§‰ ì ìœ¼ë¡œ í•œë‹¤.
 			linePoints.Add(pos);
 			break;
 		}
 
-		// Åõ»çÃ¼ À§Ä¡ ±â·Ï
+		// íˆ¬ì‚¬ì²´ ìœ„ì¹˜ ê¸°ë¡
 		linePoints.Add(pos);
 	}
 }
@@ -468,7 +481,7 @@ void AEscapePlayer::TryGrabLeft()
 		storedGun = nullptr;
 	}
 
-	// ¸¸¾à Àâ¾Ò´Ù¸é
+	// ë§Œì•½ ì¡ì•˜ë‹¤ë©´
 	if (bIsGrabbedLeft && grabComp)
 	{
 		if (grabComp->TryGrab(leftHand))
@@ -498,7 +511,7 @@ void AEscapePlayer::TryGrabRight()
 		storedGun = nullptr;
 	}
 
-	// ¸¸¾à Àâ¾Ò´Ù¸é
+	// ë§Œì•½ ì¡ì•˜ë‹¤ë©´
 	if (bIsGrabbedRight && grabComp)
 	{
 		if (grabComp->TryGrab(rightHand))
@@ -522,7 +535,7 @@ void AEscapePlayer::UnTryGrabLeft()
 		return;
 	}
 
-	// ÀâÁö ¾ÊÀº »óÅÂ·Î ÀüÈ¯
+	// ì¡ì§€ ì•Šì€ ìƒíƒœë¡œ ì „í™˜
 	bIsGrabbedLeft = false;
 
 	if (heldComponentLeft)
@@ -541,7 +554,7 @@ void AEscapePlayer::UnTryGrabRight()
 		return;
 	}
 
-	// ÀâÁö ¾ÊÀº »óÅÂ·Î ÀüÈ¯
+	// ì¡ì§€ ì•Šì€ ìƒíƒœë¡œ ì „í™˜
 	bIsGrabbedRight = false;
 
 	if (heldComponentRight)
@@ -555,15 +568,15 @@ void AEscapePlayer::UnTryGrabRight()
 
 UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionControllerComponent* motionController)
 {
-	// Áß½ÉÁ¡
+	// ì¤‘ì‹¬ì 
 	FVector center = motionController->GetComponentLocation();
 
-	// Ãæµ¹Ã¼Å©
+	// ì¶©ëŒì²´í¬
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(this);
 	params.AddIgnoredComponent(motionController);
 
-	// Ãæµ¹ÇÑ ¹°Ã¼µé ±â·ÏÇÒ ¹è¿­
+	// ì¶©ëŒí•œ ë¬¼ì²´ë“¤ ê¸°ë¡í•  ë°°ì—´
 	TArray<FOverlapResult> hitObjects;
 
 	FCollisionObjectQueryParams objectParams;
@@ -572,13 +585,13 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 
 	bool bHit = GetWorld()->OverlapMultiByObjectType(hitObjects, center, FQuat::Identity, objectParams, FCollisionShape::MakeSphere(grabRange), params);
 
-	// Ãæµ¹ÇÏÁö ¾Ê¾Ò´Ù¸é ¾Æ¹«Ã³¸®µµ ÇÏÁö ¾Ê´Â´Ù.
+	// ì¶©ëŒí•˜ì§€ ì•Šì•˜ë‹¤ë©´ ì•„ë¬´ì²˜ë¦¬ë„ í•˜ì§€ ì•ŠëŠ”ë‹¤.
 	if (!bHit)
 	{
 		return nullptr;
 	}
 	
-	// °¡Àå °¡±î¿î ¹°Ã¼ °Å¸®
+	// ê°€ì¥ ê°€ê¹Œìš´ ë¬¼ì²´ ê±°ë¦¬
 	float closestDistance = 1e9;
 	UGrabComponent* nearestGrabComponent = nullptr;
 	for (int32 i = 0; i < hitObjects.Num(); i++)
@@ -601,9 +614,9 @@ UGrabComponent* AEscapePlayer::GetGrabComponentNearMotionController(UMotionContr
 
 		for (auto grabComp : tempGrabComps)
 		{
-			// °ËÃâÇÏ°í ÀÖ´Â Object °Å¸®
+			// ê²€ì¶œí•˜ê³  ìˆëŠ” Object ê±°ë¦¬
 			float curDistance = FVector::Dist(grabComp->GetComponentLocation(), center);
-			// ¸¸¾à °ËÃâÇÏ°í ÀÖ´Â Object °Å¸®°¡ ÇöÀç °¡Àå °¡±î¿î Object °Å¸®º¸´Ù °¡±õ´Ù¸é
+			// ë§Œì•½ ê²€ì¶œí•˜ê³  ìˆëŠ” Object ê±°ë¦¬ê°€ í˜„ì¬ ê°€ì¥ ê°€ê¹Œìš´ Object ê±°ë¦¬ë³´ë‹¤ ê°€ê¹ë‹¤ë©´
 			if (curDistance <= closestDistance)
 			{
 				closestDistance = curDistance;
@@ -819,5 +832,37 @@ void AEscapePlayer::ShowHelp()
 void AEscapePlayer::HiddenHelp()
 {
 	helpWidgetComp->SetVisibility(false);
+}
+
+void AEscapePlayer::ShowDialogue()
+{
+	FString dialogue;
+	if (roomManager->GetCurrentPlayingStage() == 1.0f)
+	{
+		dialogue = TEXT("ì™¸ê³„ì¸ì´ ì—¬ê¸¸ ì–´ë–»ê²Œ ë“¤ì–´ì˜¨ê±°ì•¼ ì  ì¥ ì£½ì„ë»”í–ˆë„¤");
+	}
+	else if (roomManager->GetCurrentPlayingStage() == 2.0f)
+	{
+		dialogue = TEXT("ì € ìœ„ë¡œ ì–´ë–»ê²Œ ì˜¬ë¼ê°€ì§€?\nì‚¬ë‹¤ë¦¬ ë§ê³  ë‹¤ë¥¸ ë°©ë²•ì„ ì°¾ì•„ì•¼í•´!");
+	}
+	else if (roomManager->GetCurrentPlayingStage() == 3.0f)
+	{
+		dialogue = TEXT("ì£½ì„ ë»”í–ˆë„¤");
+	}
+
+	dialogueUI->text_dialogue->SetText(FText::FromString(dialogue));
+
+	dialogueWidgetComp->SetVisibility(true);
+
+	HiddenDialogue();
+}
+
+void AEscapePlayer::HiddenDialogue()
+{
+	FTimerHandle dialogueTimer;
+	GetWorld()->GetTimerManager().SetTimer(dialogueTimer, FTimerDelegate::CreateLambda([this]()->void
+	{
+		dialogueWidgetComp->SetVisibility(false);
+	}), 5.0f, false);
 }
 

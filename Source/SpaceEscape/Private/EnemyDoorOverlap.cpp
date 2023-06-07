@@ -1,11 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "EnemyDoorOverlap.h"
-
+#include "DialogueWidget.h"
 #include "EnemyFSM.h"
+#include "EscapePlayer.h"
 #include "ResearcherEnemy.h"
 #include "Components/SphereComponent.h"
+#include "Components/TextBlock.h"
+#include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEnemyDoorOverlap::AEnemyDoorOverlap()
@@ -25,6 +29,8 @@ void AEnemyDoorOverlap::BeginPlay()
 
 	sphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemyDoorOverlap::OnBeginOverlap);
 	sphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemyDoorOverlap::OnEndOverlap);
+
+	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 }
 
 // Called every frame
@@ -41,6 +47,12 @@ void AEnemyDoorOverlap::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	if (enemy && enemy->enemyFSM)
 	{
 		enemy->enemyFSM->bIsOverlapDoor = true;
+
+		// Show Dialogue
+		player->dialogueUI->text_dialogue->SetText(FText::FromString(TEXT("여기서 나가야해 당장")));
+		player->dialogueWidgetComp->SetVisibility(true);
+
+		player->HiddenDialogue();
 	}
 }
 

@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "EnemyDoorOverlap.generated.h"
+#include "TouchPadOverlap.generated.h"
 
 UCLASS()
-class SPACEESCAPE_API AEnemyDoorOverlap : public AActor
+class SPACEESCAPE_API ATouchPadOverlap : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AEnemyDoorOverlap();
+	ATouchPadOverlap();
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,8 +26,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Overlap")
 	class USphereComponent* sphereComp;
 
-	UPROPERTY()
-	class AEscapePlayer* player;
+	bool bIsOverlapDoor = false;
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
