@@ -38,6 +38,6 @@ private:
 
 	UPROPERTY()
 	class AMovableBattCover* myCover;
-	// 임시로 true 변경
-	bool bIsScrewFinished = true;
+
+	bool bIsScrewFinished;
 };
