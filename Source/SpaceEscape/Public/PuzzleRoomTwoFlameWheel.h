@@ -36,6 +36,7 @@ public:
 	void WhenPlayerGrab();
 	UFUNCTION()
 	void WhenPlayerUnGrab();
+
 	void ControlByPlayerHand();
 
 	UPROPERTY(EditAnywhere)
@@ -53,7 +54,6 @@ private:
 	bool bIsGrabed;
 	bool bRecordOnce;
 	bool bsoundPlayOnce;
-	float laserRotateSpeed = 0.4f;
 	FVector startVector;
 	FVector playerDirection;
 };

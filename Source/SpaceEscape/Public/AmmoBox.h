@@ -34,6 +34,7 @@ public:
 	void OnGrabed();
 	UFUNCTION()
 	void OnDroped();
+
 	void BoxShouldBeClosed();
 	void ControlByPlayerHand();
 
@@ -41,7 +42,7 @@ private:
 
 	UPROPERTY()
 	class AEscapePlayer* player;
-	// 플레이어가 커버 잡았는지 여부
+
 	bool bIsGrabed;
 	bool bRecordOnce;
 	bool bRecordRightOnce;

@@ -24,16 +24,16 @@ public:
 	class UPuzzleRoomThreeMorseScreenWidget* screenWidget;
 
 	UFUNCTION()
-	void addToTempString(float second);
+	void addToTempString(const float second);
 	UFUNCTION()
 	void Enter();
 	UFUNCTION()
 	void ForEndingRanking();
 
 	void CheckRightOrWrong();
-	void setScreenText(FString string);
+	void setScreenText(const FString& string);
 	void EmptyScreenString();
-	char Translater(FString code);
+	char Translater(const FString& code);
 	FString GetScreenString();
 
 private:
@@ -45,8 +45,10 @@ private:
 	FString screenString;
 	// 모스버튼으로 입력된 0과 1을 담을 문자열
 	FString tempString;
+	// 모스 정답
+	const FString morseAnswer = "EARTH";
 	// 모스 부호를 해독할 맵
-	TMap<FString, char> morse = {
+	const TMap<FString, char> morse = {
 		{"01", 'A'},
 		{"1000", 'B'},
 		{"1010", 'C'},

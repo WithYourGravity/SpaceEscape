@@ -49,5 +49,7 @@ private:
 	UPROPERTY()
 	class ASpaceEscapeGameModeBase* gm;
 	UPROPERTY()
+	class AMainTitle* titleActor;
+	UPROPERTY()
 	class USoundBase* clickSound;
 };

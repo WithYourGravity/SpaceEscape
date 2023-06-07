@@ -106,6 +106,17 @@ ASpaceShip::ASpaceShip()
     {
 		billboardComp->SetSprite(tempBillIMG.Object);
     }
+
+	earthStickerComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("earthStickerComp"));
+	earthStickerComp->SetupAttachment(RootComponent);
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempSticker(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/PlaneEarth.PlaneEarth'"));
+	if (tempSticker.Succeeded())
+	{
+		earthStickerComp->SetStaticMesh(tempSticker.Object);
+	}
+	earthStickerComp->SetRelativeLocationAndRotation(FVector(314.f, -47.f, 226.f), FRotator(-14.f, 11.2f, 90.f));
+	earthStickerComp->SetRelativeScale3D(FVector(0.12f, 0.094f, 0.05f));
+	earthStickerComp->SetCollisionProfileName(FName("NoCollision"));
 }
 
 // Called when the game starts or when spawned
@@ -249,7 +260,7 @@ void ASpaceShip::SpawnControlableJoystick()
 	GetWorldTimerManager().SetTimer(stickDownHandle, FTimerDelegate::CreateLambda([&]()
 		{
 			controlableStick->SetActorLocation(FMath::Lerp(stickLoc, stickFinalLoc, stickTimer));
-			stickTimer += GetWorld()->GetDeltaSeconds() * 0.4f;
+			stickTimer += GetWorld()->GetDeltaSeconds() * 0.5f;
 			stickTimer = FMath::Clamp(stickTimer, 0.f, 1.f);
 			if (stickTimer == 1)
 			{

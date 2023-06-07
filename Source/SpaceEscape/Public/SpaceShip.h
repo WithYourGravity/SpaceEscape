@@ -43,6 +43,8 @@ public:
 	class UChildActorComponent* rankingActorComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UBillboardComponent* billboardComp;
+	UPROPERTY(EditDefaultsOnly)
+	class UStaticMeshComponent* earthStickerComp;
 
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -56,19 +58,22 @@ public:
 	void SpawnControlableJoystick();
 
 private:
+
 	UPROPERTY()
 	class AEscapePlayer* player;
-	bool bPlayerUseTeleport;
-	bool bIsBoarding;
-	bool bReadyToBoarding;
-	FTimerHandle stickDownHandle;
-	FVector stickLoc;
-	FVector stickFinalLoc;
-	float stickTimer;
 	UPROPERTY()
 	class UStaticMeshComponent* stickComp;
 	UPROPERTY()
 	class ASpaceShipJoystick* controlableStick;
 	UPROPERTY()
 	class ARoomManager* rm;
+
+	FTimerHandle stickDownHandle;
+	FVector stickLoc;
+	FVector stickFinalLoc;
+	bool bPlayerUseTeleport;
+	bool bIsBoarding;
+	bool bReadyToBoarding;
+	float stickTimer;
+
 };

@@ -67,6 +67,11 @@ void AAmmoBox::BoxShouldBeClosed()
 {
 	FRotator rot = coverMeshComp->GetRelativeRotation();
 
+	if (rot.Roll == 0)
+	{
+		return;
+	}
+
 	if (rot.Roll < -2)
 	{
 		rot.Roll += 4;
