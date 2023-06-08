@@ -885,7 +885,7 @@ void AEscapePlayer::HiddenDialogue()
 void AEscapePlayer::DrawWidgetDebugLine()
 {
 	FHitResult hitResult = rightWidgetInteractionComp->GetLastHitResult();
-	if (rightWidgetInteractionComp->IsOverInteractableWidget())
+	if (rightWidgetInteractionComp->IsOverHitTestVisibleWidget())
 	{
 		FVector hitLocation = hitResult.ImpactPoint;
 		FTransform hitTransform, hitRelativeTransform;
