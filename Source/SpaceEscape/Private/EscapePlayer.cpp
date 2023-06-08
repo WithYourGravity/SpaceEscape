@@ -776,6 +776,7 @@ void AEscapePlayer::ActiveLeftWidgetInteraction()
 {
 	leftWidgetInteractionComp->Activate(true);
 	//leftWidgetInteractionComp->bShowDebug = true;
+	//debugLine->SetVisibility(true);
 }
 
 void AEscapePlayer::ActiveRightWidgetInteraction()
@@ -784,12 +785,14 @@ void AEscapePlayer::ActiveRightWidgetInteraction()
 	//rightWidgetInteractionComp->bShowDebug = true;
 
 	bIsActiveWidgetInteraction = true;
+	debugLine->SetVisibility(true);
 }
 
 void AEscapePlayer::DeactivateLeftWidgetInteraction()
 {
 	leftWidgetInteractionComp->Deactivate();
 	//leftWidgetInteractionComp->bShowDebug = false;
+	//debugLine->SetVisibility(false);
 }
 
 void AEscapePlayer::DeactivateRightWidgetInteraction()
@@ -798,6 +801,7 @@ void AEscapePlayer::DeactivateRightWidgetInteraction()
 	//rightWidgetInteractionComp->bShowDebug = false;
 
 	bIsActiveWidgetInteraction = false;
+	debugLine->SetVisibility(false);
 }
 
 void AEscapePlayer::PlayBreathingSound()
