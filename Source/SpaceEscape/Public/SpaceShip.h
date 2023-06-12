@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "SpaceShip.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FSpaceShipStickDele)
+
 UCLASS()
 class SPACEESCAPE_API ASpaceShip : public AActor
 {
@@ -57,6 +59,8 @@ public:
 	UFUNCTION()
 	void SpawnControlableJoystick();
 
+	FSpaceShipStickDele spaceShipStickDele;
+
 private:
 
 	UPROPERTY()
@@ -74,6 +78,7 @@ private:
 	bool bPlayerUseTeleport;
 	bool bIsBoarding;
 	bool bReadyToBoarding;
+	bool bStickDeleOnce;
 	float stickTimer;
 
 };

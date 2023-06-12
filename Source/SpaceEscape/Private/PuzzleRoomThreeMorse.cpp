@@ -10,6 +10,7 @@
 #include "EngineUtils.h"
 #include "PuzzleRoomThreeMorseLever.h"
 #include "RoomManager.h"
+#include "SpaceShip.h"
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -51,12 +52,22 @@ void APuzzleRoomThreeMorse::BeginPlay()
 
 	// 스크린 출력문자 초기화
 	setScreenText("");
-	screenWidget->switcher->SetActiveWidgetIndex(1);
+	screenWidget->switcher->SetActiveWidgetIndex(4);
+
+	// 조이스틱 장착여부 전달받기 위해 우주선 캐싱
+	ship = Cast<ASpaceShip>(UGameplayStatics::GetActorOfClass(this, ASpaceShip::StaticClass()));
+	ship->spaceShipStickDele.AddUFunction(this, FName("WhenShipSticked"));
 }
 
 // 모스버튼 신호를 받아서 임시문자열에 추가하는 함수
 void APuzzleRoomThreeMorse::addToTempString(const float second)
 {
+	// 조이스틱이 장착되지 않으면 동작하지 않게 처리
+	if (!bIsSticked)
+	{
+		return;
+	}
+
 	if (second >= 0.6f)
 	{
 		tempString.AppendChar('1');
@@ -72,6 +83,12 @@ void APuzzleRoomThreeMorse::addToTempString(const float second)
 // 임시 문자열을 번역해서 스크린에 출력할 문자열에 추가하는 함수
 void APuzzleRoomThreeMorse::Enter()
 {
+	// 조이스틱이 장착되지 않으면 동작하지 않게 처리
+	if (!bIsSticked)
+	{
+		return;
+	}
+
 	// 안내문 지우고
 	screenWidget->switcher->SetActiveWidgetIndex(0);
 
@@ -148,4 +165,10 @@ void APuzzleRoomThreeMorse::ForEndingRanking()
 {
 	screenString.Empty();
 	setScreenText(screenString);
+}
+
+void APuzzleRoomThreeMorse::WhenShipSticked()
+{
+	bIsSticked = true;
+	screenWidget->switcher->SetActiveWidgetIndex(1);
 }

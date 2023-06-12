@@ -196,6 +196,13 @@ void ASpaceShip::OnOverlapJoystick(UPrimitiveComponent* OverlappedComponent, AAc
 				}
 			}), GetWorld()->GetDeltaSeconds(), true, 1.f);
 	}
+
+	// 모스 화면에게 조이스틱 장착됐다고 알림
+	if (spaceShipStickDele.IsBound() && !bStickDeleOnce)
+	{
+		spaceShipStickDele.Broadcast();
+		bStickDeleOnce = true;
+	}
 }
 
 // 우주선에 탑승시키는 함수
