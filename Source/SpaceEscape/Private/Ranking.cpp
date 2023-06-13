@@ -73,7 +73,7 @@ void ARanking::CalculateRecord()
 
 	// ·©Å·¿¡ µéÁö ¸øÇÏ¸é ·©Å·È­¸éÀ» ¶ç¿ì°í
 	// rankingWidget->nameBlockArray.Num() - 1
-	if (index > 1)
+	if (index > 8)
 	{
 		rankingWidget->switcher->SetActiveWidgetIndex(0);
 		SetRankingDataToWidget();
