@@ -6,9 +6,15 @@
 #include "GameFramework/GameModeBase.h"
 #include "SpaceEscapeGameModeBase.generated.h"
 
-/**
- * 
- */
+DECLARE_MULTICAST_DELEGATE_OneParam(FChangeLanguageDele, ELanguageSettings language);
+
+UENUM(BlueprintType)
+enum class ELanguageSettings : uint8
+{
+	ENGLISH,
+	KOREAN
+};
+
 UCLASS()
 class SPACEESCAPE_API ASpaceEscapeGameModeBase : public AGameModeBase
 {
@@ -21,6 +27,8 @@ public:
 	int32 second = 0;
 
 	FTimerHandle countTimer;
+	ELanguageSettings currentLanguageSetting = ELanguageSettings::ENGLISH;
+	FChangeLanguageDele changeLanguageDele;
 
 	UPROPERTY()
 	class AEscapePlayer* player;
@@ -31,4 +39,5 @@ public:
 	void StopPlayTime();
 	void StartPlayTime();
 	void SetStage(int stage);
+	void ChangeLanguageSetting(ELanguageSettings language);
 };

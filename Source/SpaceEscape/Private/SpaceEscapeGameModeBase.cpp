@@ -95,3 +95,9 @@ void ASpaceEscapeGameModeBase::SetStage(int stage)
 		break;
 	}
 }
+
+void ASpaceEscapeGameModeBase::ChangeLanguageSetting(ELanguageSettings language)
+{
+	currentLanguageSetting = language;
+	changeLanguageDele.Broadcast(language);
+}
