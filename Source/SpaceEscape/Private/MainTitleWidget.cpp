@@ -19,6 +19,7 @@ void UMainTitleWidget::NativeConstruct()
 	btn_Credit->OnClicked.AddDynamic(this, &UMainTitleWidget::ShowCredit);
 	btn_Exit->OnClicked.AddDynamic(this, &UMainTitleWidget::GameExit);
 	btn_CloseCredit->OnClicked.AddDynamic(this, &UMainTitleWidget::CloseCredit);
+	btn_Settings->OnClicked.AddDynamic(this, &UMainTitleWidget::Settings);
 
 	// 플레이어 인터렉션
 	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
@@ -56,6 +57,13 @@ void UMainTitleWidget::GameExit()
 	PlayClickSound();
 	DeactivatePlayerInteraction();
 	UKismetSystemLibrary::QuitGame(this, GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+}
+
+void UMainTitleWidget::Settings()
+{
+	PlayClickSound();
+	switcher->SetActiveWidgetIndex(2);
+	//언어 선택
 }
 
 void UMainTitleWidget::ShowCredit()

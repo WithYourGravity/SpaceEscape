@@ -43,6 +43,8 @@ private:
 	UPROPERTY()
 	class ARoomManager* rm;
 	UPROPERTY()
+	class ASpaceEscapeGameModeBase* gm;
+	UPROPERTY()
 	class ASpaceShip* ship;
 	bool bAnswerOnce;
 	bool bIsSticked;

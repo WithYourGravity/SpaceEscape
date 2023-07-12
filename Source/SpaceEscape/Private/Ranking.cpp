@@ -81,7 +81,16 @@ void ARanking::CalculateRecord()
 	else
 	{
 		// 랭킹이 갱신된다면 이름 입력화면을 띄운다
-		rankingWidget->switcher->SetActiveWidgetIndex(1);
+		if(gm->currentLanguageSetting == ELanguageSettings::KOREAN)
+		{
+			//한글일 경우
+			rankingWidget->switcher->SetActiveWidgetIndex(1);
+		}
+		else if(gm->currentLanguageSetting == ELanguageSettings::ENGLISH)
+		{
+			//영어일 경우
+			rankingWidget->switcher->SetActiveWidgetIndex(2);
+		}
 	}
 }
 

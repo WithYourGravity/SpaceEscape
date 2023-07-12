@@ -28,12 +28,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UButton* btn_CloseCredit;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	class UButton* btn_Settings;
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UWidgetSwitcher* switcher;
 
 	UFUNCTION()
 	void GameStart();
 	UFUNCTION()
 	void GameExit();
+	UFUNCTION()
+	void Settings();
 	UFUNCTION()
 	void ShowCredit();
 	UFUNCTION()
