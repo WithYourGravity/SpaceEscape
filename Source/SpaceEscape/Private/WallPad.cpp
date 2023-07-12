@@ -10,6 +10,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "EmergencyProtocolWidget.h"
 
 // Sets default values
 AWallPad::AWallPad()
@@ -56,7 +57,17 @@ void AWallPad::BeginPlay()
 
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AWallPad::OnOverlap);
 	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
+	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	// 인게임 인스턴스에서 wallScreenComp에 각각 수동으로 설정한 WBP에 따라 동작하는 기능이 다름
+	// 겟위젯을 해와서 캐스팅이 되는지 여부로 어떤 위젯이 세팅되어있는지 판단됨
 	gravityWidget = Cast<UPuzzleRoomTwoWallPadWidget>(wallScreenComp->GetWidget());
+	protocolWidget = Cast<UEmergencyProtocolWidget>(wallScreenComp->GetWidget());
+	if (protocolWidget)
+	{
+		protocolWidget->ChangeProtocolLanguage(gm->currentLanguageSetting);
+		gm->changeLanguageDele.AddUFunction(protocolWidget, FName("ChangeProtocolLanguage"));
+	}
 }
 
 // Called every frame

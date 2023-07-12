@@ -36,7 +36,11 @@ private:
 	UPROPERTY()
 	class ARoomManager* rm;
 	UPROPERTY()
+	class ASpaceEscapeGameModeBase* gm;
+	UPROPERTY()
 	class UPuzzleRoomTwoWallPadWidget* gravityWidget;
+	UPROPERTY()
+	class UEmergencyProtocolWidget* protocolWidget;
 	UPROPERTY()
 	class USoundBase* gravityOffSound;
 

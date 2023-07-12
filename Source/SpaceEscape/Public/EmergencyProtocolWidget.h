@@ -16,7 +16,6 @@ class SPACEESCAPE_API UEmergencyProtocolWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	virtual void NativeConstruct() override;
 
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UWidgetSwitcher* switcherForLanguage;
@@ -24,5 +23,6 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class ASpaceEscapeGameModeBase* gm;
 
+	UFUNCTION()
 	void ChangeProtocolLanguage(ELanguageSettings language);
 };
