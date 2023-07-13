@@ -209,7 +209,7 @@ private:
 public:
 	// Grab 범위
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Grab")
-	float grabRange = 4;
+	float grabRange = 8;
 	// Grab Object 기억
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grab")
 	class UGrabComponent* heldComponentRight;

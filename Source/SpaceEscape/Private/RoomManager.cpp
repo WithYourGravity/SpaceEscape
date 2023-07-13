@@ -157,6 +157,9 @@ void ARoomManager::SequenceFinished()
 	player->leftIndexFingerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	player->rightIndexFingerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	player->ActiveRightWidgetInteraction();
+
+	// 조이스틱과 레버가 겹쳐잡혀서 잡는범위 축소
+	player->grabRange = 4;
 }
 
 // 현재 stage를 반환하는 함수
