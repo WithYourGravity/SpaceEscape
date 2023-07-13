@@ -82,12 +82,12 @@ void UMainTitleWidget::CloseCredit()
 
 void UMainTitleWidget::SetKorean()
 {
-	gm->currentLanguageSetting = ELanguageSettings::KOREAN;
+	gm->ChangeLanguageSetting(ELanguageSettings::KOREAN);
 }
 
 void UMainTitleWidget::SetEnglish()
 {
-	gm->currentLanguageSetting = ELanguageSettings::ENGLISH;
+	gm->ChangeLanguageSetting(ELanguageSettings::ENGLISH);
 }
 
 void UMainTitleWidget::DeactivatePlayerInteraction()
