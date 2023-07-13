@@ -35,8 +35,8 @@ AButtonBase::AButtonBase()
 	boxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
 	boxCollision->SetupAttachment(buttonBodyComp);
 	boxCollision->SetCollisionProfileName(TEXT("PuzzleButtonPreset"));
-	boxCollision->SetBoxExtent(FVector(8.f));
-	boxCollision->SetRelativeLocation(FVector(64.f, -6.f, 0));
+	boxCollision->SetBoxExtent(FVector(10, 10, 20));
+	boxCollision->SetRelativeLocation(FVector(64.f, -6.f, -10.f));
 
 	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base>tempHaptic(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
 	if (tempHaptic.Succeeded())
