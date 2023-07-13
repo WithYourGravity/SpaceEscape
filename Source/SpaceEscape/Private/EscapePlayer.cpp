@@ -36,7 +36,7 @@ AEscapePlayer::AEscapePlayer()
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(78.0f);
-	GetCapsuleComponent()->SetCapsuleRadius(30.0f);
+	GetCapsuleComponent()->SetCapsuleRadius(20.0f);
 
 	vrCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("VRCamera"));
 	vrCamera->SetupAttachment(RootComponent);
