@@ -20,6 +20,9 @@ void UMainTitleWidget::NativeConstruct()
 	btn_Exit->OnClicked.AddDynamic(this, &UMainTitleWidget::GameExit);
 	btn_CloseCredit->OnClicked.AddDynamic(this, &UMainTitleWidget::CloseCredit);
 	btn_Settings->OnClicked.AddDynamic(this, &UMainTitleWidget::Settings);
+	btn_CloseSetting->OnClicked.AddDynamic(this, &UMainTitleWidget::CloseCredit);
+	btn_English->OnClicked.AddDynamic(this, &UMainTitleWidget::SetEnglish);
+	btn_Korean->OnClicked.AddDynamic(this, &UMainTitleWidget::SetKorean);
 
 	// 플레이어 인터렉션
 	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
@@ -63,7 +66,6 @@ void UMainTitleWidget::Settings()
 {
 	PlayClickSound();
 	switcher->SetActiveWidgetIndex(2);
-	//언어 선택
 }
 
 void UMainTitleWidget::ShowCredit()
@@ -76,6 +78,16 @@ void UMainTitleWidget::CloseCredit()
 {
 	PlayClickSound();
 	switcher->SetActiveWidgetIndex(0);
+}
+
+void UMainTitleWidget::SetKorean()
+{
+	gm->currentLanguageSetting = ELanguageSettings::KOREAN;
+}
+
+void UMainTitleWidget::SetEnglish()
+{
+	gm->currentLanguageSetting = ELanguageSettings::ENGLISH;
 }
 
 void UMainTitleWidget::DeactivatePlayerInteraction()

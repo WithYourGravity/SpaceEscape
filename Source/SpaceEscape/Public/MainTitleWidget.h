@@ -30,6 +30,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UButton* btn_Settings;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	class UButton* btn_CloseSetting;
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	class UButton* btn_English;
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	class UButton* btn_Korean;
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UWidgetSwitcher* switcher;
 
 	UFUNCTION()
@@ -42,6 +48,10 @@ public:
 	void ShowCredit();
 	UFUNCTION()
 	void CloseCredit();
+	UFUNCTION()
+	void SetKorean();
+	UFUNCTION()
+	void SetEnglish();
 	void DeactivatePlayerInteraction();
 	void PlayClickSound();
 
