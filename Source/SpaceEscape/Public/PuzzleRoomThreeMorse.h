@@ -22,6 +22,8 @@ public:
 	class UWidgetComponent* screenComp;
 	UPROPERTY(EditDefaultsOnly)
 	class UPuzzleRoomThreeMorseScreenWidget* screenWidget;
+	UPROPERTY(EditDefaultsOnly)
+	class UBoxComponent* boxComp;
 
 	UFUNCTION()
 	void addToTempString(const float second);
@@ -31,6 +33,8 @@ public:
 	void ForEndingRanking();
 	UFUNCTION()
 	void WhenShipSticked();
+	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	void CheckRightOrWrong();
 	void setScreenText(const FString& string);
@@ -44,6 +48,9 @@ private:
 	class ARoomManager* rm;
 	UPROPERTY()
 	class ASpaceShip* ship;
+	UPROPERTY(EditDefaultsOnly)
+	class UHapticFeedbackEffect_Base* hapticFeedback;
+
 	bool bAnswerOnce;
 	bool bIsSticked;
 	// 스크린에 출력할 문자열
