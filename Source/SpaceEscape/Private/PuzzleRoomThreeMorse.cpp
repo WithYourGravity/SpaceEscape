@@ -10,6 +10,7 @@
 #include "EngineUtils.h"
 #include "PuzzleRoomThreeMorseLever.h"
 #include "RoomManager.h"
+#include "SpaceEscapeGameModeBase.h"
 #include "SpaceShip.h"
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
@@ -36,6 +37,9 @@ void APuzzleRoomThreeMorse::BeginPlay()
 	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
 	rm->endingDele.AddUFunction(this, FName("ForEndingRanking"));
 
+	// 언어 설정을 위한 게임모드 캐싱
+	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
+
 	// 모스 버튼 찾아서 캐싱
 	for (TActorIterator<APuzzleRoomThreeMorseButton> it(GetWorld()); it; ++it)
 	{
@@ -52,7 +56,17 @@ void APuzzleRoomThreeMorse::BeginPlay()
 
 	// 스크린 출력문자 초기화
 	setScreenText("");
-	screenWidget->switcher->SetActiveWidgetIndex(4);
+	if (gm->currentLanguageSetting == ELanguageSettings::KOREAN)
+	{
+		//한글인 경우
+		screenWidget->switcher->SetActiveWidgetIndex(4);
+	}
+	else if (gm->currentLanguageSetting == ELanguageSettings::ENGLISH)
+	{
+		//영어인 경우
+		screenWidget->switcher->SetActiveWidgetIndex(8);
+	}
+	
 
 	// 조이스틱 장착여부 전달받기 위해 우주선 캐싱
 	ship = Cast<ASpaceShip>(UGameplayStatics::GetActorOfClass(this, ASpaceShip::StaticClass()));
@@ -121,14 +135,33 @@ void APuzzleRoomThreeMorse::CheckRightOrWrong()
 	{
 		// 정답일 경우
 		bAnswerOnce = true;
-		screenWidget->switcher->SetActiveWidgetIndex(2);
+		if (gm->currentLanguageSetting == ELanguageSettings::KOREAN)
+		{
+			//한글인 경우
+			screenWidget->switcher->SetActiveWidgetIndex(2);
+		}
+		else if (gm->currentLanguageSetting == ELanguageSettings::ENGLISH)
+		{
+			//영어인 경우
+			screenWidget->switcher->SetActiveWidgetIndex(6);
+		}
 		ReportClear();
 	}
 
 	if (!bAnswerOnce)
 	{
 		// 틀렸을 경우
-		screenWidget->switcher->SetActiveWidgetIndex(3);
+		if (gm->currentLanguageSetting == ELanguageSettings::KOREAN)
+		{
+			//한글인 경우
+			screenWidget->switcher->SetActiveWidgetIndex(3);
+		}
+		else if (gm->currentLanguageSetting == ELanguageSettings::ENGLISH)
+		{
+			//영어인 경우
+			screenWidget->switcher->SetActiveWidgetIndex(7);
+		}
+		
 	}
 
 	// 풀고나서 이름 입력할 때 알아서 비워지게
@@ -170,5 +203,14 @@ void APuzzleRoomThreeMorse::ForEndingRanking()
 void APuzzleRoomThreeMorse::WhenShipSticked()
 {
 	bIsSticked = true;
-	screenWidget->switcher->SetActiveWidgetIndex(1);
+	if(gm->currentLanguageSetting == ELanguageSettings::KOREAN)
+	{
+		//한글인 경우
+		screenWidget->switcher->SetActiveWidgetIndex(1);
+	}
+	else if(gm->currentLanguageSetting == ELanguageSettings::ENGLISH)
+	{
+		//영어인 경우
+		screenWidget->switcher->SetActiveWidgetIndex(5);
+	}
 }

@@ -853,17 +853,35 @@ void AEscapePlayer::HiddenHelp()
 void AEscapePlayer::StartDialogue()
 {
 	FString dialogue;
-	if (roomManager->GetCurrentPlayingStage() == 1.0f)
+	if(gm->currentLanguageSetting == ELanguageSettings::KOREAN)
 	{
-		dialogue = TEXT("여기 들어오면서 ID 카드 떨어뜨린 것 같아");
+		if (roomManager->GetCurrentPlayingStage() == 1.0f)
+		{
+			dialogue = TEXT("여기 들어오면서 ID 카드 떨어뜨린 것 같아");
+		}
+		else if (roomManager->GetCurrentPlayingStage() == 2.0f)
+		{
+			dialogue = TEXT("저 위로 어떻게 올라가지?\n사다리 말고 다른 방법을 찾아야해!");
+		}
+		else if (roomManager->GetCurrentPlayingStage() == 3.0f)
+		{
+			dialogue = TEXT("죽을 뻔했네...");
+		}
 	}
-	else if (roomManager->GetCurrentPlayingStage() == 2.0f)
+	else if(gm->currentLanguageSetting == ELanguageSettings::ENGLISH)
 	{
-		dialogue = TEXT("저 위로 어떻게 올라가지?\n사다리 말고 다른 방법을 찾아야해!");
-	}
-	else if (roomManager->GetCurrentPlayingStage() == 3.0f)
-	{
-		dialogue = TEXT("죽을 뻔했네...");
+		if (roomManager->GetCurrentPlayingStage() == 1.0f)
+		{
+			dialogue = TEXT("Holy crap! I think I have dropped my ID card..");
+		}
+		else if (roomManager->GetCurrentPlayingStage() == 2.0f)
+		{
+			dialogue = TEXT("Oh no... The ladder is cut off..\nI should find another way to go up...");
+		}
+		else if (roomManager->GetCurrentPlayingStage() == 3.0f)
+		{
+			dialogue = TEXT("I almost died...");
+		}
 	}
 
 	dialogueUI->text_dialogue->SetText(FText::FromString(dialogue));
