@@ -7,6 +7,7 @@
 #include "PuzzleRoomThreeMorseScreenWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/WidgetComponent.h"
+#include "components/BoxComponent.h"
 #include "EngineUtils.h"
 #include "PuzzleRoomThreeMorseLever.h"
 #include "RoomManager.h"
@@ -14,6 +15,8 @@
 #include "SpaceShip.h"
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
+#include "EscapePlayer.h"
+#include "Haptics/HapticFeedbackEffect_Curve.h"
 
 APuzzleRoomThreeMorse::APuzzleRoomThreeMorse()
 {
@@ -25,6 +28,20 @@ APuzzleRoomThreeMorse::APuzzleRoomThreeMorse()
 		screenComp->SetWidgetClass(tempWidget.Class);
 	}
 	screenComp->SetDrawSize(FVector2D(1920.f, 1080.f));
+
+	// 화면 터치하면 글자 지워지게 할 박스콜리전 생성
+	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
+	boxComp->SetupAttachment(RootComponent);
+	boxComp->SetRelativeLocation(FVector(0, 650, 400));
+	boxComp->SetBoxExtent(FVector(64, 256, 128));
+	boxComp->SetCollisionProfileName(FName("PuzzleButtonPreset"));
+
+	// 진동 위해
+	ConstructorHelpers::FObjectFinder<UHapticFeedbackEffect_Base>tempHaptic(TEXT("/Script/Engine.HapticFeedbackEffect_Curve'/Game/LTG/UI/HF_TouchFeedback.HF_TouchFeedback'"));
+	if (tempHaptic.Succeeded())
+	{
+		hapticFeedback = tempHaptic.Object;
+	}
 }
 
 void APuzzleRoomThreeMorse::BeginPlay()
@@ -71,6 +88,9 @@ void APuzzleRoomThreeMorse::BeginPlay()
 	// 조이스틱 장착여부 전달받기 위해 우주선 캐싱
 	ship = Cast<ASpaceShip>(UGameplayStatics::GetActorOfClass(this, ASpaceShip::StaticClass()));
 	ship->spaceShipStickDele.AddUFunction(this, FName("WhenShipSticked"));
+
+	// 화면 터치시 입력한 문자 지우는 함수와 바인딩
+	boxComp->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomThreeMorse::OnOverlap);
 }
 
 // 모스버튼 신호를 받아서 임시문자열에 추가하는 함수
@@ -200,6 +220,7 @@ void APuzzleRoomThreeMorse::ForEndingRanking()
 	setScreenText(screenString);
 }
 
+// 우주선에 컨트롤러가 장착됐을 때 실행되는 함수
 void APuzzleRoomThreeMorse::WhenShipSticked()
 {
 	bIsSticked = true;
@@ -214,3 +235,28 @@ void APuzzleRoomThreeMorse::WhenShipSticked()
 		screenWidget->switcher->SetActiveWidgetIndex(5);
 	}
 }
+
+// 화면 터치시 입력한 모스 지우는 함수
+void APuzzleRoomThreeMorse::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	auto pl = Cast<AEscapePlayer>(OtherActor);
+	if (pl)
+	{
+		// 화면의 문자열 비우고
+		screenString.Empty();
+		setScreenText(screenString);
+		// 입력하던 모스문자열도 비움
+		tempString.Empty();
+
+		// 손과 오버랩되면 진동 울리게 처리
+		if (OtherComp->GetName().Contains("left"))
+		{
+			pl->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Left);
+		}
+		else
+		{
+			pl->GetLocalViewingPlayerController()->PlayHapticEffect(hapticFeedback, EControllerHand::Right);
+		}
+	}
+}
+
