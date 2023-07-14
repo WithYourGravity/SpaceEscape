@@ -27,6 +27,9 @@ public:
 	class USphereComponent* sphereComp;
 
 	UPROPERTY()
+	class ASpaceEscapeGameModeBase* gm;
+
+	UPROPERTY()
 	class AEscapePlayer* player;
 
 	bool bIsOverlapDoor = false;

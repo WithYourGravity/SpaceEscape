@@ -10,6 +10,7 @@
 #include "Components/TextBlock.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "SpaceEscapeGameModeBase.h"
 
 // Sets default values
 AEnemyDoorOverlap::AEnemyDoorOverlap()
@@ -31,6 +32,7 @@ void AEnemyDoorOverlap::BeginPlay()
 	sphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemyDoorOverlap::OnEndOverlap);
 
 	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 // Called every frame
@@ -53,7 +55,14 @@ void AEnemyDoorOverlap::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 			bIsOverlapDoor = true;
 
 			// Show Dialogue
-			player->dialogueUI->text_dialogue->SetText(FText::FromString(TEXT("여기서 나가야해 당장")));
+			if(gm->currentLanguageSetting == ELanguageSettings::KOREAN)
+			{
+				player->dialogueUI->text_dialogue->SetText(FText::FromString(TEXT("여기서 나가야해 당장")));
+			}
+			else if(gm->currentLanguageSetting == ELanguageSettings::ENGLISH)
+			{
+				player->dialogueUI->text_dialogue->SetText(FText::FromString(TEXT("I should get out of here right now")));
+			}
 			player->ShowDialogue();
 		}
 	}

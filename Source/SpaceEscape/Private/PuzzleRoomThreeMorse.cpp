@@ -49,14 +49,14 @@ void APuzzleRoomThreeMorse::BeginPlay()
 	Super::BeginPlay();
 	// 출력할 화면 캐싱
 	screenWidget = Cast<UPuzzleRoomThreeMorseScreenWidget>(screenComp->GetWidget());
-
+	
 	// 게임 종료후 이니셜 입력 기능위해 룸매니저 캐싱
 	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
 	rm->endingDele.AddUFunction(this, FName("ForEndingRanking"));
 
 	// 언어 설정을 위한 게임모드 캐싱
 	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
-
+	gm->changeLanguageDele.AddUFunction(this, FName("ChangeLanguage"));
 	// 모스 버튼 찾아서 캐싱
 	for (TActorIterator<APuzzleRoomThreeMorseButton> it(GetWorld()); it; ++it)
 	{
@@ -70,20 +70,10 @@ void APuzzleRoomThreeMorse::BeginPlay()
 		APuzzleRoomThreeMorseLever* lever = *it;
 		lever->morseLeverDele.BindUFunction(this, TEXT("Enter"));
 	}
-
+	UE_LOG(LogTemp, Warning, TEXT("Ship Language : %d"), gm->currentLanguageSetting)
 	// 스크린 출력문자 초기화
 	setScreenText("");
-	if (gm->currentLanguageSetting == ELanguageSettings::KOREAN)
-	{
-		//한글인 경우
-		screenWidget->switcher->SetActiveWidgetIndex(4);
-	}
-	else if (gm->currentLanguageSetting == ELanguageSettings::ENGLISH)
-	{
-		//영어인 경우
-		screenWidget->switcher->SetActiveWidgetIndex(8);
-	}
-	
+	//ChangeLanguage(gm->currentLanguageSetting);
 
 	// 조이스틱 장착여부 전달받기 위해 우주선 캐싱
 	ship = Cast<ASpaceShip>(UGameplayStatics::GetActorOfClass(this, ASpaceShip::StaticClass()));
@@ -91,6 +81,22 @@ void APuzzleRoomThreeMorse::BeginPlay()
 
 	// 화면 터치시 입력한 문자 지우는 함수와 바인딩
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &APuzzleRoomThreeMorse::OnOverlap);
+}
+
+void APuzzleRoomThreeMorse::ChangeLanguage(ELanguageSettings language)
+{
+	if (gm->currentLanguageSetting == ELanguageSettings::KOREAN)
+	{
+		//한글인 경우
+		screenWidget->switcher->SetActiveWidgetIndex(4);
+		UE_LOG(LogTemp, Warning, TEXT("First screen of Ship : %d"), gm->currentLanguageSetting)
+	}
+	if (gm->currentLanguageSetting == ELanguageSettings::ENGLISH)
+	{
+		//영어인 경우
+		screenWidget->switcher->SetActiveWidgetIndex(8);
+		UE_LOG(LogTemp, Warning, TEXT("First screen of Ship English: %d"), gm->currentLanguageSetting)
+	}
 }
 
 // 모스버튼 신호를 받아서 임시문자열에 추가하는 함수

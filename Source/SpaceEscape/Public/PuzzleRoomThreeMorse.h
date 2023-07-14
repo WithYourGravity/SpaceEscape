@@ -26,6 +26,8 @@ public:
 	class UBoxComponent* boxComp;
 
 	UFUNCTION()
+	void ChangeLanguage(ELanguageSettings language);
+	UFUNCTION()
 	void addToTempString(const float second);
 	UFUNCTION()
 	void Enter();
