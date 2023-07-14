@@ -145,6 +145,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
 	class UWidgetComponent* helpWidgetComp;
 
+	UPROPERTY()
+	class UHelpWidget* helpWidget;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
 	class UWidgetComponent* dialogueWidgetComp;
 

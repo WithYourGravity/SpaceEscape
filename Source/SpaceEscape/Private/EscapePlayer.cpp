@@ -11,6 +11,7 @@
 #include "GrabComponent.h"
 #include "Gun.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "HelpWidget.h"
 #include "MotionControllerComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -240,6 +241,12 @@ void AEscapePlayer::BeginPlay()
 	roomManager->spawnEnemyDele.AddUFunction(this, FName("StartDialogue"));
 
 	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());
+	helpWidget = Cast<UHelpWidget>(helpWidgetComp->GetWidget());
+	if(helpWidget)
+	{
+		helpWidget->ChangeLanguage(gm->currentLanguageSetting);
+		gm->changeLanguageDele.AddUFunction(helpWidget, FName("ChangeLanguage"));
+	}
 }
 
 // Called every frame
