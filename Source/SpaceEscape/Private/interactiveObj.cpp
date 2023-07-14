@@ -12,6 +12,7 @@ AinteractiveObj::AinteractiveObj()
 	PrimaryActorTick.bCanEverTick = true;
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
 	SetRootComponent(boxComp);
+	boxComp->SetSimulatePhysics(true);
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("meshComp"));
 	meshComp->SetupAttachment(RootComponent);
 	grabComp = CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComp"));
@@ -24,7 +25,6 @@ void AinteractiveObj::BeginPlay()
 {
 	Super::BeginPlay();
 
-	boxComp->SetSimulatePhysics(true);
 }
 
 // Called every frame
