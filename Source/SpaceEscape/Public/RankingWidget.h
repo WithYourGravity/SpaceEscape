@@ -69,7 +69,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UButton* btn_Delete;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	class UButton* btn_DeleteEng;
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UButton* btn_Enter;
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	class UButton* btn_EnterEng;
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UWidgetSwitcher* switcher;
 

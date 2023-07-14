@@ -15,7 +15,9 @@ void URankingWidget::NativeConstruct()
 
 	btn_Exit->OnClicked.AddDynamic(this, &URankingWidget::GoToMain);
 	btn_Delete->OnClicked.AddDynamic(this, &URankingWidget::DeleteName);
+	btn_DeleteEng->OnClicked.AddDynamic(this, &URankingWidget::DeleteName);
 	btn_Enter->OnClicked.AddDynamic(this, &URankingWidget::EnterName);
+	btn_EnterEng->OnClicked.AddDynamic(this, &URankingWidget::EnterName);
 
 	rankingActor = Cast<ARanking>(UGameplayStatics::GetActorOfClass(this, ARanking::StaticClass()));
 	morse = Cast<APuzzleRoomThreeMorse>(UGameplayStatics::GetActorOfClass(this, APuzzleRoomThreeMorse::StaticClass()));
