@@ -5,8 +5,10 @@
 
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
+#include "OnBoardSign.h"
 #include "PuzzleRoomThreeJoystick.h"
 #include "RoomManager.h"
+#include "SpaceEscapeGameModeBase.h"
 #include "SpaceShipJoystick.h"
 #include "Components/BillboardComponent.h"
 #include "Components/BoxComponent.h"
@@ -107,6 +109,18 @@ ASpaceShip::ASpaceShip()
 		billboardComp->SetSprite(tempBillIMG.Object);
     }
 
+	billboardEngComp = CreateDefaultSubobject<UBillboardComponent>(TEXT("billboardEngComp"));
+	billboardEngComp->SetupAttachment(boxComp);
+	billboardEngComp->SetRelativeLocation(FVector(40, -50, -100));
+	billboardEngComp->SetVisibility(false);
+	billboardEngComp->SetHiddenInGame(false);
+	ConstructorHelpers::FObjectFinder<UTexture2D>tempBillEngIMG(TEXT("/Script/Engine.Texture2D'/Game/Yeni/Images/OnBoardingEng1.OnBoardingEng1'"));
+    if (tempBillEngIMG.Succeeded())
+    {
+		billboardEngComp->SetSprite(tempBillEngIMG.Object);
+		billboardEngComp->ScreenSize = 0.0025f;
+    }
+	
 	earthStickerComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("earthStickerComp"));
 	earthStickerComp->SetupAttachment(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempSticker(TEXT("/Script/Engine.StaticMesh'/Game/LTG/Assets/Meshes/PlaneEarth.PlaneEarth'"));
@@ -132,6 +146,9 @@ void ASpaceShip::BeginPlay()
 
 	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
 	rm->gameClearDele.AddUFunction(this, FName("SpawnControlableJoystick"));
+
+	gm = Cast<ASpaceEscapeGameModeBase>(GetWorld()->GetAuthGameMode());	
+	
 }
 
 // Called every frame
@@ -151,7 +168,8 @@ void ASpaceShip::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		bReadyToBoarding = true;
 
 		//ºôº¸µå ÄÑ±â
-		billboardComp->SetVisibility(true);
+		//billboardComp->SetVisibility(true);
+		ChangeLanguage(gm->currentLanguageSetting);
 	}
 }
 
@@ -166,6 +184,20 @@ void ASpaceShip::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 
 		// ºôº¸µå ²ô±â
 		billboardComp->SetVisibility(false);
+		billboardEngComp->SetVisibility(false);
+	}
+}
+
+void ASpaceShip::ChangeLanguage(ELanguageSettings language)
+{
+	switch (language)
+	{
+	case ELanguageSettings::ENGLISH:
+		billboardEngComp->SetVisibility(true);
+		break;
+	case ELanguageSettings::KOREAN:
+		billboardComp->SetVisibility(true);
+		break;
 	}
 }
 

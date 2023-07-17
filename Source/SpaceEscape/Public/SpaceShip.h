@@ -46,6 +46,8 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class UBillboardComponent* billboardComp;
 	UPROPERTY(EditDefaultsOnly)
+	class UBillboardComponent* billboardEngComp;
+	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* earthStickerComp;
 
 	UFUNCTION()
@@ -58,6 +60,8 @@ public:
 	void BoardingShip();
 	UFUNCTION()
 	void SpawnControlableJoystick();
+	UFUNCTION()
+	void ChangeLanguage(ELanguageSettings language);
 
 	FSpaceShipStickDele spaceShipStickDele;
 
@@ -71,6 +75,8 @@ private:
 	class ASpaceShipJoystick* controlableStick;
 	UPROPERTY()
 	class ARoomManager* rm;
+	UPROPERTY()
+	class ASpaceEscapeGameModeBase* gm;
 
 	FTimerHandle stickDownHandle;
 	FVector stickLoc;
