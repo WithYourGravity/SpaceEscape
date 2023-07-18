@@ -64,13 +64,27 @@ void APuzzleRoomThreeMorse::BeginPlay()
 		btn->morseButtonDele.BindUFunction(this, TEXT("addToTempString"));
 	}
 
+	//Setting 창에서 언어를 선택하지 않았을 경우 Spaceship의 Morse Screen에 나타날 언어 정하기
+	if (gm->currentLanguageSetting == ELanguageSettings::ENGLISH)
+	{
+		//영어인 경우
+		screenWidget->switcher->SetActiveWidgetIndex(8);
+	}
+	else if (gm->currentLanguageSetting == ELanguageSettings::KOREAN)
+	{
+		//한글인 경우
+		screenWidget->switcher->SetActiveWidgetIndex(4);
+	}
+
 	// 모스 레버 찾아서 캐싱
 	for (TActorIterator<APuzzleRoomThreeMorseLever> it(GetWorld()); it; ++it)
 	{
 		APuzzleRoomThreeMorseLever* lever = *it;
 		lever->morseLeverDele.BindUFunction(this, TEXT("Enter"));
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Ship Language : %d"), gm->currentLanguageSetting)
+
+	//UE_LOG(LogTemp, Warning, TEXT("Ship Language : %d"), gm->currentLanguageSetting)
+
 	// 스크린 출력문자 초기화
 	setScreenText("");
 	//ChangeLanguage(gm->currentLanguageSetting);
@@ -85,18 +99,20 @@ void APuzzleRoomThreeMorse::BeginPlay()
 
 void APuzzleRoomThreeMorse::ChangeLanguage(ELanguageSettings language)
 {
-	if (gm->currentLanguageSetting == ELanguageSettings::KOREAN)
+	switch (language)
 	{
-		//한글인 경우
-		screenWidget->switcher->SetActiveWidgetIndex(4);
-		UE_LOG(LogTemp, Warning, TEXT("First screen of Ship : %d"), gm->currentLanguageSetting)
-	}
-	if (gm->currentLanguageSetting == ELanguageSettings::ENGLISH)
-	{
+	case  ELanguageSettings::ENGLISH:
 		//영어인 경우
 		screenWidget->switcher->SetActiveWidgetIndex(8);
-		UE_LOG(LogTemp, Warning, TEXT("First screen of Ship English: %d"), gm->currentLanguageSetting)
+		//UE_LOG(LogTemp, Warning, TEXT("First screen of Ship English: %d"), gm->currentLanguageSetting)
+		break;
+	case  ELanguageSettings::KOREAN:
+		//한글인 경우
+		screenWidget->switcher->SetActiveWidgetIndex(4);
+		//UE_LOG(LogTemp, Warning, TEXT("First screen of Ship : %d"), gm->currentLanguageSetting)
+	break;
 	}
+
 }
 
 // 모스버튼 신호를 받아서 임시문자열에 추가하는 함수
