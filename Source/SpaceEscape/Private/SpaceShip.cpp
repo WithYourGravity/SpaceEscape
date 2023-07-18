@@ -5,7 +5,6 @@
 
 #include "EscapePlayer.h"
 #include "GrabComponent.h"
-#include "OnBoardSign.h"
 #include "PuzzleRoomThreeJoystick.h"
 #include "RoomManager.h"
 #include "SpaceEscapeGameModeBase.h"

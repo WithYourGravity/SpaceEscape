@@ -44,9 +44,13 @@ void ASpaceEscapeGameModeBase::StartPlayTime()
 	GetWorld()->GetTimerManager().SetTimer(countTimer, this, &ASpaceEscapeGameModeBase::CountPlayTime, 1.0f, true, 0);
 }
 
-// 스테이지를 입력하면 바로 그 스테이지부터 시작하게 해주는 함수
+// 스테이지를 입력하면 바로 그 스테이지부터 시작하게 해주는 함수(시연용)
 void ASpaceEscapeGameModeBase::SetStage(int stage)
 {
+	// For Steam
+	return;
+
+	// 시연용 코드
 	if (GetWorldTimerManager().IsTimerActive(player->dialogueTimer))
 	{
 		GetWorldTimerManager().ClearTimer(player->dialogueTimer);
