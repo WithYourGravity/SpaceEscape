@@ -16,7 +16,7 @@ AScrewDriver::AScrewDriver()
 
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Screw Collision"));
 	SetRootComponent(boxComp);
-	boxComp->SetBoxExtent(FVector(0.8, 0.7, 0.8));
+	boxComp->SetBoxExtent(FVector(2.3f, 1.3f, 1.3f));
 	boxComp->SetCollisionProfileName(TEXT("PuzzleObjectPreset"));
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ScrewMesh"));
 	meshComp->SetupAttachment(RootComponent);

@@ -17,7 +17,7 @@ AScrew::AScrew()
 
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Screw Collision"));
 	SetRootComponent(boxComp);
-	boxComp->SetBoxExtent(FVector(1, 1.6, 1));
+	boxComp->SetBoxExtent(FVector(1.5f, 2.f, 2.f));
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ScrewMesh"));
 	meshComp->SetupAttachment(RootComponent);
 		
