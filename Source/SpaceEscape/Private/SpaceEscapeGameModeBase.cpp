@@ -48,7 +48,7 @@ void ASpaceEscapeGameModeBase::StartPlayTime()
 void ASpaceEscapeGameModeBase::SetStage(int stage)
 {
 	// For Steam
-	return;
+	//return;
 
 	// 시연용 코드
 	if (GetWorldTimerManager().IsTimerActive(player->dialogueTimer))
