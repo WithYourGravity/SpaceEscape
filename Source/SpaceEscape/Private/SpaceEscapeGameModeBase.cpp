@@ -13,6 +13,9 @@ void ASpaceEscapeGameModeBase::BeginPlay()
 
 	player = Cast<AEscapePlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	rm = Cast<ARoomManager>(UGameplayStatics::GetActorOfClass(this, ARoomManager::StaticClass()));
+
+	// 코엑스 시연시 한글을 기본값으로
+	ChangeLanguageSetting(ELanguageSettings::KOREAN);
 }
 
 // 플레이타임 카운트하는 함수
